@@ -4,7 +4,7 @@ let currentLocation = null;
 let currentEmployee = null;
 let userEmail = '';
 let config = {
-    middlewareUrl: 'https://octagon-ess-production.up.railway.app/',
+    middlewareUrl: 'https://octagon-ess-production.up.railway.app',
     employeeId: '',
     employmentType: '',
     siteLat: null,
