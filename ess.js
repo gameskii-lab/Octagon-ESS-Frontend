@@ -626,19 +626,63 @@ function updateDrawerInfo() {
 }
 
 // ============================================
-// LEAVE FUNCTIONS
+// LEAVE FUNCTIONS (Improved with Tabs & Modal)
 // ============================================
+
+let currentLeaveTab = 'balance';
+let currentLeaveDetail = null;
+
+function switchLeaveTab(tab) {
+    currentLeaveTab = tab;
+    
+    const tabBalance = document.getElementById('tabBalance');
+    const tabRequests = document.getElementById('tabRequests');
+    const balanceTab = document.getElementById('leaveBalanceTab');
+    const requestsTab = document.getElementById('leaveRequestsTab');
+    
+    if (tab === 'balance') {
+        tabBalance.style.background = 'white';
+        tabBalance.style.color = '#333';
+        tabRequests.style.background = 'transparent';
+        tabRequests.style.color = '#666';
+        balanceTab.style.display = 'block';
+        requestsTab.style.display = 'none';
+        loadLeaveBalance();
+    } else {
+        tabRequests.style.background = 'white';
+        tabRequests.style.color = '#333';
+        tabBalance.style.background = 'transparent';
+        tabBalance.style.color = '#666';
+        balanceTab.style.display = 'none';
+        requestsTab.style.display = 'block';
+        loadLeaveRequests();
+    }
+}
+
+function openLeaveApplyModal() {
+    document.getElementById('leaveModalOverlay').style.display = 'block';
+    document.getElementById('leaveApplyModal').style.bottom = '0';
+    document.getElementById('leaveModalError').style.display = 'none';
+}
+
+function closeLeaveApplyModal() {
+    document.getElementById('leaveModalOverlay').style.display = 'none';
+    document.getElementById('leaveApplyModal').style.bottom = '-100%';
+}
+
 async function refreshLeaveData() {
-    showLeaveStatus('Refreshing leave data...', 'info');
-    await loadLeaveBalance();
-    await loadLeaveRequests();
-    showLeaveStatus('Leave data updated!', 'success');
+    showLeaveStatus('Refreshing...', 'info');
+    if (currentLeaveTab === 'balance') {
+        await loadLeaveBalance();
+    } else {
+        await loadLeaveRequests();
+    }
+    showLeaveStatus('Updated!', 'success');
 }
 
 async function loadLeaveScreen() {
     if (!config.employeeId) return;
-    await loadLeaveBalance();
-    await loadLeaveRequests();
+    switchLeaveTab('balance');
 }
 
 async function loadLeaveBalance() {
@@ -648,7 +692,6 @@ async function loadLeaveBalance() {
         
         console.log('🔍 Leave balance result:', result);
         
-        // Get the leave type select element
         const leaveTypeSelect = document.getElementById('leaveType');
         
         if (result.success && result.balances && result.balances.length > 0) {
@@ -665,58 +708,69 @@ async function loadLeaveBalance() {
             });
             document.getElementById('leaveBalanceSummary').innerHTML = html;
             
-            // 🔥 UPDATE DROPDOWN: Only show allocated leave types
+            // Update dropdown for modal
             if (leaveTypeSelect) {
-                // Clear existing options
                 leaveTypeSelect.innerHTML = '<option value="">Select Leave Type</option>';
-                
-                // Add only allocated leave types
                 result.balances.forEach(b => {
                     const remaining = (b.leaves_allocated || 0) - (b.leaves_taken || 0);
-                    if (remaining > 0) {  // Only show if they have remaining balance
+                    if (remaining > 0) {
                         const option = document.createElement('option');
                         option.value = b.leave_type;
-                        option.textContent = `${b.leave_type} (${remaining} days available)`;
+                        option.textContent = `${b.leave_type} (${remaining} days)`;
                         leaveTypeSelect.appendChild(option);
                     }
                 });
-                
-                // If no options were added, show a message
                 if (leaveTypeSelect.options.length === 1) {
                     const option = document.createElement('option');
                     option.value = '';
-                    option.textContent = 'No leave types with balance available';
+                    option.textContent = 'No leave available';
                     option.disabled = true;
                     leaveTypeSelect.appendChild(option);
                 }
             }
             
+            // Load upcoming approved leave
+            loadUpcomingLeave();
         } else if (result.success && result.balances && result.balances.length === 0) {
-            console.log('✅ Showing "No leave allocations"');
             document.getElementById('leaveBalanceSummary').innerHTML = '<p style="text-align: center; padding: 20px;">No leave allocations found</p>';
-            
-            // 🔥 UPDATE DROPDOWN: Show "No leave types available"
-            if (leaveTypeSelect) {
-                leaveTypeSelect.innerHTML = '<option value="">No leave types available</option>';
-            }
-            
+            if (leaveTypeSelect) leaveTypeSelect.innerHTML = '<option value="">No leave available</option>';
         } else {
-            console.log('⚠️ API returned unexpected format');
             document.getElementById('leaveBalanceSummary').innerHTML = '<p style="text-align: center; padding: 20px;">Unable to load leave balance</p>';
-            
-            // Keep default options but disable them
-            if (leaveTypeSelect) {
-                leaveTypeSelect.innerHTML = '<option value="">Unable to load leave types</option>';
-            }
         }
     } catch (error) {
         console.error('Error loading leave balance:', error);
         document.getElementById('leaveBalanceSummary').innerHTML = '<p style="text-align: center; padding: 20px;">Error loading balance</p>';
+    }
+}
+
+async function loadUpcomingLeave() {
+    try {
+        const response = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
+        const result = await response.json();
         
-        const leaveTypeSelect = document.getElementById('leaveType');
-        if (leaveTypeSelect) {
-            leaveTypeSelect.innerHTML = '<option value="">Error loading leave types</option>';
+        if (result.success && result.requests && result.requests.length > 0) {
+            const approved = result.requests.filter(r => r.status === 'Approved');
+            if (approved.length > 0) {
+                let html = '';
+                approved.slice(0, 3).forEach(req => {
+                    html += `
+                        <div class="leave-request-item" onclick="viewLeaveDetail('${req.name}')" style="cursor: pointer;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>${req.leave_type}</strong>
+                                <span>${req.from_date} → ${req.to_date}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('upcomingLeaveList').innerHTML = html;
+            } else {
+                document.getElementById('upcomingLeaveList').innerHTML = '<p style="color: #666; text-align: center;">No upcoming leave</p>';
+            }
+        } else {
+            document.getElementById('upcomingLeaveList').innerHTML = '<p style="color: #666; text-align: center;">No upcoming leave</p>';
         }
+    } catch (error) {
+        console.error('Error loading upcoming leave:', error);
     }
 }
 
@@ -727,29 +781,86 @@ async function loadLeaveRequests() {
         
         if (result.success && result.requests && result.requests.length > 0) {
             let html = '';
-            result.requests.slice(0, 5).forEach(req => {
+            result.requests.forEach(req => {
                 const statusClass = req.status === 'Approved' ? 'status-approved' : 
                                    (req.status === 'Rejected' ? 'status-rejected' : 'status-pending');
                 html += `
-                    <div class="leave-request-item">
+                    <div class="leave-request-item" onclick="viewLeaveDetail('${req.name}')" style="cursor: pointer;">
                         <div style="display: flex; justify-content: space-between;">
-                            <strong>${req.leave_type}</strong>
+                            <div>
+                                <strong>${req.leave_type}</strong>
+                                <div style="font-size: 12px; color: #666;">${req.from_date} → ${req.to_date}</div>
+                            </div>
                             <span class="leave-status ${statusClass}">${req.status}</span>
-                        </div>
-                        <div style="font-size: 14px; color: #666; margin-top: 4px;">
-                            ${req.from_date} to ${req.to_date}
                         </div>
                     </div>
                 `;
             });
             document.getElementById('leaveRequestsList').innerHTML = html;
         } else {
-            document.getElementById('leaveRequestsList').innerHTML = '<p style="color: #666;">No leave requests found</p>';
+            document.getElementById('leaveRequestsList').innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No leave requests found</p>';
         }
     } catch (error) {
         console.error('Error loading leave requests:', error);
-        document.getElementById('leaveRequestsList').innerHTML = '<p>Error loading requests</p>';
+        document.getElementById('leaveRequestsList').innerHTML = '<p style="color: #666;">Error loading requests</p>';
     }
+}
+
+async function viewLeaveDetail(docname) {
+    try {
+        const response = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
+        const result = await response.json();
+        
+        const request = (result.requests || []).find(r => r.name === docname);
+        if (!request) return;
+        
+        currentLeaveDetail = request;
+        
+        // Hide tabs and list, show detail
+        document.getElementById('leaveBalanceTab').style.display = 'none';
+        document.getElementById('leaveRequestsTab').style.display = 'none';
+        document.querySelector('#leaveScreen .flex-row')?.style.setProperty('display', 'none', 'important');
+        document.getElementById('leaveDetailView').style.display = 'block';
+        
+        // Hide the header buttons
+        const tabContainer = document.querySelector('#leaveScreen > div:nth-child(1)');
+        const applyButton = document.querySelector('#leaveScreen > div:nth-child(1) button');
+        if (tabContainer) tabContainer.style.display = 'none';
+        if (applyButton) applyButton.style.display = 'none';
+        
+        const statusClass = request.status === 'Approved' ? 'status-approved' : 
+                           (request.status === 'Rejected' ? 'status-rejected' : 'status-pending');
+        
+        document.getElementById('leaveDetailContent').innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span class="leave-status ${statusClass}" style="font-size: 16px; padding: 8px 20px;">${request.status}</span>
+            </div>
+            <h3 style="text-align: center; margin-bottom: 16px;">${request.leave_type}</h3>
+            <div class="hours-row"><span>From:</span> <span>${request.from_date}</span></div>
+            <div class="hours-row"><span>To:</span> <span>${request.to_date}</span></div>
+            <div class="hours-row"><span>Days:</span> <span>${request.total_leave_days || 'N/A'}</span></div>
+            <div class="hours-row"><span>Status:</span> <span class="leave-status ${statusClass}">${request.status}</span></div>
+            ${request.description ? `<div class="hours-row"><span>Reason:</span> <span>${request.description}</span></div>` : ''}
+        `;
+    } catch (error) {
+        console.error('Error viewing leave detail:', error);
+    }
+}
+
+function closeLeaveDetail() {
+    document.getElementById('leaveDetailView').style.display = 'none';
+    
+    // Show the header buttons and tabs again
+    const tabContainer = document.querySelector('#leaveScreen > div:nth-child(1)');
+    const applyButton = document.querySelector('#leaveScreen > div:nth-child(1) button');
+    if (tabContainer) tabContainer.style.display = 'flex';
+    if (applyButton) applyButton.style.display = 'block';
+    
+    // Restore tabs
+    document.getElementById('tabRequests').style.display = 'block';
+    document.getElementById('tabBalance').style.display = 'block';
+    
+    switchLeaveTab(currentLeaveTab);
 }
 
 async function submitLeaveApplication() {
@@ -759,19 +870,19 @@ async function submitLeaveApplication() {
     const toDate = document.getElementById('leaveToDate').value;
     const halfDay = document.getElementById('leaveHalfDay').value;
     const reason = document.getElementById('leaveReason').value;
+    const errorEl = document.getElementById('leaveModalError');
     
-    console.log('📝 Submitting:', { leaveType, fromDate, toDate, halfDay, reason });
+    errorEl.style.display = 'none';
     
     if (!leaveType || !fromDate || !toDate || !reason) {
-        showLeaveStatus('Please fill all fields', 'error');
+        errorEl.textContent = 'Please fill all fields';
+        errorEl.style.display = 'block';
         return;
     }
     
-    const submitBtn = document.querySelector('#leaveScreen button');
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
-    }
+    const submitBtn = document.querySelector('#leaveApplyModal button');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
     
     try {
         const response = await fetch(`${config.middlewareUrl}/api/leave-application`, {
@@ -791,25 +902,30 @@ async function submitLeaveApplication() {
         const result = await response.json();
         
         if (result.success) {
-            showLeaveStatus('✅ Leave request submitted successfully!', 'success');
+            closeLeaveApplyModal();
+            showLeaveStatus('✅ Leave request submitted!', 'success');
             // Clear form
             document.getElementById('leaveType').value = '';
             document.getElementById('leaveFromDate').value = '';
             document.getElementById('leaveToDate').value = '';
             document.getElementById('leaveHalfDay').value = '0';
             document.getElementById('leaveReason').value = '';
-            // Refresh list
-            await loadLeaveRequests();
+            // Refresh
+            if (currentLeaveTab === 'balance') {
+                await loadLeaveBalance();
+            } else {
+                await loadLeaveRequests();
+            }
         } else {
-            throw new Error(result.error || 'Failed to submit');
+            errorEl.textContent = result.error || 'Failed to submit';
+            errorEl.style.display = 'block';
         }
     } catch (error) {
-        showLeaveStatus(`❌ Error: ${error.message}`, 'error');
+        errorEl.textContent = error.message;
+        errorEl.style.display = 'block';
     } finally {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Leave Request';
-        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Leave Request';
     }
 }
 
