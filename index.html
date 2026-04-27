@@ -574,6 +574,122 @@
                 
                 <div id="leaveStatusMessage"></div>
             </div>
+
+                        <!-- Payslips Screen -->
+            <div id="payslipsScreen" class="screen">
+                <div id="latestPayslipCard" class="card hidden" style="background: linear-gradient(135deg, #e8f0fe, #d4e8ff); border: 1px solid #b8d4fe;">
+                    <div class="card-title" style="color: #1a73e8;">💰 Latest Payslip</div>
+                    <div id="latestPayslipContent" style="text-align: center; padding: 12px 0;"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📋 Recent Payslips</div>
+                    <div id="payslipsList">
+                        <p style="color: #666; text-align: center;">Loading payslips...</p>
+                    </div>
+                </div>
+                <div id="payslipDetail" class="card hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div class="card-title" id="payslipDetailTitle" style="margin: 0;">Payslip Details</div>
+                        <button onclick="downloadPayslip()" style="width: auto; padding: 8px 14px; font-size: 14px; background: #4CAF50;">📥 Download</button>
+                    </div>
+                    <div id="payslipPrintView" style="max-height: 500px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; padding: 10px;"></div>
+                    <button class="secondary" onclick="hidePayslipDetail()" style="margin-top: 12px;">← Back to list</button>
+                </div>
+                <div id="payslipStatusMessage"></div>
+            </div>
+
+            <!-- Schedule Screen -->
+            <div id="scheduleScreen" class="screen">
+                <div class="card" style="text-align: center;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <button onclick="changeMonth(-1)" style="width: auto; padding: 8px 12px; background: none; color: #333; font-size: 20px;">◀</button>
+                        <div class="card-title" id="calendarMonth" style="margin: 0;">April 2026</div>
+                        <button onclick="changeMonth(1)" style="width: auto; padding: 8px 12px; background: none; color: #333; font-size: 20px;">▶</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px;">
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">Sun</div>
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">Mon</div>
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">Tue</div>
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">Wed</div>
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">Thu</div>
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">Fri</div>
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">Sat</div>
+                    </div>
+                    <div id="calendarGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;"></div>
+                    <div style="display: flex; justify-content: center; gap: 16px; margin-top: 12px; font-size: 11px; color: #666;">
+                        <span>🟢 Work</span><span>🟡 Leave</span><span>🔴 Holiday</span><span>⚪ Off</span>
+                    </div>
+                </div>
+                <div id="dayDetail" class="card hidden">
+                    <div class="card-title" id="dayDetailTitle">Day Details</div>
+                    <div id="dayDetailContent"></div>
+                    <button class="secondary" onclick="hideDayDetail()" style="margin-top: 8px;">← Back to Calendar</button>
+                </div>
+                <div class="card" style="margin-top: 12px;">
+                    <div class="card-title">📋 Upcoming Shifts</div>
+                    <div id="scheduleList"><p style="color: #666; text-align: center;">Loading...</p></div>
+                </div>
+                <div id="scheduleStatusMessage"></div>
+            </div>
+
+            <!-- Approvals Screen -->
+            <div id="approvalsScreen" class="screen">
+                <div class="card">
+                    <div class="card-title">📋 Pending Approvals</div>
+                    <div id="approvalsList"><p style="color: #666; text-align: center;">Loading approvals...</p></div>
+                </div>
+                <div id="approvalDetail" class="card hidden">
+                    <div class="card-title" id="approvalDetailTitle">Document</div>
+                    <div id="approvalPrintView" style="max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px;"></div>
+                    <div style="margin-top: 12px;">
+                        <label>Remark (optional)</label>
+                        <textarea id="approvalRemark" rows="2" placeholder="Add a remark..."></textarea>
+                    </div>
+                    <div class="flex-row" style="margin-top: 12px;">
+                        <button id="approveBtn" style="background: #4CAF50;">✅ Approve</button>
+                        <button id="rejectBtn" style="background: #f44336;">❌ Reject</button>
+                    </div>
+                    <button class="secondary" onclick="showApprovalsList()" style="margin-top: 8px;">← Back to list</button>
+                </div>
+                <div id="approvalStatusMessage"></div>
+            </div>
+
+            <!-- Onboarding Screen -->
+            <div id="onboardingScreen" class="screen">
+                <div class="card" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: 1px solid #90caf9;">
+                    <div style="text-align: center; padding: 16px 0;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
+                        <h2 id="onboardingWelcome">Welcome!</h2>
+                        <p style="color: #1565c0; font-size: 14px;" id="onboardingSubtitle">Let's get you set up</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-weight: bold;">Onboarding Progress</span>
+                        <span id="onboardingProgress">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden;">
+                        <div id="onboardingProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); border-radius: 5px; transition: width 0.5s;"></div>
+                    </div>
+                    <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center;" id="onboardingFraction">0 of 0 activities complete</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">📋 Activities</div>
+                    <div id="onboardingActivities"><p style="color: #666; text-align: center;">Loading activities...</p></div>
+                </div>
+                <div id="onboardingDetail" class="card hidden">
+                    <div class="card-title" id="onboardingDetailTitle">Activity Details</div>
+                    <div id="onboardingDetailContent"></div>
+                    <div style="margin-top: 12px;">
+                        <button id="onboardingCompleteBtn" style="background: #4CAF50;">✅ Mark as Complete</button>
+                    </div>
+                    <button class="secondary" onclick="hideOnboardingDetail()" style="margin-top: 8px;">← Back to list</button>
+                </div>
+                <div id="onboardingStatusMessage"></div>
+            </div>
+
+            <!-- Global Status Message -->
+            <div id="statusMessage"></div>
         </div>
 
     <script src="ess.js?v=13"></script>
