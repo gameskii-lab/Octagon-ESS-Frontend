@@ -826,26 +826,32 @@ async function loadLeaveRequests() {
 }
 
 async function viewLeaveDetail(docname) {
+    console.log('🔍 viewLeaveDetail called with:', docname);
+    
     try {
         const response = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
         const result = await response.json();
         
+        console.log('📥 Leave requests response:', result);
+        
         const request = (result.requests || []).find(r => r.name === docname);
-        if (!request) return;
+        console.log('🔍 Found request:', request);
+        
+        if (!request) {
+            console.log('❌ Request not found for docname:', docname);
+            return;
+        }
         
         currentLeaveDetail = request;
         
-        // Hide tabs and list, show detail
+        // Show detail view
         document.getElementById('leaveBalanceTab').style.display = 'none';
         document.getElementById('leaveRequestsTab').style.display = 'none';
-        document.querySelector('#leaveScreen .flex-row')?.style.setProperty('display', 'none', 'important');
         document.getElementById('leaveDetailView').style.display = 'block';
         
-        // Hide the header buttons
-        const tabContainer = document.querySelector('#leaveScreen > div:nth-child(1)');
-        const applyButton = document.querySelector('#leaveScreen > div:nth-child(1) button');
-        if (tabContainer) tabContainer.style.display = 'none';
-        if (applyButton) applyButton.style.display = 'none';
+        // Hide header buttons
+        const headerDiv = document.querySelector('#leaveScreen > div:first-child');
+        if (headerDiv) headerDiv.style.display = 'none';
         
         const statusClass = request.status === 'Approved' ? 'status-approved' : 
                            (request.status === 'Rejected' ? 'status-rejected' : 'status-pending');
@@ -859,7 +865,6 @@ async function viewLeaveDetail(docname) {
             <div class="hours-row"><span>To:</span> <span>${request.to_date}</span></div>
             <div class="hours-row"><span>Days:</span> <span>${request.total_leave_days || 'N/A'}</span></div>
             <div class="hours-row"><span>Status:</span> <span class="leave-status ${statusClass}">${request.status}</span></div>
-            ${request.description ? `<div class="hours-row"><span>Reason:</span> <span>${request.description}</span></div>` : ''}
         `;
     } catch (error) {
         console.error('Error viewing leave detail:', error);
