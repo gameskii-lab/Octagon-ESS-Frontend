@@ -750,11 +750,13 @@ async function loadUpcomingLeave() {
         
         if (result.success && result.requests && result.requests.length > 0) {
             const approved = result.requests.filter(r => r.status === 'Approved');
+            const upcomingList = document.getElementById('upcomingLeaveList');
+            
             if (approved.length > 0) {
                 let html = '';
-                approved.slice(0, 3).forEach(req => {
+                approved.slice(0, 3).forEach((req, index) => {
                     html += `
-                        <div class="leave-request-item" onclick="viewLeaveDetail('${req.name}')" style="cursor: pointer;">
+                        <div class="leave-request-item leave-detail-click" data-docname="${req.name}" style="cursor: pointer;">
                             <div style="display: flex; justify-content: space-between;">
                                 <strong>${req.leave_type}</strong>
                                 <span>${req.from_date} → ${req.to_date}</span>
@@ -762,9 +764,16 @@ async function loadUpcomingLeave() {
                         </div>
                     `;
                 });
-                document.getElementById('upcomingLeaveList').innerHTML = html;
+                upcomingList.innerHTML = html;
+                
+                // Add click handlers
+                upcomingList.querySelectorAll('.leave-detail-click').forEach(item => {
+                    item.addEventListener('click', function() {
+                        viewLeaveDetail(this.getAttribute('data-docname'));
+                    });
+                });
             } else {
-                document.getElementById('upcomingLeaveList').innerHTML = '<p style="color: #666; text-align: center;">No upcoming leave</p>';
+                upcomingList.innerHTML = '<p style="color: #666; text-align: center;">No upcoming leave</p>';
             }
         } else {
             document.getElementById('upcomingLeaveList').innerHTML = '<p style="color: #666; text-align: center;">No upcoming leave</p>';
@@ -780,12 +789,14 @@ async function loadLeaveRequests() {
         const result = await response.json();
         
         if (result.success && result.requests && result.requests.length > 0) {
+            const requestList = document.getElementById('leaveRequestsList');
             let html = '';
+            
             result.requests.forEach(req => {
                 const statusClass = req.status === 'Approved' ? 'status-approved' : 
                                    (req.status === 'Rejected' ? 'status-rejected' : 'status-pending');
                 html += `
-                    <div class="leave-request-item" onclick="viewLeaveDetail('${req.name}')" style="cursor: pointer;">
+                    <div class="leave-request-item leave-request-click" data-docname="${req.name}" style="cursor: pointer;">
                         <div style="display: flex; justify-content: space-between;">
                             <div>
                                 <strong>${req.leave_type}</strong>
@@ -796,7 +807,15 @@ async function loadLeaveRequests() {
                     </div>
                 `;
             });
-            document.getElementById('leaveRequestsList').innerHTML = html;
+            
+            requestList.innerHTML = html;
+            
+            // Add click handlers
+            requestList.querySelectorAll('.leave-request-click').forEach(item => {
+                item.addEventListener('click', function() {
+                    viewLeaveDetail(this.getAttribute('data-docname'));
+                });
+            });
         } else {
             document.getElementById('leaveRequestsList').innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No leave requests found</p>';
         }
