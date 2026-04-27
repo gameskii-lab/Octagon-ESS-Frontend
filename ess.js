@@ -729,8 +729,8 @@ async function loadLeaveBalance() {
                 }
             }
             
-            // Load upcoming approved leave
-            loadUpcomingLeave();
+// Load upcoming approved leave
+    loadUpcomingLeave();
         } else if (result.success && result.balances && result.balances.length === 0) {
             document.getElementById('leaveBalanceSummary').innerHTML = '<p style="text-align: center; padding: 20px;">No leave allocations found</p>';
             if (leaveTypeSelect) leaveTypeSelect.innerHTML = '<option value="">No leave available</option>';
@@ -753,24 +753,22 @@ async function loadUpcomingLeave() {
             const upcomingList = document.getElementById('upcomingLeaveList');
             
             if (approved.length > 0) {
-                let html = '';
-                approved.slice(0, 3).forEach((req, index) => {
-                    html += `
-                        <div class="leave-request-item leave-detail-click" data-docname="${req.name}" style="cursor: pointer;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>${req.leave_type}</strong>
-                                <span>${req.from_date} → ${req.to_date}</span>
-                            </div>
+                upcomingList.innerHTML = '';
+                approved.slice(0, 3).forEach(req => {
+                    const div = document.createElement('div');
+                    div.className = 'leave-request-item';
+                    div.style.cursor = 'pointer';
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${req.leave_type}</strong>
+                            <span>${req.from_date} → ${req.to_date}</span>
                         </div>
                     `;
-                });
-                upcomingList.innerHTML = html;
-                
-                // Add click handlers
-                upcomingList.querySelectorAll('.leave-detail-click').forEach(item => {
-                    item.addEventListener('click', function() {
-                        viewLeaveDetail(this.getAttribute('data-docname'));
-                    });
+                    // Use closure to capture the correct docname
+                    div.addEventListener('click', (function(docname) {
+                        return function() { viewLeaveDetail(docname); };
+                    })(req.name));
+                    upcomingList.appendChild(div);
                 });
             } else {
                 upcomingList.innerHTML = '<p style="color: #666; text-align: center;">No upcoming leave</p>';
@@ -790,31 +788,29 @@ async function loadLeaveRequests() {
         
         if (result.success && result.requests && result.requests.length > 0) {
             const requestList = document.getElementById('leaveRequestsList');
-            let html = '';
+            requestList.innerHTML = '';
             
             result.requests.forEach(req => {
                 const statusClass = req.status === 'Approved' ? 'status-approved' : 
                                    (req.status === 'Rejected' ? 'status-rejected' : 'status-pending');
-                html += `
-                    <div class="leave-request-item leave-request-click" data-docname="${req.name}" style="cursor: pointer;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <div>
-                                <strong>${req.leave_type}</strong>
-                                <div style="font-size: 12px; color: #666;">${req.from_date} → ${req.to_date}</div>
-                            </div>
-                            <span class="leave-status ${statusClass}">${req.status}</span>
+                
+                const div = document.createElement('div');
+                div.className = 'leave-request-item';
+                div.style.cursor = 'pointer';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <strong>${req.leave_type}</strong>
+                            <div style="font-size: 12px; color: #666;">${req.from_date} → ${req.to_date}</div>
                         </div>
+                        <span class="leave-status ${statusClass}">${req.status}</span>
                     </div>
                 `;
-            });
-            
-            requestList.innerHTML = html;
-            
-            // Add click handlers
-            requestList.querySelectorAll('.leave-request-click').forEach(item => {
-                item.addEventListener('click', function() {
-                    viewLeaveDetail(this.getAttribute('data-docname'));
-                });
+                // Use closure to capture the correct docname
+                div.addEventListener('click', (function(docname) {
+                    return function() { viewLeaveDetail(docname); };
+                })(req.name));
+                requestList.appendChild(div);
             });
         } else {
             document.getElementById('leaveRequestsList').innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No leave requests found</p>';
