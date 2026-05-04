@@ -6,652 +6,263 @@
     <title>Octagon ESS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --primary: #1a2744;
-            --primary-light: #2d3748;
-            --accent: #4f46e5;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --primary: #1a2744; --primary-light: #2d3748; --accent: #4f46e5;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+            --text-secondary: #64748b; --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
+            background: var(--bg); color: var(--text); overflow-x: hidden;
         }
-
-        /* Header */
         .app-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 16px 20px;
-            border-radius: 0 0 24px 24px;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            color: white; padding: 16px 20px; border-radius: 0 0 24px 24px;
+            box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100;
         }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .menu-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 18px;
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 40px; height: 40px; border-radius: 12px; cursor: pointer;
+            font-size: 18px; backdrop-filter: blur(10px);
         }
-
-        .menu-btn:active {
-            transform: scale(0.95);
-        }
-
-        .greeting h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .greeting p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
+        .menu-btn:active { transform: scale(0.95); }
+        .greeting h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .greeting p { font-size: 14px; opacity: 0.9; }
         .current-date {
-            background: rgba(255,255,255,0.15);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            display: inline-block;
-            margin-top: 12px;
+            background: rgba(255,255,255,0.15); padding: 8px 16px;
+            border-radius: 20px; font-size: 13px; display: inline-block; margin-top: 12px;
         }
-
-        /* Main Content */
-        .main-content {
-            padding: 20px;
-            padding-bottom: 40px;
-        }
-
-        /* Cards Grid */
+        .main-content { padding: 20px; padding-bottom: 40px; }
         .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;
         }
-
-        @media (min-width: 480px) {
-            .cards-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
+        @media (min-width: 480px) { .cards-grid { grid-template-columns: repeat(3, 1fr); } }
         .action-card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 20px 16px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: all 0.2s;
+            background: var(--card); border-radius: 16px; padding: 20px 16px;
+            text-align: center; box-shadow: var(--shadow); cursor: pointer; transition: all 0.2s;
         }
-
-        .action-card:active {
-            transform: scale(0.96);
-        }
-
+        .action-card:active { transform: scale(0.96); }
         .card-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 24px;
+            width: 56px; height: 56px; border-radius: 14px; display: flex;
+            align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 24px;
         }
-
         .card-icon.green { background: #d1fae5; color: var(--success); }
         .card-icon.red { background: #fee2e2; color: var(--danger); }
         .card-icon.orange { background: #ffedd5; color: #f97316; }
         .card-icon.blue { background: #dbeafe; color: #3b82f6; }
         .card-icon.purple { background: #e9d5ff; color: #a855f7; }
         .card-icon.yellow { background: #fef3c7; color: var(--warning); }
-
-        .card-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .card-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        /* Check-in Button */
-        .checkin-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-
+        .card-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
+        .card-value { font-size: 20px; font-weight: 700; color: var(--text); }
+        .checkin-container { margin: 20px 0; text-align: center; }
         .checkin-btn {
-            background: linear-gradient(135deg, var(--success), #059669);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 320px;
+            background: linear-gradient(135deg, var(--success), #059669); color: white;
+            border: none; padding: 18px 40px; border-radius: 16px; font-size: 18px;
+            font-weight: 700; cursor: pointer; box-shadow: var(--shadow);
+            width: 100%; max-width: 320px;
         }
-
-        .checkin-btn.check-out {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-        }
-
-        .checkin-btn:active {
-            transform: scale(0.97);
-        }
-
-        .checkin-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        .checkin-btn.check-out { background: linear-gradient(135deg, var(--danger), #dc2626); }
+        .checkin-btn:active { transform: scale(0.97); }
+        .checkin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card {
-            background: var(--card);
-            border-radius: 14px;
-            padding: 16px 10px;
-            text-align: center;
-            box-shadow: var(--shadow);
+            background: var(--card); border-radius: 14px; padding: 16px 10px;
+            text-align: center; box-shadow: var(--shadow);
         }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
+        .stat-value { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
         .stat-value.green { color: var(--success); }
         .stat-value.yellow { color: var(--warning); }
         .stat-value.red { color: var(--danger); }
-
-        .stat-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* Section Title */
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 24px 0 16px;
-        }
-
-        /* Side Drawer */
+        .stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+        .section-title { font-size: 18px; font-weight: 700; margin: 24px 0 16px; }
         #sideDrawer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 280px;
-            height: 100%;
-            background: white;
-            z-index: 2000;
-            transform: translateX(-100%);
-            transition: transform 0.3s;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            overflow-y: auto;
+            position: fixed; top: 0; left: 0; width: 280px; height: 100%;
+            background: white; z-index: 2000; transform: translateX(-100%);
+            transition: transform 0.3s; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            padding: 20px; overflow-y: auto;
         }
-
-        #sideDrawer.open {
-            transform: translateX(0);
-        }
-
+        #sideDrawer.open { transform: translateX(0); }
         #drawerOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1999;
-            display: none;
-            backdrop-filter: blur(4px);
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1999; display: none; backdrop-filter: blur(4px);
         }
-
-        #drawerOverlay.open {
-            display: block;
-        }
-
-        .drawer-header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
+        #drawerOverlay.open { display: block; }
+        .drawer-header { text-align: center; padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .drawer-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--accent), #818cf8);
-            border-radius: 50%;
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 32px;
-            font-weight: 700;
+            width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent), #818cf8);
+            border-radius: 50%; margin: 0 auto 12px; display: flex;
+            align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 700;
         }
-
         .drawer-nav button {
-            width: 100%;
-            padding: 14px 16px;
-            border: none;
-            background: var(--bg);
-            border-radius: 12px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
+            width: 100%; padding: 14px 16px; border: none; background: var(--bg);
+            border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
         }
-
-        .drawer-nav button:active {
-            background: var(--border);
-        }
-
-        .drawer-nav button i {
-            width: 24px;
-        }
-
-        /* Modal */
+        .drawer-nav button:active { background: var(--border); }
+        .drawer-nav button i { width: 24px; }
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 3000;
-            backdrop-filter: blur(4px);
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none; align-items: flex-end;
+            justify-content: center; z-index: 3000; backdrop-filter: blur(4px);
         }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
+        .modal-overlay.active { display: flex; }
         .modal-content {
-            background: white;
-            border-radius: 24px 24px 0 0;
-            padding: 24px 20px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s;
+            background: white; border-radius: 24px 24px 0 0; padding: 24px 20px;
+            width: 100%; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s;
         }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-title { font-size: 20px; font-weight: 700; }
         .close-modal {
-            background: var(--bg);
-            border: none;
-            font-size: 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            background: var(--bg); border: none; font-size: 20px; color: var(--text-secondary);
+            cursor: pointer; width: 36px; height: 36px; border-radius: 50%;
         }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
         .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 16px;
-            font-family: inherit;
+            width: 100%; padding: 14px 16px; border: 2px solid var(--border);
+            border-radius: 12px; font-size: 16px; font-family: inherit;
         }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
+        .form-textarea { resize: vertical; min-height: 100px; }
         .submit-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            width: 100%;
-            cursor: pointer;
+            background: var(--accent); color: white; border: none; padding: 16px;
+            border-radius: 12px; font-size: 16px; font-weight: 700; width: 100%; cursor: pointer;
         }
-
-        .submit-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Status Messages */
+        .submit-btn:active { transform: scale(0.98); }
         .status {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 4000;
-            box-shadow: var(--shadow);
-            animation: slideDown 0.3s;
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600;
+            z-index: 4000; box-shadow: var(--shadow); animation: slideDown 0.3s;
         }
-
-        @keyframes slideDown {
-            from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-
+        @keyframes slideDown { from { transform: translateX(-50%) translateY(-20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
         .status.success { background: var(--success); color: white; }
         .status.error { background: var(--danger); color: white; }
         .status.info { background: var(--accent); color: white; }
-
-        /* Screen Management */
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* Login Screen */
+        .screen { display: none; }
+        .screen.active { display: block; }
         .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
         }
-
         .login-card {
-            background: white;
-            border-radius: 24px;
-            padding: 32px 24px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            background: white; border-radius: 24px; padding: 32px 24px;
+            width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
-
-        .login-title {
-            font-size: 26px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-
-        .login-subtitle {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            font-size: 14px;
-        }
-
-        /* Leave Screen */
+        .login-title { font-size: 26px; font-weight: 700; text-align: center; margin-bottom: 8px; color: var(--primary); }
+        .login-subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 32px; font-size: 14px; }
         .tabs {
-            display: flex;
-            gap: 8px;
-            background: var(--bg);
-            padding: 6px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            display: flex; gap: 8px; background: var(--bg); padding: 6px;
+            border-radius: 12px; margin-bottom: 20px;
         }
-
         .tab {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
+            flex: 1; padding: 10px; border: none; background: transparent;
+            border-radius: 8px; font-size: 14px; font-weight: 600;
+            color: var(--text-secondary); cursor: pointer;
         }
-
-        .tab.active {
-            background: white;
-            color: var(--accent);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .leave-balance-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
+        .tab.active { background: white; color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .leave-balance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
         .leave-type {
-            background: white;
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: var(--shadow);
+            background: white; border-radius: 14px; padding: 16px;
+            text-align: center; box-shadow: var(--shadow);
         }
-
-        .leave-type .count {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 4px;
-        }
-
-        .leave-type .label {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
+        .leave-type .count { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+        .leave-type .label { font-size: 13px; color: var(--text-secondary); }
         .leave-request-item {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 10px;
-            box-shadow: var(--shadow);
+            background: white; border-radius: 12px; padding: 16px;
+            margin-bottom: 10px; box-shadow: var(--shadow);
         }
-
-        .leave-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        .leave-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-approved { background: #d1fae5; color: #065f46; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-rejected { background: #fee2e2; color: #991b1b; }
-
         .fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background: var(--accent);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-            z-index: 999;
+            position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px;
+            background: var(--accent); border: none; border-radius: 50%;
+            color: white; font-size: 24px; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); z-index: 999;
         }
-
-        .fab:active {
-            transform: scale(0.95);
-        }
-
-        /* Profile Screen */
+        .fab:active { transform: scale(0.95); }
         .profile-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: var(--shadow);
+            background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow);
         }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
+        .profile-header { text-align: center; margin-bottom: 24px; }
         .profile-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--accent), #818cf8);
-            border-radius: 50%;
-            margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 48px;
+            width: 100px; height: 100px; background: linear-gradient(135deg, var(--accent), #818cf8);
+            border-radius: 50%; margin: 0 auto 16px; display: flex;
+            align-items: center; justify-content: center; color: white; font-size: 48px;
         }
-
-        .profile-name {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .profile-designation {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
+        .profile-name { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .profile-designation { color: var(--text-secondary); font-size: 14px; }
         .profile-info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
+            display: flex; justify-content: space-between; padding: 12px 0;
             border-bottom: 1px solid var(--border);
         }
-
-        .profile-info-row:last-child {
-            border-bottom: none;
-        }
-
-        .profile-info-label {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .profile-info-value {
-            font-weight: 500;
-        }
-
+        .profile-info-row:last-child { border-bottom: none; }
+        .profile-info-label { font-weight: 600; color: var(--text-secondary); }
+        .profile-info-value { font-weight: 500; }
         .logout-btn {
-            width: 100%;
-            padding: 16px;
-            margin-top: 20px;
-            background: #fee2e2;
-            color: var(--danger);
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            width: 100%; padding: 16px; margin-top: 20px; background: #fee2e2;
+            color: var(--danger); border: none; border-radius: 12px; font-size: 16px;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 8px;
         }
-
-        /* Hidden utility */
-        .hidden {
-            display: none !important;
+        .hidden { display: none !important; }
+        /* Calendar Styles */
+        .calendar-card {
+            background: white; border-radius: 16px; padding: 20px;
+            box-shadow: var(--shadow); margin-bottom: 20px;
+        }
+        .calendar-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+        }
+        .calendar-nav-btn {
+            background: var(--bg); border: none; width: 36px; height: 36px;
+            border-radius: 8px; cursor: pointer; font-size: 16px;
+        }
+        #calendarGrid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+        }
+        .calendar-legend {
+            display: flex; gap: 12px; margin-top: 16px; justify-content: center; flex-wrap: wrap;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .legend-dot.work { background: #4CAF50; }
+        .legend-dot.leave { background: #ffc107; }
+        .legend-dot.holiday { background: #f44336; }
+        .legend-dot.off { background: #ccc; }
+        /* Detail Views */
+        .detail-view {
+            background: white; border-radius: 16px; padding: 20px;
+            box-shadow: var(--shadow); margin-bottom: 20px;
+        }
+        .detail-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+        }
+        .detail-close-btn {
+            background: var(--bg); border: none; width: 32px; height: 32px;
+            border-radius: 8px; cursor: pointer;
+        }
+        /* Onboarding Progress */
+        .progress-bar {
+            background: var(--bg); border-radius: 8px; height: 12px; overflow: hidden;
+        }
+        .progress-fill {
+            background: var(--accent); height: 100%; width: 0%; transition: width 0.3s;
         }
     </style>
 </head>
 <body>
-
-    <!-- Status Message -->
+    <!-- Status Messages -->
     <div id="statusMessage"></div>
+    <div id="leaveStatusMessage"></div>
+    <div id="approvalStatusMessage"></div>
+    <div id="payslipStatusMessage"></div>
+    <div id="onboardingStatusMessage"></div>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="screen active">
@@ -659,19 +270,15 @@
             <div class="login-card">
                 <h1 class="login-title">Octagon ESS</h1>
                 <p class="login-subtitle">Employee Self Service Portal</p>
-                
                 <div class="form-group">
                     <label class="form-label">Email</label>
                     <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <input type="password" id="loginPassword" class="form-input" placeholder="Enter password">
                 </div>
-                
                 <button onclick="handleLogin()" class="submit-btn">Sign In</button>
-                
                 <div id="worksiteDisplay" style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 13px;"></div>
                 <div id="locationDisplay" style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);"></div>
             </div>
@@ -682,92 +289,60 @@
     <div id="dashboardScreen" class="screen">
         <header class="app-header" id="appHeader">
             <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div>
-                    <div class="greeting">
-                        <h1 id="greetingText">Hi, Employee</h1>
-                        <p id="greetingSub">Good Morning</p>
-                    </div>
-                    <div class="current-date" id="currentDate">Loading...</div>
-                </div>
+                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Dashboard</h1>
                 <div style="width: 40px;"></div>
             </div>
+            <div class="greeting">
+                <h1 id="greetingText">Hi, Employee</h1>
+                <p id="greetingSub">Good Morning</p>
+            </div>
+            <div class="current-date" id="currentDate">Loading...</div>
         </header>
-
         <main class="main-content">
-            <!-- Overview Cards -->
             <div class="cards-grid">
                 <div class="action-card" onclick="navigateTo('leave')">
-                    <div class="card-icon green">
-                        <i class="fas fa-envelope"></i>
-                    </div>
+                    <div class="card-icon green"><i class="fas fa-envelope"></i></div>
                     <div class="card-label">Request</div>
                     <div class="card-value" id="requestCount">0</div>
                 </div>
                 <div class="action-card" onclick="navigateTo('leave')">
-                    <div class="card-icon red">
-                        <i class="fas fa-calendar-times"></i>
-                    </div>
+                    <div class="card-icon red"><i class="fas fa-calendar-times"></i></div>
                     <div class="card-label">Leave</div>
                     <div class="card-value" id="leaveCount">0</div>
                 </div>
                 <div class="action-card" onclick="navigateTo('schedule')">
-                    <div class="card-icon orange">
-                        <i class="fas fa-clipboard-check"></i>
-                    </div>
+                    <div class="card-icon orange"><i class="fas fa-clipboard-check"></i></div>
                     <div class="card-label">Attendance</div>
                     <div class="card-value" id="attendanceCount">0</div>
                 </div>
                 <div class="action-card" onclick="navigateTo('schedule')">
-                    <div class="card-icon blue">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                    </div>
+                    <div class="card-icon blue"><i class="fas fa-file-invoice-dollar"></i></div>
                     <div class="card-label">Pay Slip</div>
                     <div class="card-value" id="payslipCount">1</div>
                 </div>
                 <div class="action-card" onclick="navigateTo('approvals')">
-                    <div class="card-icon purple">
-                        <i class="fas fa-tasks"></i>
-                    </div>
+                    <div class="card-icon purple"><i class="fas fa-tasks"></i></div>
                     <div class="card-label">Tasks</div>
                     <div class="card-value" id="taskCount">0</div>
                 </div>
                 <div class="action-card" onclick="navigateTo('profile')">
-                    <div class="card-icon yellow">
-                        <i class="fas fa-users"></i>
-                    </div>
+                    <div class="card-icon yellow"><i class="fas fa-users"></i></div>
                     <div class="card-label">Team</div>
                     <div class="card-value" id="teamCount">0</div>
                 </div>
             </div>
-
-            <!-- Check-in Button -->
             <div class="checkin-container" id="checkinContainer">
-                <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()" disabled>
-                    CHECK IN
-                </button>
+                <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()" disabled>CHECK IN</button>
                 <div style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
                     <i class="fas fa-circle-notch fa-spin"></i> Getting location...
                 </div>
             </div>
-
-            <!-- Today's Stats -->
             <h2 class="section-title">Today's Attendance</h2>
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value green" id="presentCount">100</div>
-                    <div class="stat-label">Present</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value yellow" id="lateCount">20</div>
-                    <div class="stat-label">Late</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value red" id="absentCount">10</div>
-                    <div class="stat-label">Absent</div>
-                </div>
+                <div class="stat-card"><div class="stat-value green" id="presentCount">100</div><div class="stat-label">Present</div></div>
+                <div class="stat-card"><div class="stat-value yellow" id="lateCount">20</div><div class="stat-label">Late</div></div>
+                <div class="stat-card"><div class="stat-value red" id="absentCount">10</div><div class="stat-label">Absent</div></div>
             </div>
         </main>
     </div>
@@ -776,47 +351,42 @@
     <div id="leaveScreen" class="screen">
         <header class="app-header">
             <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 style="font-size: 20px; font-weight: 700;">Leave</h1>
+                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Leave</h1>
                 <div style="width: 40px;"></div>
             </div>
         </header>
-
         <main class="main-content">
             <div class="tabs">
                 <button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">💰 Balance</button>
                 <button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">📋 Requests</button>
             </div>
-
             <div id="leaveBalanceTab">
                 <h2 class="section-title">Leave Balance</h2>
                 <div id="leaveBalanceSummary" class="leave-balance-grid">
                     <p style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading...</p>
                 </div>
-
                 <h2 class="section-title">Upcoming Leave</h2>
                 <div id="upcomingLeaveList">
-                    <div class="leave-request-item">
-                        <p style="color: var(--text-secondary); text-align: center;">Loading...</p>
-                    </div>
+                    <div class="leave-request-item"><p style="color: var(--text-secondary); text-align: center;">Loading...</p></div>
                 </div>
             </div>
-
             <div id="leaveRequestsTab" style="display: none;">
                 <h2 class="section-title">Recent Requests</h2>
                 <div id="leaveRequestsList">
-                    <div class="leave-request-item">
-                        <p style="color: var(--text-secondary); text-align: center;">Loading...</p>
-                    </div>
+                    <div class="leave-request-item"><p style="color: var(--text-secondary); text-align: center;">Loading...</p></div>
                 </div>
             </div>
+            <!-- Leave Detail View -->
+            <div id="leaveDetailView" class="hidden detail-view">
+                <div class="detail-header">
+                    <h3 id="leaveDetailTitle" style="font-size: 18px; font-weight: 700;">Leave Details</h3>
+                    <button class="detail-close-btn" onclick="closeLeaveDetail()">✕</button>
+                </div>
+                <div id="leaveDetailContent"></div>
+            </div>
         </main>
-
-        <button class="fab" onclick="openLeaveApplyModal()">
-            <i class="fas fa-plus"></i>
-        </button>
+        <button class="fab" onclick="openLeaveApplyModal()"><i class="fas fa-plus"></i></button>
     </div>
 
     <!-- Leave Apply Modal -->
@@ -824,30 +394,21 @@
         <div class="modal-content" id="leaveApplyModal">
             <div class="modal-header">
                 <h2 class="modal-title">📝 Apply for Leave</h2>
-                <button class="close-modal" onclick="closeLeaveApplyModal()">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="close-modal" onclick="closeLeaveApplyModal()"><i class="fas fa-times"></i></button>
             </div>
-            
             <div id="leaveModalError" style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none;"></div>
-            
             <div class="form-group">
                 <label class="form-label">Leave Type</label>
-                <select id="leaveType" class="form-select">
-                    <option value="">Select Leave Type</option>
-                </select>
+                <select id="leaveType" class="form-select"><option value="">Select Leave Type</option></select>
             </div>
-            
             <div class="form-group">
                 <label class="form-label">From Date</label>
                 <input type="date" id="leaveFromDate" class="form-input">
             </div>
-            
             <div class="form-group">
                 <label class="form-label">To Date</label>
                 <input type="date" id="leaveToDate" class="form-input">
             </div>
-            
             <div class="form-group">
                 <label class="form-label">Half Day?</label>
                 <select id="leaveHalfDay" class="form-select">
@@ -856,12 +417,10 @@
                     <option value="2">Second Half</option>
                 </select>
             </div>
-            
             <div class="form-group">
                 <label class="form-label">Reason</label>
                 <textarea id="leaveReason" class="form-textarea" placeholder="Enter reason for leave..."></textarea>
             </div>
-            
             <button onclick="submitLeaveApplication()" class="submit-btn">Submit Leave Request</button>
         </div>
     </div>
@@ -870,14 +429,11 @@
     <div id="profileScreen" class="screen">
         <header class="app-header">
             <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 style="font-size: 20px; font-weight: 700;">Profile</h1>
+                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Profile</h1>
                 <div style="width: 40px;"></div>
             </div>
         </header>
-
         <main class="main-content">
             <div class="profile-card" id="profileInfo">
                 <div class="profile-header">
@@ -885,29 +441,14 @@
                     <div class="profile-name" id="profileName">Loading...</div>
                     <div class="profile-designation" id="profileDesignation">Loading...</div>
                 </div>
-                
-                <div class="profile-info-row">
-                    <span class="profile-info-label">Employee ID</span>
-                    <span class="profile-info-value" id="profileEmployeeId">-</span>
-                </div>
-                <div class="profile-info-row">
-                    <span class="profile-info-label">Department</span>
-                    <span class="profile-info-value" id="profileDepartment">-</span>
-                </div>
-                <div class="profile-info-row">
-                    <span class="profile-info-label">Employment Type</span>
-                    <span class="profile-info-value" id="profileEmploymentType">-</span>
-                </div>
-                <div class="profile-info-row">
-                    <span class="profile-info-label">Email</span>
-                    <span class="profile-info-value" id="profileEmail">-</span>
+                <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+                    <div class="profile-info-row"><span class="profile-info-label">Employee ID</span><span class="profile-info-value" id="profileEmployeeId">-</span></div>
+                    <div class="profile-info-row"><span class="profile-info-label">Department</span><span class="profile-info-value" id="profileDepartment">-</span></div>
+                    <div class="profile-info-row"><span class="profile-info-label">Employment Type</span><span class="profile-info-value" id="profileEmploymentType">-</span></div>
+                    <div class="profile-info-row"><span class="profile-info-label">Email</span><span class="profile-info-value" id="profileEmail">-</span></div>
                 </div>
             </div>
-
-            <button onclick="logout()" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                Sign Out
-            </button>
+            <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
         </main>
     </div>
 
@@ -915,15 +456,37 @@
     <div id="scheduleScreen" class="screen">
         <header class="app-header">
             <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 style="font-size: 20px; font-weight: 700;">Schedule</h1>
+                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Schedule</h1>
                 <div style="width: 40px;"></div>
             </div>
         </header>
-
         <main class="main-content">
+            <!-- Calendar Card -->
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <button class="calendar-nav-btn" onclick="changeMonth(-1)">◀</button>
+                    <h2 id="calendarMonth" style="font-size: 18px; font-weight: 700;">Loading...</h2>
+                    <button class="calendar-nav-btn" onclick="changeMonth(1)">▶</button>
+                </div>
+                <div id="calendarGrid"></div>
+                <div class="calendar-legend">
+                    <div class="legend-item"><div class="legend-dot work"></div><span>Work</span></div>
+                    <div class="legend-item"><div class="legend-dot leave"></div><span>Leave</span></div>
+                    <div class="legend-item"><div class="legend-dot holiday"></div><span>Holiday</span></div>
+                    <div class="legend-item"><div class="legend-dot off"></div><span>Off</span></div>
+                </div>
+            </div>
+            <!-- Day Detail View -->
+            <div id="dayDetail" class="hidden detail-view">
+                <div class="detail-header">
+                    <h3 id="dayDetailTitle" style="font-size: 18px; font-weight: 700;">Day Detail</h3>
+                    <button class="detail-close-btn" onclick="hideDayDetail()">✕</button>
+                </div>
+                <div id="dayDetailContent"></div>
+            </div>
+            <!-- Upcoming Shifts -->
+            <h2 class="section-title">📋 Upcoming Shifts</h2>
             <div id="scheduleList">
                 <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading schedule...</p>
             </div>
@@ -934,17 +497,27 @@
     <div id="approvalsScreen" class="screen">
         <header class="app-header">
             <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 style="font-size: 20px; font-weight: 700;">Approvals</h1>
+                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Approvals</h1>
                 <div style="width: 40px;"></div>
             </div>
         </header>
-
         <main class="main-content">
             <div id="approvalsList">
                 <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading approvals...</p>
+            </div>
+            <!-- Approval Detail View -->
+            <div id="approvalDetail" class="hidden detail-view">
+                <div class="detail-header">
+                    <h3 id="approvalDetailTitle" style="font-size: 18px; font-weight: 700;">Approval Details</h3>
+                    <button class="detail-close-btn" onclick="showApprovalsList()">✕</button>
+                </div>
+                <div id="approvalPrintView"></div>
+                <textarea id="approvalRemark" class="form-textarea" placeholder="Add remark (optional)" style="margin-top: 16px;"></textarea>
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button id="approveBtn" class="submit-btn" style="background: var(--success); flex: 1;">✅ Approve</button>
+                    <button id="rejectBtn" class="submit-btn" style="background: var(--danger); flex: 1;">❌ Reject</button>
+                </div>
             </div>
         </main>
     </div>
@@ -953,17 +526,36 @@
     <div id="onboardingScreen" class="screen">
         <header class="app-header">
             <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 style="font-size: 20px; font-weight: 700;">Onboarding</h1>
+                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Onboarding</h1>
                 <div style="width: 40px;"></div>
             </div>
         </header>
-
         <main class="main-content">
+            <div class="card" style="background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px;">
+                <h2 id="onboardingWelcome" style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Welcome!</h2>
+                <p id="onboardingSubtitle" style="color: var(--text-secondary); margin-bottom: 24px;">Let's get you set up</p>
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-weight: 600;">Onboarding Progress</span>
+                        <span id="onboardingProgress" style="font-weight: 700; color: var(--accent);">0%</span>
+                    </div>
+                    <div class="progress-bar"><div id="onboardingProgressBar" class="progress-fill"></div></div>
+                    <p id="onboardingFraction" style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">0 of 0 activities complete</p>
+                </div>
+            </div>
+            <h2 class="section-title">📋 Activities</h2>
             <div id="onboardingActivities">
-                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading onboarding...</p>
+                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading activities...</p>
+            </div>
+            <!-- Onboarding Detail View -->
+            <div id="onboardingDetail" class="hidden detail-view">
+                <div class="detail-header">
+                    <h3 id="onboardingDetailTitle" style="font-size: 18px; font-weight: 700;">Activity Details</h3>
+                    <button class="detail-close-btn" onclick="hideOnboardingDetail()">✕</button>
+                </div>
+                <div id="onboardingDetailContent"></div>
+                <button id="onboardingCompleteBtn" onclick="" style="margin-top: 16px; padding: 14px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; width: 100%; cursor: pointer;">✅ Mark as Complete</button>
             </div>
         </main>
     </div>
@@ -976,26 +568,13 @@
             <div id="drawerEmployeeName" style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Employee Name</div>
             <div id="drawerEmployeeDept" style="color: var(--text-secondary); font-size: 13px;">Department</div>
         </div>
-        
         <nav class="drawer-nav">
-            <button onclick="navigateTo('dashboard')">
-                <i class="fas fa-chart-bar"></i> Dashboard
-            </button>
-            <button onclick="navigateTo('leave')">
-                <i class="fas fa-calendar-alt"></i> Leave
-            </button>
-            <button onclick="navigateTo('schedule')">
-                <i class="fas fa-calendar"></i> Schedule
-            </button>
-            <button onclick="navigateTo('approvals')">
-                <i class="fas fa-check-circle"></i> Approvals
-            </button>
-            <button onclick="navigateTo('onboarding')">
-                <i class="fas fa-rocket"></i> Onboarding
-            </button>
-            <button onclick="navigateTo('profile')">
-                <i class="fas fa-user"></i> Profile
-            </button>
+            <button onclick="navigateTo('dashboard')"><i class="fas fa-chart-bar"></i> Dashboard</button>
+            <button onclick="navigateTo('leave')"><i class="fas fa-calendar-alt"></i> Leave</button>
+            <button onclick="navigateTo('schedule')"><i class="fas fa-calendar"></i> Schedule</button>
+            <button onclick="navigateTo('approvals')"><i class="fas fa-check-circle"></i> Approvals</button>
+            <button onclick="navigateTo('onboarding')"><i class="fas fa-rocket"></i> Onboarding</button>
+            <button onclick="navigateTo('profile')"><i class="fas fa-user"></i> Profile</button>
             <button onclick="logout()" style="background: #fee2e2; color: var(--danger); margin-top: 20px;">
                 <i class="fas fa-sign-out-alt"></i> Sign Out
             </button>
@@ -1003,7 +582,6 @@
     </div>
 
     <script src="ess.js"></script>
-    
     <script>
         // Initialize greeting
         function updateGreeting() {
@@ -1015,8 +593,6 @@
                 else greetingSub.textContent = 'Good Evening';
             }
         }
-
-        // Update date
         function updateDate() {
             const dateEl = document.getElementById('currentDate');
             if (dateEl) {
@@ -1024,8 +600,6 @@
                 dateEl.textContent = new Date().toLocaleDateString('en-US', options);
             }
         }
-
-        // Initialize on load
         updateGreeting();
         updateDate();
         setInterval(updateDate, 60000);
