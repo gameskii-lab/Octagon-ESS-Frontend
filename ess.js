@@ -144,7 +144,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeDashboard();
         
         showStatus(`Welcome back, ${employeeName}!`, 'success');
-        // Update greeting with employee name
+        setTimeout(() => {
+            const greetingEl = document.getElementById('greetingText');
+            if (greetingEl && currentEmployee) {
+                const name = currentEmployee.employee_name || currentEmployee.name || 'Employee';
+                greetingEl.textContent = `Hi, ${name}`;
+            }
+        }, 100);
         const greetingEl = document.getElementById('greetingText');
         if (greetingEl) {
             greetingEl.textContent = `Hi ${employeeName}`;
@@ -284,6 +290,13 @@ async function handleLogin() {
         showAppSection();
         initializeDashboard();
         showStatus(`Welcome, ${employeeName}!`, 'success');
+        setTimeout(() => {
+            const greetingEl = document.getElementById('greetingText');
+            if (greetingEl && currentEmployee) {
+                const name = currentEmployee.employee_name || currentEmployee.name || 'Employee';
+                greetingEl.textContent = `Hi, ${name}`;
+            }
+        }, 100);
         // Update greeting with employee name after login
         const nameToShow = currentEmployee.employee_name || currentEmployee.name || 'Employee';
         const greetingEl = document.getElementById('greetingText');
@@ -376,13 +389,17 @@ function showAppSection() {
 }
 
 function initializeDashboard() {
+    // Get elements with null checks
+    const fieldWorkerEl = document.getElementById('fieldWorkerDashboard');
+    const officeStaffEl = document.getElementById('officeStaffDashboard');
+    
     if (config.employmentType === 'Daily Wage') {
-        document.getElementById('fieldWorkerDashboard').classList.remove('hidden');
-        document.getElementById('officeStaffDashboard').classList.add('hidden');
+        if (fieldWorkerEl) fieldWorkerEl.classList.remove('hidden');
+        if (officeStaffEl) officeStaffEl.classList.add('hidden');
         loadFieldWorkerDashboard();
     } else {
-        document.getElementById('fieldWorkerDashboard').classList.add('hidden');
-        document.getElementById('officeStaffDashboard').classList.remove('hidden');
+        if (fieldWorkerEl) fieldWorkerEl.classList.add('hidden');
+        if (officeStaffEl) officeStaffEl.classList.remove('hidden');
         loadOfficeStaffDashboard();
     }
 }
