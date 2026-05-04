@@ -151,9 +151,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 greetingEl.textContent = `Hi, ${name}`;
             }
         }, 100);
+        // In handleLogin() and DOMContentLoaded, update to:
         const greetingEl = document.getElementById('greetingText');
-        if (greetingEl) {
-            greetingEl.textContent = `Hi ${employeeName}`;
+        if (greetingEl && employeeName) {
+            greetingEl.textContent = `Hi, ${employeeName}`;
         }
     }
 });
