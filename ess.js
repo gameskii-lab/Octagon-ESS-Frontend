@@ -159,6 +159,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+function updateGreetingAndDate() {
+    const now = new Date();
+    const hour = now.getHours();
+    let greeting = 'Good Morning';
+    if (hour >= 12 && hour < 17) greeting = 'Good Afternoon';
+    else if (hour >= 17) greeting = 'Good Evening';
+    
+    const greetingSub = document.getElementById('greetingSub');
+    if (greetingSub) greetingSub.textContent = greeting;
+    
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const dateEl = document.getElementById('currentDate');
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', options);
+}
+
+// Call this in handleLogin() and DOMContentLoaded:
+updateGreetingAndDate();
+
 function displayDate() {
     const dateEl = document.getElementById('dateDisplay');
     if (!dateEl) return;  // 👈 ADD THIS

@@ -51,14 +51,14 @@
         }
 
         /* =========================================
-        2. HEADER (Mobile-Optimized)
+        ERPNext-Style Header
         ========================================= */
         .app-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: #1e2a3a; /* ERPNext dark navy */
             color: white;
             padding: 0;
-            border-radius: 0 0 20px 20px;
-            box-shadow: var(--shadow-lg);
+            border-radius: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -68,76 +68,203 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            gap: 12px;
+            padding: 12px 20px;
+            gap: 16px;
         }
 
         .menu-btn {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.1);
             border: none;
             color: white;
             width: 40px;
             height: 40px;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 18px;
-            backdrop-filter: blur(10px);
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s, background 0.2s;
+            transition: background 0.2s;
         }
-        .menu-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.25); }
+        .menu-btn:active { background: rgba(255,255,255,0.2); }
 
-        .header-center {
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
             flex: 1;
-            text-align: center;
-            min-width: 0;
         }
 
         .header-greeting {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.3;
+        }
+
+        .header-greeting .name {
             font-size: 16px;
             font-weight: 600;
             margin: 0;
-            line-height: 1.2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        .header-subtitle {
+        .header-greeting .time {
             font-size: 13px;
-            margin: 2px 0 0 0;
-            opacity: 0.9;
+            opacity: 0.85;
+            margin: 0;
         }
 
         .header-date {
-            background: rgba(255,255,255,0.15);
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 500;
-            backdrop-filter: blur(10px);
             white-space: nowrap;
-            flex-shrink: 0;
         }
 
-        .header-title-bar {
-            padding: 8px 16px 16px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .header-title-bar h2 {
-            margin: 0;
+        .header-title {
             font-size: 18px;
             font-weight: 600;
+            margin: 0;
+            white-space: nowrap;
         }
 
         /* =========================================
-        3. DASHBOARD & CARDS
+        ERPNext-Style Grid Menu
         ========================================= */
-        .main-content { padding: 16px; padding-bottom: calc(24px + var(--safe-bottom)); }
+        .main-content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
+        .erp-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 480px) {
+            .erp-menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .erp-menu-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-height: 80px;
+            justify-content: center;
+        }
+
+        .erp-menu-card:active {
+            transform: scale(0.98);
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        .erp-menu-card i {
+            font-size: 20px;
+            color: #475569;
+        }
+
+        .erp-menu-card .label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .erp-menu-card.signout {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .erp-menu-card.signout i,
+        .erp-menu-card.signout .label {
+            color: #dc2626;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #475569;
+            margin: 24px 0 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Check-in Button */
+        .checkin-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .checkin-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            transition: all 0.2s;
+        }
+
+        .checkin-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .checkin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Cards Grid (for dashboard stats) */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -145,95 +272,58 @@
             margin-bottom: 20px;
         }
 
+        @media (min-width: 480px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
         .action-card {
-            background: var(--card);
-            border-radius: 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             padding: 20px 16px;
             text-align: center;
-            box-shadow: var(--shadow);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
         }
-        .action-card:active { transform: scale(0.97); box-shadow: none; }
+
+        .action-card:active {
+            transform: scale(0.97);
+            border-color: #3b82f6;
+        }
 
         .card-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 12px;
-            font-size: 24px;
+            font-size: 20px;
         }
-        .card-icon.green { background: #d1fae5; color: var(--success); }
-        .card-icon.red { background: #fee2e2; color: var(--danger); }
-        .card-icon.orange { background: #ffedd5; color: #f97316; }
-        .card-icon.blue { background: #dbeafe; color: #3b82f6; }
-        .card-icon.purple { background: #e9d5ff; color: #a855f7; }
-        .card-icon.yellow { background: #fef3c7; color: var(--warning); }
 
-        .card-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
-        .card-value { font-size: 20px; font-weight: 700; color: var(--text); }
+        .card-icon.green { background: #dcfce7; color: #16a34a; }
+        .card-icon.red { background: #fee2e2; color: #dc2626; }
+        .card-icon.orange { background: #ffedd5; color: #ea580c; }
+        .card-icon.blue { background: #dbeafe; color: #2563eb; }
+        .card-icon.purple { background: #f3e8ff; color: #9333ea; }
+        .card-icon.yellow { background: #fef9c3; color: #ca8a04; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+        .card-label {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 4px;
+            font-weight: 500;
         }
-        .stat-card {
-            background: var(--card);
-            border-radius: 14px;
-            padding: 16px 10px;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-        .stat-value { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
-        .stat-value.green { color: var(--success); }
-        .stat-value.yellow { color: var(--warning); }
-        .stat-value.red { color: var(--danger); }
-        .stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
 
-        /* =========================================
-        4. CHECK-IN & BUTTONS
-        ========================================= */
-        .checkin-container { margin: 20px 0; text-align: center; }
-        .checkin-btn {
-            background: linear-gradient(135deg, var(--success), #059669);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 16px;
-            font-size: 18px;
+        .card-value {
+            font-size: 20px;
             font-weight: 700;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 320px;
-            transition: transform 0.2s, opacity 0.2s;
+            color: #1e293b;
         }
-        .checkin-btn.check-out { background: linear-gradient(135deg, var(--danger), #dc2626); }
-        .checkin-btn:active { transform: scale(0.97); }
-        .checkin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .fab {
-            position: fixed;
-            bottom: calc(24px + var(--safe-bottom));
-            right: 16px;
-            width: 56px;
-            height: 56px;
-            background: var(--accent);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-            z-index: 999;
-            transition: transform 0.2s;
-        }
-        .fab:active { transform: scale(0.92); }
 
         /* =========================================
         5. TABS, MODALS & FORMS
@@ -483,64 +573,98 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 
-                <div class="header-center">
-                    <h1 id="greetingText" class="header-greeting">Hi, Employee</h1>
-                    <p id="greetingSub" class="header-subtitle">Good Morning</p>
+                <div class="header-left">
+                    <div class="header-greeting">
+                        <h1 class="name" id="greetingText">Hi, Employee</h1>
+                        <p class="time" id="greetingSub">Good Morning</p>
+                    </div>
+                    <div class="header-date" id="currentDate">Mon, May 4, 2026</div>
                 </div>
                 
-                <div class="header-date">
-                    <span id="currentDate">Mon, May 4</span>
-                </div>
-            </div>
-            
-            <div class="header-title-bar">
-                <h2 id="screenTitle" style="margin: 0; font-size: 18px; font-weight: 600;">Dashboard</h2>
+                <h2 class="header-title" id="screenTitle">Dashboard</h2>
             </div>
         </header>
         <main class="main-content">
-            <div class="cards-grid">
-                <div class="action-card" onclick="navigateTo('leave')">
-                    <div class="card-icon green"><i class="fas fa-envelope"></i></div>
-                    <div class="card-label">Request</div>
-                    <div class="card-value" id="requestCount">0</div>
+            <!-- ERPNext-Style Menu Grid -->
+            <div class="erp-menu-grid">
+                <div class="erp-menu-card" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="label">Dashboard</span>
                 </div>
-                <div class="action-card" onclick="navigateTo('leave')">
-                    <div class="card-icon red"><i class="fas fa-calendar-times"></i></div>
-                    <div class="card-label">Leave</div>
-                    <div class="card-value" id="leaveCount">0</div>
+                <div class="erp-menu-card" onclick="navigateTo('leave')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="label">Leave</span>
                 </div>
-                <div class="action-card" onclick="navigateTo('schedule')">
-                    <div class="card-icon orange"><i class="fas fa-clipboard-check"></i></div>
-                    <div class="card-label">Attendance</div>
-                    <div class="card-value" id="attendanceCount">0</div>
+                <div class="erp-menu-card" onclick="navigateTo('schedule')">
+                    <i class="fas fa-calendar"></i>
+                    <span class="label">Schedule</span>
                 </div>
-                <div class="action-card" onclick="navigateTo('schedule')">
-                    <div class="card-icon blue"><i class="fas fa-file-invoice-dollar"></i></div>
-                    <div class="card-label">Pay Slip</div>
-                    <div class="card-value" id="payslipCount">1</div>
+                <div class="erp-menu-card" onclick="navigateTo('approvals')">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="label">Approvals</span>
                 </div>
-                <div class="action-card" onclick="navigateTo('approvals')">
-                    <div class="card-icon purple"><i class="fas fa-tasks"></i></div>
-                    <div class="card-label">Tasks</div>
-                    <div class="card-value" id="taskCount">0</div>
+                <div class="erp-menu-card" onclick="navigateTo('onboarding')">
+                    <i class="fas fa-rocket"></i>
+                    <span class="label">Onboarding</span>
                 </div>
-                <div class="action-card" onclick="navigateTo('profile')">
-                    <div class="card-icon yellow"><i class="fas fa-users"></i></div>
-                    <div class="card-label">Team</div>
-                    <div class="card-value" id="teamCount">0</div>
+                <div class="erp-menu-card" onclick="navigateTo('profile')">
+                    <i class="fas fa-user"></i>
+                    <span class="label">Profile</span>
                 </div>
-            </div>
-            <div class="checkin-container" id="checkinContainer">
-                <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()" disabled>CHECK IN</button>
-                <div style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
-                    <i class="fas fa-circle-notch fa-spin"></i> Getting location...
+                <div class="erp-menu-card signout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="label">Sign Out</span>
                 </div>
             </div>
-            <h2 class="section-title">Today's Attendance</h2>
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-value green" id="presentCount">100</div><div class="stat-label">Present</div></div>
-                <div class="stat-card"><div class="stat-value yellow" id="lateCount">20</div><div class="stat-label">Late</div></div>
-                <div class="stat-card"><div class="stat-value red" id="absentCount">10</div><div class="stat-label">Absent</div></div>
+
+            <!-- Dashboard Stats (shown when on dashboard) -->
+            <div id="dashboardContent">
+                <div class="cards-grid">
+                    <div class="action-card" onclick="navigateTo('leave')">
+                        <div class="card-icon green"><i class="fas fa-envelope"></i></div>
+                        <div class="card-label">Request</div>
+                        <div class="card-value" id="requestCount">0</div>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('leave')">
+                        <div class="card-icon red"><i class="fas fa-calendar-times"></i></div>
+                        <div class="card-label">Leave</div>
+                        <div class="card-value" id="leaveCount">0</div>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('schedule')">
+                        <div class="card-icon orange"><i class="fas fa-clipboard-check"></i></div>
+                        <div class="card-label">Attendance</div>
+                        <div class="card-value" id="attendanceCount">0</div>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('schedule')">
+                        <div class="card-icon blue"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <div class="card-label">Pay Slip</div>
+                        <div class="card-value" id="payslipCount">1</div>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('approvals')">
+                        <div class="card-icon purple"><i class="fas fa-tasks"></i></div>
+                        <div class="card-label">Tasks</div>
+                        <div class="card-value" id="taskCount">0</div>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('profile')">
+                        <div class="card-icon yellow"><i class="fas fa-users"></i></div>
+                        <div class="card-label">Team</div>
+                        <div class="card-value" id="teamCount">0</div>
+                    </div>
+                </div>
+
+                <div class="checkin-container" id="checkinContainer">
+                    <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()" disabled>CHECK IN</button>
+                    <div style="margin-top: 12px; font-size: 13px; color: #64748b;">
+                        <i class="fas fa-circle-notch fa-spin"></i> Getting location...
+                    </div>
+                </div>
+
+                <h2 class="section-title">Today's Attendance</h2>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-value" style="color: #16a34a;" id="presentCount">100</div><div class="stat-label">Present</div></div>
+                    <div class="stat-card"><div class="stat-value" style="color: #ca8a04;" id="lateCount">20</div><div class="stat-label">Late</div></div>
+                    <div class="stat-card"><div class="stat-value" style="color: #dc2626;" id="absentCount">10</div><div class="stat-label">Absent</div></div>
+                </div>
             </div>
         </main>
     </div>
