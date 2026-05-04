@@ -2,34 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#1a2744">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Octagon ESS">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="description" content="Employee Self Service Portal">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Octagon ESS</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-    
-    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
         }
 
         :root {
@@ -45,14 +26,6 @@
             --text-secondary: #64748b;
             --border: #e2e8f0;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --safe-area-top: env(safe-area-inset-top);
-            --safe-area-bottom: env(safe-area-inset-bottom);
-        }
-
-        html {
-            font-size: 16px;
-            -webkit-text-size-adjust: 100%;
         }
 
         body {
@@ -60,23 +33,18 @@
             background: var(--bg);
             color: var(--text);
             overflow-x: hidden;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* Mobile-First Responsive Design */
+        /* Header */
         .app-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
-            padding: calc(12px + var(--safe-area-top)) 16px 16px;
+            padding: 16px 20px;
             border-radius: 0 0 24px 24px;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow);
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
         }
 
         .header-top {
@@ -86,29 +54,24 @@
             margin-bottom: 16px;
         }
 
-        .menu-btn, .notification-btn {
-            background: rgba(255,255,255,0.15);
+        .menu-btn {
+            background: rgba(255,255,255,0.1);
             border: none;
             color: white;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             cursor: pointer;
             font-size: 18px;
             backdrop-filter: blur(10px);
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .menu-btn:active, .notification-btn:active {
-            transform: scale(0.92);
-            background: rgba(255,255,255,0.25);
+        .menu-btn:active {
+            transform: scale(0.95);
         }
 
         .greeting h1 {
-            font-size: clamp(20px, 5vw, 26px);
+            font-size: 24px;
             font-weight: 700;
             margin-bottom: 4px;
         }
@@ -120,23 +83,20 @@
 
         .current-date {
             background: rgba(255,255,255,0.15);
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 13px;
             display: inline-block;
-            backdrop-filter: blur(10px);
             margin-top: 12px;
         }
 
-        /* Main Content with Safe Areas */
+        /* Main Content */
         .main-content {
-            padding: 16px;
-            padding-bottom: calc(100px + var(--safe-area-bottom));
-            max-width: 600px;
-            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 40px;
         }
 
-        /* Cards Grid - Responsive */
+        /* Cards Grid */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -153,28 +113,26 @@
         .action-card {
             background: var(--card);
             border-radius: 16px;
-            padding: 16px 12px;
+            padding: 20px 16px;
             text-align: center;
             box-shadow: var(--shadow);
             cursor: pointer;
             transition: all 0.2s;
-            border: 2px solid transparent;
         }
 
         .action-card:active {
             transform: scale(0.96);
-            box-shadow: none;
         }
 
         .card-icon {
-            width: 52px;
-            height: 52px;
+            width: 56px;
+            height: 56px;
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 22px;
+            margin: 0 auto 12px;
+            font-size: 24px;
         }
 
         .card-icon.green { background: #d1fae5; color: var(--success); }
@@ -185,19 +143,52 @@
         .card-icon.yellow { background: #fef3c7; color: var(--warning); }
 
         .card-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
             margin-bottom: 4px;
             font-weight: 500;
         }
 
         .card-value {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--text);
         }
 
-        /* Stats Section */
+        /* Check-in Button */
+        .checkin-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .checkin-btn {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .checkin-btn.check-out {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+        }
+
+        .checkin-btn:active {
+            transform: scale(0.97);
+        }
+
+        .checkin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -208,7 +199,7 @@
         .stat-card {
             background: var(--card);
             border-radius: 14px;
-            padding: 14px 10px;
+            padding: 16px 10px;
             text-align: center;
             box-shadow: var(--shadow);
         }
@@ -229,117 +220,95 @@
             font-weight: 500;
         }
 
-        /* Check-in Button - Large Touch Target */
-        .checkin-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .checkin-btn {
-            background: linear-gradient(135deg, var(--success), #059669);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 16px;
+        /* Section Title */
+        .section-title {
             font-size: 18px;
             font-weight: 700;
-            cursor: pointer;
-            box-shadow: var(--shadow-lg);
-            transition: all 0.2s;
-            width: 100%;
-            max-width: 320px;
-            min-height: 56px;
-            touch-action: manipulation;
+            margin: 24px 0 16px;
         }
 
-        .checkin-btn:active {
-            transform: scale(0.97);
-        }
-
-        .checkin-btn.checkout {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-        }
-
-        .checkin-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* Bottom Navigation - iOS Style */
-        .bottom-nav {
+        /* Side Drawer */
+        #sideDrawer {
             position: fixed;
-            bottom: 0;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #sideDrawer.open {
+            transform: translateX(0);
+        }
+
+        #drawerOverlay {
+            position: fixed;
+            top: 0;
             left: 0;
             right: 0;
-            background: white;
-            padding: 8px 16px calc(8px + var(--safe-area-bottom));
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            border-top: 1px solid var(--border);
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+            backdrop-filter: blur(4px);
         }
 
-        .nav-item {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            padding: 8px 12px;
-            border-radius: 12px;
-            transition: all 0.2s;
-            min-width: 64px;
+        #drawerOverlay.open {
+            display: block;
         }
 
-        .nav-item:active {
-            transform: scale(0.92);
-            background: var(--bg);
+        .drawer-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
         }
 
-        .nav-item.active {
-            color: var(--accent);
-        }
-
-        .nav-item i {
-            font-size: 22px;
-        }
-
-        .nav-item span {
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* FAB Button */
-        .fab {
-            position: fixed;
-            bottom: calc(90px + var(--safe-area-bottom));
-            right: 16px;
-            width: 56px;
-            height: 56px;
-            background: var(--accent);
-            border: none;
+        .drawer-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
             border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: var(--shadow-lg);
+            margin: 0 auto 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-            z-index: 999;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
         }
 
-        .fab:active {
-            transform: scale(0.92);
+        .drawer-nav button {
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            background: var(--bg);
+            border-radius: 12px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
         }
 
-        /* Modal - Bottom Sheet Style */
+        .drawer-nav button:active {
+            background: var(--border);
+        }
+
+        .drawer-nav button i {
+            width: 24px;
+        }
+
+        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -350,7 +319,7 @@
             display: none;
             align-items: flex-end;
             justify-content: center;
-            z-index: 2000;
+            z-index: 3000;
             backdrop-filter: blur(4px);
         }
 
@@ -361,11 +330,11 @@
         .modal-content {
             background: white;
             border-radius: 24px 24px 0 0;
-            padding: 24px 20px calc(24px + var(--safe-area-bottom));
+            padding: 24px 20px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
+            animation: slideUp 0.3s;
         }
 
         @keyframes slideUp {
@@ -394,12 +363,9 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        /* Form Elements - Touch Optimized */
+        /* Form Elements */
         .form-group {
             margin-bottom: 20px;
         }
@@ -409,7 +375,6 @@
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: var(--text);
         }
 
         .form-input, .form-select, .form-textarea {
@@ -417,16 +382,8 @@
             padding: 14px 16px;
             border: 2px solid var(--border);
             border-radius: 12px;
-            font-size: 16px; /* Prevents zoom on iOS */
+            font-size: 16px;
             font-family: inherit;
-            transition: all 0.2s;
-            background: white;
-            min-height: 48px;
-        }
-
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--accent);
         }
 
         .form-textarea {
@@ -444,9 +401,6 @@
             font-weight: 700;
             width: 100%;
             cursor: pointer;
-            transition: all 0.2s;
-            min-height: 52px;
-            margin-top: 8px;
         }
 
         .submit-btn:active {
@@ -456,18 +410,16 @@
         /* Status Messages */
         .status {
             position: fixed;
-            top: calc(80px + var(--safe-area-top));
+            top: 80px;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 24px;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
-            z-index: 3000;
-            box-shadow: var(--shadow-lg);
+            z-index: 4000;
+            box-shadow: var(--shadow);
             animation: slideDown 0.3s;
-            max-width: 90%;
-            text-align: center;
         }
 
         @keyframes slideDown {
@@ -479,19 +431,13 @@
         .status.error { background: var(--danger); color: white; }
         .status.info { background: var(--accent); color: white; }
 
-        /* Screen Transitions */
+        /* Screen Management */
         .screen {
             display: none;
-            animation: fadeIn 0.3s;
         }
 
         .screen.active {
             display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Login Screen */
@@ -510,7 +456,7 @@
             padding: 32px 24px;
             width: 100%;
             max-width: 400px;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
 
         .login-title {
@@ -528,67 +474,187 @@
             font-size: 14px;
         }
 
-        /* Responsive Typography */
-        @media (max-width: 360px) {
-            html { font-size: 14px; }
-            .card-icon { width: 44px; height: 44px; font-size: 18px; }
-            .nav-item span { font-size: 10px; }
+        /* Leave Screen */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--bg);
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 20px;
         }
 
-        /* Landscape Mode */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .modal-content { max-height: 90vh; }
-            .bottom-nav { padding: 4px 16px; }
-        }
-
-        /* Loading States */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
+        .tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
             border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
         }
 
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Utility Classes */
-        .hidden { display: none !important; }
-        
-        /* Pull to Refresh Indicator */
-        .ptr-indicator {
-            position: fixed;
-            top: calc(100px + var(--safe-area-top));
-            left: 50%;
-            transform: translateX(-50%);
+        .tab.active {
             background: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            color: var(--accent);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .leave-balance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .leave-type {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
             box-shadow: var(--shadow);
+        }
+
+        .leave-type .count {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .leave-type .label {
             font-size: 13px;
             color: var(--text-secondary);
-            z-index: 999;
-            display: none;
         }
 
-        .ptr-indicator.show {
-            display: block;
+        .leave-request-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .leave-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+            z-index: 999;
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Profile Screen */
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .profile-designation {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .profile-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .profile-info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .profile-info-value {
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 20px;
+            background: #fee2e2;
+            color: var(--danger);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <!-- Pull to Refresh Indicator -->
-    <div class="ptr-indicator" id="ptrIndicator">
-        <i class="fas fa-spinner fa-spin"></i> Refreshing...
-    </div>
 
-    <!-- Status Message Container -->
+    <!-- Status Message -->
     <div id="statusMessage"></div>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="screen">
+    <div id="loginScreen" class="screen active">
         <div class="login-container">
             <div class="login-card">
                 <h1 class="login-title">Octagon ESS</h1>
@@ -596,17 +662,15 @@
                 
                 <div class="form-group">
                     <label class="form-label">Email</label>
-                    <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" autocomplete="email">
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Password</label>
-                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" autocomplete="current-password">
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter password">
                 </div>
                 
-                <button onclick="handleLogin()" class="submit-btn">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
-                </button>
+                <button onclick="handleLogin()" class="submit-btn">Sign In</button>
                 
                 <div id="worksiteDisplay" style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 13px;"></div>
                 <div id="locationDisplay" style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);"></div>
@@ -616,21 +680,20 @@
 
     <!-- Dashboard Screen -->
     <div id="dashboardScreen" class="screen">
-        <header class="app-header">
+        <header class="app-header" id="appHeader">
             <div class="header-top">
                 <button class="menu-btn" onclick="openDrawer()">
                     <i class="fas fa-bars"></i>
                 </button>
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge" id="notifBadge" style="position: absolute; top: -2px; right: -2px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">3</span>
-                </button>
+                <div>
+                    <div class="greeting">
+                        <h1 id="greetingText">Hi, Employee</h1>
+                        <p id="greetingSub">Good Morning</p>
+                    </div>
+                    <div class="current-date" id="currentDate">Loading...</div>
+                </div>
+                <div style="width: 40px;"></div>
             </div>
-            <div class="greeting">
-                <h1 id="greetingText">Hi, Employee</h1>
-                <p id="greetingSub">Good Morning</p>
-            </div>
-            <div class="current-date" id="currentDate">Loading...</div>
         </header>
 
         <main class="main-content">
@@ -657,7 +720,7 @@
                     <div class="card-label">Attendance</div>
                     <div class="card-value" id="attendanceCount">0</div>
                 </div>
-                <div class="action-card" onclick="navigateTo('payslips')">
+                <div class="action-card" onclick="navigateTo('schedule')">
                     <div class="card-icon blue">
                         <i class="fas fa-file-invoice-dollar"></i>
                     </div>
@@ -682,7 +745,7 @@
 
             <!-- Check-in Button -->
             <div class="checkin-container" id="checkinContainer">
-                <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()">
+                <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()" disabled>
                     CHECK IN
                 </button>
                 <div style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
@@ -691,7 +754,7 @@
             </div>
 
             <!-- Today's Stats -->
-            <h2 style="font-size: 18px; font-weight: 700; margin: 24px 0 16px;">Today's Attendance</h2>
+            <h2 class="section-title">Today's Attendance</h2>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value green" id="presentCount">100</div>
@@ -707,68 +770,46 @@
                 </div>
             </div>
         </main>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <button class="nav-item active" onclick="navigateTo('dashboard')">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </button>
-            <button class="nav-item" onclick="navigateTo('leave')">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Leave</span>
-            </button>
-            <button class="nav-item" onclick="navigateTo('payslips')">
-                <i class="fas fa-wallet"></i>
-                <span>Pay</span>
-            </button>
-            <button class="nav-item" onclick="navigateTo('profile')">
-                <i class="fas fa-user"></i>
-                <span>Profile</span>
-            </button>
-        </nav>
     </div>
 
     <!-- Leave Screen -->
     <div id="leaveScreen" class="screen">
         <header class="app-header">
             <div class="header-top">
-                <button class="menu-btn" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-arrow-left"></i>
+                <button class="menu-btn" onclick="openDrawer()">
+                    <i class="fas fa-bars"></i>
                 </button>
-                <h1 style="font-size: 20px; font-weight: 700;">Leave Application</h1>
-                <div style="width: 44px;"></div>
+                <h1 style="font-size: 20px; font-weight: 700;">Leave</h1>
+                <div style="width: 40px;"></div>
             </div>
         </header>
 
         <main class="main-content">
-            <div style="background: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow);">
-                <div style="display: flex; gap: 8px; background: var(--bg); padding: 6px; border-radius: 12px;">
-                    <button class="tab active" onclick="switchLeaveTab('balance')" style="flex: 1; padding: 10px; border: none; background: white; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        💰 Balance
-                    </button>
-                    <button class="tab" onclick="switchLeaveTab('requests')" style="flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-secondary);">
-                        📋 Requests
-                    </button>
-                </div>
+            <div class="tabs">
+                <button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">💰 Balance</button>
+                <button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">📋 Requests</button>
             </div>
 
             <div id="leaveBalanceTab">
-                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Leave Balance</h2>
-                <div id="leaveBalanceSummary" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;">
-                    <!-- Dynamic content -->
+                <h2 class="section-title">Leave Balance</h2>
+                <div id="leaveBalanceSummary" class="leave-balance-grid">
+                    <p style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading...</p>
                 </div>
 
-                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Upcoming Leave</h2>
-                <div id="upcomingLeaveList" style="background: white; border-radius: 16px; padding: 16px; box-shadow: var(--shadow);">
-                    <!-- Dynamic content -->
+                <h2 class="section-title">Upcoming Leave</h2>
+                <div id="upcomingLeaveList">
+                    <div class="leave-request-item">
+                        <p style="color: var(--text-secondary); text-align: center;">Loading...</p>
+                    </div>
                 </div>
             </div>
 
             <div id="leaveRequestsTab" style="display: none;">
-                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Recent Requests</h2>
+                <h2 class="section-title">Recent Requests</h2>
                 <div id="leaveRequestsList">
-                    <!-- Dynamic content -->
+                    <div class="leave-request-item">
+                        <p style="color: var(--text-secondary); text-align: center;">Loading...</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -776,30 +817,11 @@
         <button class="fab" onclick="openLeaveApplyModal()">
             <i class="fas fa-plus"></i>
         </button>
-
-        <nav class="bottom-nav">
-            <button class="nav-item" onclick="navigateTo('dashboard')">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </button>
-            <button class="nav-item active" onclick="navigateTo('leave')">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Leave</span>
-            </button>
-            <button class="nav-item" onclick="navigateTo('payslips')">
-                <i class="fas fa-wallet"></i>
-                <span>Pay</span>
-            </button>
-            <button class="nav-item" onclick="navigateTo('profile')">
-                <i class="fas fa-user"></i>
-                <span>Profile</span>
-            </button>
-        </nav>
     </div>
 
     <!-- Leave Apply Modal -->
-    <div class="modal-overlay" id="leaveModalOverlay" onclick="if(event.target === this) closeLeaveApplyModal()">
-        <div class="modal-content">
+    <div class="modal-overlay" id="leaveModalOverlay">
+        <div class="modal-content" id="leaveApplyModal">
             <div class="modal-header">
                 <h2 class="modal-title">📝 Apply for Leave</h2>
                 <button class="close-modal" onclick="closeLeaveApplyModal()">
@@ -807,7 +829,7 @@
                 </button>
             </div>
             
-            <div id="leaveModalError" style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none; font-size: 14px;"></div>
+            <div id="leaveModalError" style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none;"></div>
             
             <div class="form-group">
                 <label class="form-label">Leave Type</label>
@@ -840,73 +862,150 @@
                 <textarea id="leaveReason" class="form-textarea" placeholder="Enter reason for leave..."></textarea>
             </div>
             
-            <button onclick="submitLeaveApplication()" class="submit-btn">
-                Submit Leave Request
-            </button>
+            <button onclick="submitLeaveApplication()" class="submit-btn">Submit Leave Request</button>
         </div>
     </div>
 
-    <!-- Side Drawer -->
-    <div id="drawerOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2001; display: none; backdrop-filter: blur(4px);" onclick="closeDrawer()"></div>
-    
-    <div id="sideDrawer" style="position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: white; z-index: 2002; transform: translateX(-100%); transition: transform 0.3s; box-shadow: var(--shadow-lg); padding: calc(20px + var(--safe-area-top)) 20px 20px; overflow-y: auto;">
-        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
-            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent), #818cf8); border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 700;">
-                👤
+    <!-- Profile Screen -->
+    <div id="profileScreen" class="screen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="openDrawer()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 style="font-size: 20px; font-weight: 700;">Profile</h1>
+                <div style="width: 40px;"></div>
             </div>
+        </header>
+
+        <main class="main-content">
+            <div class="profile-card" id="profileInfo">
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-designation" id="profileDesignation">Loading...</div>
+                </div>
+                
+                <div class="profile-info-row">
+                    <span class="profile-info-label">Employee ID</span>
+                    <span class="profile-info-value" id="profileEmployeeId">-</span>
+                </div>
+                <div class="profile-info-row">
+                    <span class="profile-info-label">Department</span>
+                    <span class="profile-info-value" id="profileDepartment">-</span>
+                </div>
+                <div class="profile-info-row">
+                    <span class="profile-info-label">Employment Type</span>
+                    <span class="profile-info-value" id="profileEmploymentType">-</span>
+                </div>
+                <div class="profile-info-row">
+                    <span class="profile-info-label">Email</span>
+                    <span class="profile-info-value" id="profileEmail">-</span>
+                </div>
+            </div>
+
+            <button onclick="logout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Sign Out
+            </button>
+        </main>
+    </div>
+
+    <!-- Schedule Screen -->
+    <div id="scheduleScreen" class="screen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="openDrawer()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 style="font-size: 20px; font-weight: 700;">Schedule</h1>
+                <div style="width: 40px;"></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="scheduleList">
+                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading schedule...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Approvals Screen -->
+    <div id="approvalsScreen" class="screen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="openDrawer()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 style="font-size: 20px; font-weight: 700;">Approvals</h1>
+                <div style="width: 40px;"></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="approvalsList">
+                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading approvals...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Onboarding Screen -->
+    <div id="onboardingScreen" class="screen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="openDrawer()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 style="font-size: 20px; font-weight: 700;">Onboarding</h1>
+                <div style="width: 40px;"></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="onboardingActivities">
+                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading onboarding...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Side Drawer -->
+    <div id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div id="sideDrawer">
+        <div class="drawer-header">
+            <div class="drawer-avatar">👤</div>
             <div id="drawerEmployeeName" style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Employee Name</div>
             <div id="drawerEmployeeDept" style="color: var(--text-secondary); font-size: 13px;">Department</div>
         </div>
         
-        <nav style="display: flex; flex-direction: column; gap: 8px;">
-            <button onclick="navigateTo('dashboard'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-chart-bar" style="width: 24px;"></i> Dashboard
+        <nav class="drawer-nav">
+            <button onclick="navigateTo('dashboard')">
+                <i class="fas fa-chart-bar"></i> Dashboard
             </button>
-            <button onclick="navigateTo('leave'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-calendar-alt" style="width: 24px;"></i> Leave
+            <button onclick="navigateTo('leave')">
+                <i class="fas fa-calendar-alt"></i> Leave
             </button>
-            <button onclick="navigateTo('payslips'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-wallet" style="width: 24px;"></i> Payslips
+            <button onclick="navigateTo('schedule')">
+                <i class="fas fa-calendar"></i> Schedule
             </button>
-            <button onclick="navigateTo('schedule'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-calendar" style="width: 24px;"></i> Schedule
+            <button onclick="navigateTo('approvals')">
+                <i class="fas fa-check-circle"></i> Approvals
             </button>
-            <button onclick="navigateTo('approvals'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-check-circle" style="width: 24px;"></i> Approvals
+            <button onclick="navigateTo('onboarding')">
+                <i class="fas fa-rocket"></i> Onboarding
             </button>
-            <button onclick="navigateTo('onboarding'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-rocket" style="width: 24px;"></i> Onboarding
+            <button onclick="navigateTo('profile')">
+                <i class="fas fa-user"></i> Profile
             </button>
-            <button onclick="navigateTo('profile'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-user" style="width: 24px;"></i> Profile
-            </button>
-            <button onclick="logout()" style="padding: 14px 16px; border: none; background: #fee2e2; color: var(--danger); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-top: 20px;">
-                <i class="fas fa-sign-out-alt" style="width: 24px;"></i> Sign Out
+            <button onclick="logout()" style="background: #fee2e2; color: var(--danger); margin-top: 20px;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
             </button>
         </nav>
     </div>
 
-    <!-- Other screens would go here (payslips, schedule, profile, etc.) -->
-    <!-- For brevity, I'm showing the main structure -->
-
     <script src="ess.js"></script>
     
-    <!-- Register Service Worker for PWA -->
     <script>
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('SW registered:', registration);
-                    })
-                    .catch(error => {
-                        console.log('SW registration failed:', error);
-                    });
-            });
-        }
-
-        // Update greeting based on time
+        // Initialize greeting
         function updateGreeting() {
             const hour = new Date().getHours();
             const greetingSub = document.getElementById('greetingSub');
@@ -917,7 +1016,7 @@
             }
         }
 
-        // Update date display
+        // Update date
         function updateDate() {
             const dateEl = document.getElementById('currentDate');
             if (dateEl) {
@@ -926,29 +1025,10 @@
             }
         }
 
-        // Initialize
+        // Initialize on load
         updateGreeting();
         updateDate();
         setInterval(updateDate, 60000);
-
-        // Prevent zoom on double tap (iOS)
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (event) => {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-
-        // Handle viewport resize
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                updateDate();
-            }, 250);
-        });
     </script>
 </body>
 </html>
