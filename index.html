@@ -2,15 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1a2744">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Octagon ESS">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="Employee Self Service Portal">
+    
     <title>Octagon ESS</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    
+    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         :root {
@@ -25,8 +44,15 @@
             --text: #1e293b;
             --text-secondary: #64748b;
             --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --safe-area-top: env(safe-area-inset-top);
+            --safe-area-bottom: env(safe-area-inset-bottom);
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
         }
 
         body {
@@ -34,18 +60,23 @@
             background: var(--bg);
             color: var(--text);
             overflow-x: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Header */
+        /* Mobile-First Responsive Design */
         .app-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
-            padding: 20px;
+            padding: calc(12px + var(--safe-area-top)) 16px 16px;
             border-radius: 0 0 24px 24px;
             box-shadow: var(--shadow-lg);
-            position: relative;
-            z-index: 100;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header-top {
@@ -55,55 +86,29 @@
             margin-bottom: 16px;
         }
 
-        .menu-btn {
-            background: rgba(255,255,255,0.1);
+        .menu-btn, .notification-btn {
+            background: rgba(255,255,255,0.15);
             border: none;
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
             cursor: pointer;
             font-size: 18px;
             backdrop-filter: blur(10px);
-            transition: all 0.3s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .menu-btn:active {
-            transform: scale(0.95);
-        }
-
-        .notification-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 18px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-        }
-
-        .notification-btn:active {
-            transform: scale(0.95);
-        }
-
-        .badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 600;
+        .menu-btn:active, .notification-btn:active {
+            transform: scale(0.92);
+            background: rgba(255,255,255,0.25);
         }
 
         .greeting h1 {
-            font-size: 24px;
+            font-size: clamp(20px, 5vw, 26px);
             font-weight: 700;
             margin-bottom: 4px;
         }
@@ -111,72 +116,65 @@
         .greeting p {
             font-size: 14px;
             opacity: 0.9;
-            font-weight: 400;
         }
 
         .current-date {
             background: rgba(255,255,255,0.15);
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             font-size: 13px;
             display: inline-block;
             backdrop-filter: blur(10px);
+            margin-top: 12px;
         }
 
-        /* Main Content */
+        /* Main Content with Safe Areas */
         .main-content {
-            padding: 20px;
-            padding-bottom: 100px;
+            padding: 16px;
+            padding-bottom: calc(100px + var(--safe-area-bottom));
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        /* Overview Cards Grid */
-        .overview-section {
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text);
-        }
-
+        /* Cards Grid - Responsive */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 480px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .action-card {
             background: var(--card);
-            border-radius: 20px;
-            padding: 20px 16px;
+            border-radius: 16px;
+            padding: 16px 12px;
             text-align: center;
             box-shadow: var(--shadow);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             border: 2px solid transparent;
         }
 
         .action-card:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
             box-shadow: none;
         }
 
-        .action-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
         .card-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 24px;
+            margin: 0 auto 10px;
+            font-size: 22px;
         }
 
         .card-icon.green { background: #d1fae5; color: var(--success); }
@@ -187,39 +185,36 @@
         .card-icon.yellow { background: #fef3c7; color: var(--warning); }
 
         .card-label {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: 4px;
             font-weight: 500;
         }
 
         .card-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--text);
         }
 
-        /* Stats Cards */
-        .stats-section {
-            margin-bottom: 24px;
-        }
-
+        /* Stats Section */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background: var(--card);
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 14px 10px;
             text-align: center;
             box-shadow: var(--shadow);
         }
 
         .stat-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             margin-bottom: 4px;
         }
@@ -229,122 +224,64 @@
         .stat-value.red { color: var(--danger); }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             font-weight: 500;
         }
 
-        /* Recent Section */
-        .recent-section {
-            margin-bottom: 24px;
+        /* Check-in Button - Large Touch Target */
+        .checkin-container {
+            margin: 20px 0;
+            text-align: center;
         }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .see-all {
-            color: var(--accent);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .recent-card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .recent-card:active {
-            transform: scale(0.98);
-        }
-
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #818cf8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .checkin-btn {
+            background: linear-gradient(135deg, var(--success), #059669);
             color: white;
-            font-weight: 600;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 16px;
             font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .recent-info {
-            flex: 1;
-        }
-
-        .recent-name {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 2px;
-        }
-
-        .recent-date {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 2px;
-        }
-
-        .recent-type {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .status-badge.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-badge.approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-badge.cancelled {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 12px 24px;
-            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
             box-shadow: var(--shadow-lg);
-            display: flex;
-            gap: 24px;
-            z-index: 1000;
+            transition: all 0.2s;
+            width: 100%;
+            max-width: 320px;
+            min-height: 56px;
+            touch-action: manipulation;
         }
 
-        .quick-action-btn {
+        .checkin-btn:active {
+            transform: scale(0.97);
+        }
+
+        .checkin-btn.checkout {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+        }
+
+        .checkin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Bottom Navigation - iOS Style */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 8px 16px calc(8px + var(--safe-area-bottom));
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item {
             background: none;
             border: none;
             display: flex;
@@ -353,193 +290,35 @@
             gap: 4px;
             cursor: pointer;
             color: var(--text-secondary);
-            transition: all 0.3s;
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 12px;
+            transition: all 0.2s;
+            min-width: 64px;
         }
 
-        .quick-action-btn:active {
-            transform: scale(0.95);
+        .nav-item:active {
+            transform: scale(0.92);
+            background: var(--bg);
         }
 
-        .quick-action-btn.active {
+        .nav-item.active {
             color: var(--accent);
-            background: rgba(79, 70, 229, 0.1);
         }
 
-        .quick-action-btn i {
-            font-size: 24px;
+        .nav-item i {
+            font-size: 22px;
         }
 
-        .quick-action-btn span {
+        .nav-item span {
             font-size: 11px;
             font-weight: 600;
         }
 
-        /* Leave Application Screen */
-        .screen {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .screen-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 0 0 24px 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .back-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 18px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-        }
-
-        .back-btn:active {
-            transform: scale(0.95);
-        }
-
-        .screen-title {
-            font-size: 20px;
-            font-weight: 700;
-            flex: 1;
-        }
-
-        /* Tabs */
-        .tabs-container {
-            padding: 20px;
-            background: white;
-            border-radius: 16px;
-            margin: 16px 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            background: var(--bg);
-            padding: 6px;
-            border-radius: 12px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            background: white;
-            color: var(--accent);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Leave List */
-        .leave-list {
-            padding: 0 20px 100px;
-        }
-
-        .leave-item {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .leave-item:active {
-            transform: scale(0.98);
-        }
-
-        .leave-info {
-            flex: 1;
-        }
-
-        .leave-name {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 4px;
-        }
-
-        .leave-dates {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .leave-type {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        .leave-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .action-btn {
-            padding: 6px 16px;
-            border: none;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .action-btn.cancel {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .action-btn.approve {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .action-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Floating Action Button */
+        /* FAB Button */
         .fab {
             position: fixed;
-            bottom: 100px;
-            right: 20px;
+            bottom: calc(90px + var(--safe-area-bottom));
+            right: 16px;
             width: 56px;
             height: 56px;
             background: var(--accent);
@@ -552,80 +331,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: all 0.2s;
             z-index: 999;
         }
 
         .fab:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .cards-grid, .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .card-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 20px;
-            }
-        }
-
-        /* Loading State */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Check-in Button */
-        .checkin-container {
-            margin: 20px;
-            text-align: center;
-        }
-
-        .checkin-btn {
-            background: linear-gradient(135deg, var(--success), #059669);
-            color: white;
-            border: none;
-            padding: 20px 60px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: var(--shadow-lg);
-            transition: all 0.3s;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .checkin-btn:active {
-            transform: scale(0.95);
-        }
-
-        .checkin-btn.checkout {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-        }
-
-        .location-status {
-            margin-top: 12px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        /* Modal */
+        /* Modal - Bottom Sheet Style */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -647,11 +361,11 @@
         .modal-content {
             background: white;
             border-radius: 24px 24px 0 0;
-            padding: 24px;
+            padding: 24px 20px calc(24px + var(--safe-area-bottom));
             width: 100%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-            animation: slideUp 0.3s;
+            animation: slideUp 0.3s ease-out;
         }
 
         @keyframes slideUp {
@@ -672,9 +386,9 @@
         }
 
         .close-modal {
-            background: none;
+            background: var(--bg);
             border: none;
-            font-size: 24px;
+            font-size: 20px;
             color: var(--text-secondary);
             cursor: pointer;
             width: 36px;
@@ -683,13 +397,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
         }
 
-        .close-modal:active {
-            background: var(--bg);
-        }
-
+        /* Form Elements - Touch Optimized */
         .form-group {
             margin-bottom: 20px;
         }
@@ -707,10 +417,11 @@
             padding: 14px 16px;
             border: 2px solid var(--border);
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 16px; /* Prevents zoom on iOS */
             font-family: inherit;
-            transition: all 0.3s;
+            transition: all 0.2s;
             background: white;
+            min-height: 48px;
         }
 
         .form-input:focus, .form-select:focus, .form-textarea:focus {
@@ -733,19 +444,178 @@
             font-weight: 700;
             width: 100%;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            min-height: 52px;
             margin-top: 8px;
         }
 
         .submit-btn:active {
             transform: scale(0.98);
         }
+
+        /* Status Messages */
+        .status {
+            position: fixed;
+            top: calc(80px + var(--safe-area-top));
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 3000;
+            box-shadow: var(--shadow-lg);
+            animation: slideDown 0.3s;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .status.success { background: var(--success); color: white; }
+        .status.error { background: var(--danger); color: white; }
+        .status.info { background: var(--accent); color: white; }
+
+        /* Screen Transitions */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Login Screen */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-title {
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        /* Responsive Typography */
+        @media (max-width: 360px) {
+            html { font-size: 14px; }
+            .card-icon { width: 44px; height: 44px; font-size: 18px; }
+            .nav-item span { font-size: 10px; }
+        }
+
+        /* Landscape Mode */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .modal-content { max-height: 90vh; }
+            .bottom-nav { padding: 4px 16px; }
+        }
+
+        /* Loading States */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        
+        /* Pull to Refresh Indicator */
+        .ptr-indicator {
+            position: fixed;
+            top: calc(100px + var(--safe-area-top));
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            font-size: 13px;
+            color: var(--text-secondary);
+            z-index: 999;
+            display: none;
+        }
+
+        .ptr-indicator.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <!-- Pull to Refresh Indicator -->
+    <div class="ptr-indicator" id="ptrIndicator">
+        <i class="fas fa-spinner fa-spin"></i> Refreshing...
+    </div>
+
+    <!-- Status Message Container -->
+    <div id="statusMessage"></div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen">
+        <div class="login-container">
+            <div class="login-card">
+                <h1 class="login-title">Octagon ESS</h1>
+                <p class="login-subtitle">Employee Self Service Portal</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" autocomplete="email">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" autocomplete="current-password">
+                </div>
+                
+                <button onclick="handleLogin()" class="submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                
+                <div id="worksiteDisplay" style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 13px;"></div>
+                <div id="locationDisplay" style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Dashboard Screen -->
-    <div id="dashboardScreen" class="screen active">
+    <div id="dashboardScreen" class="screen">
         <header class="app-header">
             <div class="header-top">
                 <button class="menu-btn" onclick="openDrawer()">
@@ -753,253 +623,307 @@
                 </button>
                 <button class="notification-btn">
                     <i class="fas fa-bell"></i>
-                    <span class="badge" id="notifBadge">3</span>
+                    <span class="badge" id="notifBadge" style="position: absolute; top: -2px; right: -2px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600;">3</span>
                 </button>
             </div>
             <div class="greeting">
                 <h1 id="greetingText">Hi, Employee</h1>
                 <p id="greetingSub">Good Morning</p>
             </div>
-            <div style="margin-top: 12px;">
-                <span class="current-date" id="currentDate">Loading...</span>
-            </div>
+            <div class="current-date" id="currentDate">Loading...</div>
         </header>
 
         <main class="main-content">
             <!-- Overview Cards -->
-            <section class="overview-section">
-                <h2 class="section-title">Overview</h2>
-                <div class="cards-grid">
-                    <div class="action-card" onclick="navigateTo('leave')">
-                        <div class="card-icon green">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="card-label">Request</div>
-                        <div class="card-value" id="requestCount">0</div>
+            <div class="cards-grid">
+                <div class="action-card" onclick="navigateTo('leave')">
+                    <div class="card-icon green">
+                        <i class="fas fa-envelope"></i>
                     </div>
-                    <div class="action-card" onclick="navigateTo('leave')">
-                        <div class="card-icon red">
-                            <i class="fas fa-calendar-times"></i>
-                        </div>
-                        <div class="card-label">Leave Request</div>
-                        <div class="card-value" id="leaveCount">0</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('schedule')">
-                        <div class="card-icon orange">
-                            <i class="fas fa-clipboard-check"></i>
-                        </div>
-                        <div class="card-label">Attendance</div>
-                        <div class="card-value" id="attendanceCount">0</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('payslips')">
-                        <div class="card-icon blue">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
-                        <div class="card-label">Pay Slip</div>
-                        <div class="card-value" id="payslipCount">1</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('approvals')">
-                        <div class="card-icon purple">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                        <div class="card-label">Project Task</div>
-                        <div class="card-value" id="taskCount">0</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('profile')">
-                        <div class="card-icon yellow">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="card-label">Team</div>
-                        <div class="card-value" id="teamCount">0</div>
-                    </div>
+                    <div class="card-label">Request</div>
+                    <div class="card-value" id="requestCount">0</div>
                 </div>
-            </section>
+                <div class="action-card" onclick="navigateTo('leave')">
+                    <div class="card-icon red">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <div class="card-label">Leave</div>
+                    <div class="card-value" id="leaveCount">0</div>
+                </div>
+                <div class="action-card" onclick="navigateTo('schedule')">
+                    <div class="card-icon orange">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="card-label">Attendance</div>
+                    <div class="card-value" id="attendanceCount">0</div>
+                </div>
+                <div class="action-card" onclick="navigateTo('payslips')">
+                    <div class="card-icon blue">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="card-label">Pay Slip</div>
+                    <div class="card-value" id="payslipCount">1</div>
+                </div>
+                <div class="action-card" onclick="navigateTo('approvals')">
+                    <div class="card-icon purple">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="card-label">Tasks</div>
+                    <div class="card-value" id="taskCount">0</div>
+                </div>
+                <div class="action-card" onclick="navigateTo('profile')">
+                    <div class="card-icon yellow">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-label">Team</div>
+                    <div class="card-value" id="teamCount">0</div>
+                </div>
+            </div>
 
             <!-- Check-in Button -->
             <div class="checkin-container" id="checkinContainer">
                 <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()">
                     CHECK IN
                 </button>
-                <div class="location-status" id="locationStatus">
+                <div style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
                     <i class="fas fa-circle-notch fa-spin"></i> Getting location...
                 </div>
             </div>
 
             <!-- Today's Stats -->
-            <section class="stats-section">
-                <h2 class="section-title">Today's Attendance</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value green" id="presentCount">100</div>
-                        <div class="stat-label">Present</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value yellow" id="lateCount">20</div>
-                        <div class="stat-label">Late</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value red" id="absentCount">10</div>
-                        <div class="stat-label">Absent</div>
-                    </div>
+            <h2 style="font-size: 18px; font-weight: 700; margin: 24px 0 16px;">Today's Attendance</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value green" id="presentCount">100</div>
+                    <div class="stat-label">Present</div>
                 </div>
-            </section>
-
-            <!-- Recent Leave Applications -->
-            <section class="recent-section">
-                <div class="section-header">
-                    <h2 class="section-title">Recent Leave Application</h2>
-                    <a class="see-all" onclick="navigateTo('leave')">See All</a>
+                <div class="stat-card">
+                    <div class="stat-value yellow" id="lateCount">20</div>
+                    <div class="stat-label">Late</div>
                 </div>
-                <div id="recentLeaveList">
-                    <!-- Dynamically populated -->
+                <div class="stat-card">
+                    <div class="stat-value red" id="absentCount">10</div>
+                    <div class="stat-label">Absent</div>
                 </div>
-            </section>
+            </div>
         </main>
 
-        <!-- Quick Actions Bottom Bar -->
-        <nav class="quick-actions">
-            <button class="quick-action-btn active" onclick="navigateTo('dashboard')">
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="navigateTo('dashboard')">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </button>
-            <button class="quick-action-btn" onclick="navigateTo('leave')">
+            <button class="nav-item" onclick="navigateTo('leave')">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Leave</span>
             </button>
-            <button class="quick-action-btn" onclick="navigateTo('payslips')">
+            <button class="nav-item" onclick="navigateTo('payslips')">
                 <i class="fas fa-wallet"></i>
                 <span>Pay</span>
             </button>
-            <button class="quick-action-btn" onclick="navigateTo('profile')">
+            <button class="nav-item" onclick="navigateTo('profile')">
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </button>
         </nav>
     </div>
 
-    <!-- Leave Application Screen -->
+    <!-- Leave Screen -->
     <div id="leaveScreen" class="screen">
-        <div class="screen-header">
-            <button class="back-btn" onclick="navigateTo('dashboard')">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <h1 class="screen-title">Leave Application</h1>
-        </div>
-
-        <div class="tabs-container">
-            <div class="tabs">
-                <button class="tab active" onclick="switchLeaveTab('waiting')">Waiting</button>
-                <button class="tab" onclick="switchLeaveTab('approved')">Approved</button>
-                <button class="tab" onclick="switchLeaveTab('cancelled')">Cancelled</button>
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 style="font-size: 20px; font-weight: 700;">Leave Application</h1>
+                <div style="width: 44px;"></div>
             </div>
-        </div>
+        </header>
 
-        <div class="leave-list" id="leaveApplicationList">
-            <!-- Dynamically populated -->
-        </div>
+        <main class="main-content">
+            <div style="background: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow);">
+                <div style="display: flex; gap: 8px; background: var(--bg); padding: 6px; border-radius: 12px;">
+                    <button class="tab active" onclick="switchLeaveTab('balance')" style="flex: 1; padding: 10px; border: none; background: white; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        💰 Balance
+                    </button>
+                    <button class="tab" onclick="switchLeaveTab('requests')" style="flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-secondary);">
+                        📋 Requests
+                    </button>
+                </div>
+            </div>
 
-        <button class="fab" onclick="openLeaveModal()">
+            <div id="leaveBalanceTab">
+                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Leave Balance</h2>
+                <div id="leaveBalanceSummary" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;">
+                    <!-- Dynamic content -->
+                </div>
+
+                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Upcoming Leave</h2>
+                <div id="upcomingLeaveList" style="background: white; border-radius: 16px; padding: 16px; box-shadow: var(--shadow);">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <div id="leaveRequestsTab" style="display: none;">
+                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Recent Requests</h2>
+                <div id="leaveRequestsList">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </main>
+
+        <button class="fab" onclick="openLeaveApplyModal()">
             <i class="fas fa-plus"></i>
         </button>
+
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="navigateTo('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item active" onclick="navigateTo('leave')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Leave</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('payslips')">
+                <i class="fas fa-wallet"></i>
+                <span>Pay</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('profile')">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- Other screens remain similar but with updated styling -->
-    <!-- Include your existing screens with the new design system -->
-
-    <!-- Leave Modal -->
-    <div class="modal-overlay" id="leaveModal">
+    <!-- Leave Apply Modal -->
+    <div class="modal-overlay" id="leaveModalOverlay" onclick="if(event.target === this) closeLeaveApplyModal()">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Apply for Leave</h2>
-                <button class="close-modal" onclick="closeLeaveModal()">
+                <h2 class="modal-title">📝 Apply for Leave</h2>
+                <button class="close-modal" onclick="closeLeaveApplyModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="leaveForm" onsubmit="submitLeaveApplication(event)">
-                <div class="form-group">
-                    <label class="form-label">Leave Type</label>
-                    <select class="form-select" id="leaveType" required>
-                        <option value="">Select Leave Type</option>
-                        <option value="Annual">Annual Leave</option>
-                        <option value="Sick">Sick Leave</option>
-                        <option value="Casual">Casual Leave</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">From Date</label>
-                    <input type="date" class="form-input" id="leaveFromDate" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">To Date</label>
-                    <input type="date" class="form-input" id="leaveToDate" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Reason</label>
-                    <textarea class="form-textarea" id="leaveReason" placeholder="Enter reason for leave..." required></textarea>
-                </div>
-                <button type="submit" class="submit-btn">Submit Request</button>
-            </form>
+            
+            <div id="leaveModalError" style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none; font-size: 14px;"></div>
+            
+            <div class="form-group">
+                <label class="form-label">Leave Type</label>
+                <select id="leaveType" class="form-select">
+                    <option value="">Select Leave Type</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">From Date</label>
+                <input type="date" id="leaveFromDate" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">To Date</label>
+                <input type="date" id="leaveToDate" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Half Day?</label>
+                <select id="leaveHalfDay" class="form-select">
+                    <option value="0">No</option>
+                    <option value="1">First Half</option>
+                    <option value="2">Second Half</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Reason</label>
+                <textarea id="leaveReason" class="form-textarea" placeholder="Enter reason for leave..."></textarea>
+            </div>
+            
+            <button onclick="submitLeaveApplication()" class="submit-btn">
+                Submit Leave Request
+            </button>
         </div>
     </div>
 
+    <!-- Side Drawer -->
+    <div id="drawerOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2001; display: none; backdrop-filter: blur(4px);" onclick="closeDrawer()"></div>
+    
+    <div id="sideDrawer" style="position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: white; z-index: 2002; transform: translateX(-100%); transition: transform 0.3s; box-shadow: var(--shadow-lg); padding: calc(20px + var(--safe-area-top)) 20px 20px; overflow-y: auto;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent), #818cf8); border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 700;">
+                👤
+            </div>
+            <div id="drawerEmployeeName" style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Employee Name</div>
+            <div id="drawerEmployeeDept" style="color: var(--text-secondary); font-size: 13px;">Department</div>
+        </div>
+        
+        <nav style="display: flex; flex-direction: column; gap: 8px;">
+            <button onclick="navigateTo('dashboard'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-chart-bar" style="width: 24px;"></i> Dashboard
+            </button>
+            <button onclick="navigateTo('leave'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-calendar-alt" style="width: 24px;"></i> Leave
+            </button>
+            <button onclick="navigateTo('payslips'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-wallet" style="width: 24px;"></i> Payslips
+            </button>
+            <button onclick="navigateTo('schedule'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-calendar" style="width: 24px;"></i> Schedule
+            </button>
+            <button onclick="navigateTo('approvals'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-check-circle" style="width: 24px;"></i> Approvals
+            </button>
+            <button onclick="navigateTo('onboarding'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-rocket" style="width: 24px;"></i> Onboarding
+            </button>
+            <button onclick="navigateTo('profile'); closeDrawer();" style="padding: 14px 16px; border: none; background: var(--bg); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-user" style="width: 24px;"></i> Profile
+            </button>
+            <button onclick="logout()" style="padding: 14px 16px; border: none; background: #fee2e2; color: var(--danger); border-radius: 12px; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-top: 20px;">
+                <i class="fas fa-sign-out-alt" style="width: 24px;"></i> Sign Out
+            </button>
+        </nav>
+    </div>
+
+    <!-- Other screens would go here (payslips, schedule, profile, etc.) -->
+    <!-- For brevity, I'm showing the main structure -->
+
     <script src="ess.js"></script>
+    
+    <!-- Register Service Worker for PWA -->
     <script>
-        // Initialize greeting based on time
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+
+        // Update greeting based on time
         function updateGreeting() {
             const hour = new Date().getHours();
-            const greetingText = document.getElementById('greetingText');
             const greetingSub = document.getElementById('greetingSub');
-            
-            if (hour < 12) {
-                greetingSub.textContent = 'Good Morning';
-            } else if (hour < 17) {
-                greetingSub.textContent = 'Good Afternoon';
-            } else {
-                greetingSub.textContent = 'Good Evening';
+            if (greetingSub) {
+                if (hour < 12) greetingSub.textContent = 'Good Morning';
+                else if (hour < 17) greetingSub.textContent = 'Good Afternoon';
+                else greetingSub.textContent = 'Good Evening';
             }
         }
 
         // Update date display
         function updateDate() {
-            const options = { day: 'numeric', month: 'short', year: 'numeric' };
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
-        }
-
-        // Enhanced navigation
-        function navigateTo(screen) {
-            // Update active state in bottom nav
-            document.querySelectorAll('.quick-action-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const activeBtn = document.querySelector(`.quick-action-btn[onclick="navigateTo('${screen}')"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            // Hide all screens
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            
-            // Show target screen
-            const targetScreen = document.getElementById(screen + 'Screen');
-            if (targetScreen) {
-                targetScreen.classList.add('active');
-                window.scrollTo(0, 0);
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+                dateEl.textContent = new Date().toLocaleDateString('en-US', options);
             }
-        }
-
-        // Modal functions
-        function openLeaveModal() {
-            document.getElementById('leaveModal').classList.add('active');
-        }
-
-        function closeLeaveModal() {
-            document.getElementById('leaveModal').classList.remove('active');
-        }
-
-        // Tab switching
-        function switchLeaveTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            loadLeaveApplications(tab);
         }
 
         // Initialize
@@ -1007,9 +931,23 @@
         updateDate();
         setInterval(updateDate, 60000);
 
-        // Close modal on overlay click
-        document.getElementById('leaveModal').addEventListener('click', function(e) {
-            if (e.target === this) closeLeaveModal();
+        // Prevent zoom on double tap (iOS)
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (event) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Handle viewport resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                updateDate();
+            }, 250);
         });
     </script>
 </body>

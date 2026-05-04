@@ -1,0 +1,41 @@
+{
+  "name": "Octagon ESS",
+  "short_name": "Octagon ESS",
+  "description": "Employee Self Service Portal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1a2744",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Check In",
+      "short_name": "Check In",
+      "description": "Quick check-in",
+      "url": "/?action=checkin",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Apply Leave",
+      "short_name": "Leave",
+      "description": "Apply for leave",
+      "url": "/?action=leave",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
