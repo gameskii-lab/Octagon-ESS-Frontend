@@ -1061,35 +1061,37 @@
 
     <!-- Approvals Screen -->
     <div id="approvalsScreen" class="screen">
-        <header class="app-header">
-            <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Approvals</h1>
-                <div style="width: 40px;"></div>
-            </div>
-        </header>
+        <div class="app-container">  <!-- 👈 ADD THIS -->
+            <header class="app-header">
+                <div class="header-top">
+                    <button class="menu-btn" onclick="openDrawer()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Approvals</h1>
+                    <div style="width: 40px;"></div>
+                </div>
+            </header>
 
-        <main class="main-content">
-            <div id="approvalsList">
-                <p style="text-align: center; color: var(--gray-600); padding: 40px;">Loading approvals...</p>
-            </div>
-            
-            <!-- Approval Detail View -->
-            <div id="approvalDetail" class="hidden card" style="margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 id="approvalDetailTitle" style="font-size: 18px; font-weight: 700;">Approval Details</h3>
-                    <button onclick="showApprovalsList()" style="background: var(--gray-100); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+            <main class="main-content">
+                <div id="approvalsList">
+                    <p style="text-align: center; color: var(--gray-600); padding: 40px;">Loading approvals...</p>
                 </div>
-                <div id="approvalPrintView"></div>
-                <textarea id="approvalRemark" class="form-textarea" placeholder="Add remark (optional)" style="margin-top: 16px;"></textarea>
-                <div style="display: flex; gap: 12px; margin-top: 16px;">
-                    <button id="approveBtn" class="btn btn-primary" style="flex: 1; background: var(--success);">✅ Approve</button>
-                    <button id="rejectBtn" class="btn" style="flex: 1; background: var(--danger); color: white;">❌ Reject</button>
+                
+                <!-- Approval Detail View -->
+                <div id="approvalDetail" class="hidden card" style="margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 id="approvalDetailTitle" style="font-size: 18px; font-weight: 700;">Approval Details</h3>
+                        <button onclick="showApprovalsList()" style="background: var(--gray-100); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                    </div>
+                    <div id="approvalPrintView"></div>
+                    <textarea id="approvalRemark" class="form-textarea" placeholder="Add remark (optional)" style="margin-top: 16px;"></textarea>
+                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+                        <button id="approveBtn" class="btn btn-primary" style="flex: 1; background: var(--success);">✅ Approve</button>
+                        <button id="rejectBtn" class="btn" style="flex: 1; background: var(--danger); color: white;">❌ Reject</button>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
     <!-- Onboarding Screen -->
