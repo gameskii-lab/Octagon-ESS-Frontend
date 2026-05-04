@@ -168,9 +168,11 @@
 
         /* ===== HEADER ===== */
         .app-header {
-            background: var(--white);
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 20px;
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -179,93 +181,64 @@
         .header-top {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .menu-btn {
             width: 44px;
             height: 44px;
             border: none;
-            background: var(--gray-100);
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 20px;
-            color: var(--gray-700);
-            transition: all 0.2s;
-        }
-
-        .menu-btn:hover {
-            background: var(--gray-200);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            width: 44px;
-            height: 44px;
-            border: none;
-            background: var(--gray-100);
-            border-radius: var(--radius);
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
             cursor: pointer;
             font-size: 18px;
-            color: var(--gray-700);
-            position: relative;
-            transition: all 0.2s;
-        }
-
-        .icon-btn:hover {
-            background: var(--gray-200);
-        }
-
-        .badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            background: var(--danger);
             color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 600;
+            flex-shrink: 0;
         }
 
-        .greeting-section {
-            margin-bottom: 16px;
+        .header-greeting {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .greeting-text {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            color: var(--gray-800);
-            margin-bottom: 4px;
+            margin: 0;
+            line-height: 1.2;
         }
 
         .greeting-sub {
             font-size: 14px;
-            color: var(--gray-600);
+            opacity: 0.9;
+            margin: 0;
         }
 
         .date-pill {
-            display: inline-flex;
+            background: rgba(255,255,255,0.2);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
         /* ===== DASHBOARD CARDS ===== */
         .main-content {
             padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            padding-bottom: 40px; /* Was 80px for bottom nav */
         }
 
         .section-title {
@@ -404,22 +377,6 @@
             font-size: 13px;
             color: var(--gray-600);
             font-weight: 600;
-        }
-
-        /* ===== BOTTOM NAV ===== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            border-top: 1px solid var(--gray-200);
         }
 
         .nav-item {
@@ -855,27 +812,21 @@
     <!-- Dashboard Screen -->
     <div id="dashboardScreen" class="screen">
         <div class="app-container">
-            <header class="app-header" id="appHeader">
+            <header class="app-header">
                 <div class="header-top">
-                    <button class="menu-btn" onclick="openDrawer()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="header-actions">
-                        <button class="icon-btn">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge">3</span>
+                    <div class="header-left">
+                        <button class="menu-btn" onclick="openDrawer()">
+                            <i class="fas fa-bars"></i>
                         </button>
+                        <div class="header-greeting">
+                            <h1 class="greeting-text" id="greetingText">Hi, Employee</h1>
+                            <p class="greeting-sub" id="greetingSub">Good Morning</p>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="greeting-section">
-                    <h1 class="greeting-text" id="greetingText">Hi, Employee</h1>
-                    <p class="greeting-sub" id="greetingSub">Good Morning</p>
-                </div>
-                
-                <div class="date-pill">
-                    <i class="fas fa-calendar"></i>
-                    <span id="currentDate">Loading...</span>
+                    <div class="date-pill">
+                        <i class="fas fa-calendar"></i>
+                        <span id="currentDate">Loading...</span>
+                    </div>
                 </div>
             </header>
 
@@ -954,26 +905,6 @@
                     </div>
                 </div>
             </main>
-
-            <!-- Bottom Navigation -->
-            <nav class="bottom-nav">
-                <button class="nav-item active" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('leave')">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Leave</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('schedule')">
-                    <i class="fas fa-calendar"></i>
-                    <span>Schedule</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('profile')">
-                    <i class="fas fa-user"></i>
-                    <span>Profile</span>
-                </button>
-            </nav>
         </div>
     </div>
 
@@ -1144,25 +1075,6 @@
                     <div style="padding: 40px; text-align: center; color: var(--gray-600);">Loading schedule...</div>
                 </div>
             </main>
-
-            <nav class="bottom-nav">
-                <button class="nav-item" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('leave')">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Leave</span>
-                </button>
-                <button class="nav-item active" onclick="navigateTo('schedule')">
-                    <i class="fas fa-calendar"></i>
-                    <span>Schedule</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('profile')">
-                    <i class="fas fa-user"></i>
-                    <span>Profile</span>
-                </button>
-            </nav>
         </div>
     </div>
 
@@ -1214,25 +1126,6 @@
                     Sign Out
                 </button>
             </main>
-
-            <nav class="bottom-nav">
-                <button class="nav-item" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('leave')">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Leave</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('schedule')">
-                    <i class="fas fa-calendar"></i>
-                    <span>Schedule</span>
-                </button>
-                <button class="nav-item active" onclick="navigateTo('profile')">
-                    <i class="fas fa-user"></i>
-                    <span>Profile</span>
-                </button>
-            </nav>
         </div>
     </div>
 
