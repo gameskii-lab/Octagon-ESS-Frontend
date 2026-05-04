@@ -159,6 +159,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Add this helper function near the top of ess.js (after global state)
+function updateGreeting(name) {
+    const el = document.getElementById('greetingText');
+    if (el && name) {
+        el.textContent = `Hi, ${name}`;
+    }
+}
+
+// In handleLogin() (around line 280), replace the greeting block with:
+const employeeName = currentEmployee.employee_name || currentEmployee.name || 'Employee';
+updateGreeting(employeeName);
+showStatus(`Welcome, ${employeeName}!`, 'success');
+
+// In DOMContentLoaded (around line 340), replace the greeting block with:
+const employeeName = currentEmployee.employee_name || currentEmployee.name || 'Employee';
+updateGreeting(employeeName);
+showStatus(`Welcome back, ${employeeName}!`, 'success');
+
 function updateGreetingAndDate() {
     const now = new Date();
     const hour = now.getHours();
@@ -408,18 +426,17 @@ function showAppSection() {
 }
 
 function initializeDashboard() {
-    // Get elements with null checks
-    const fieldWorkerEl = document.getElementById('fieldWorkerDashboard');
-    const officeStaffEl = document.getElementById('officeStaffDashboard');
+    const fieldEl = document.getElementById('fieldWorkerDashboard');
+    const officeEl = document.getElementById('officeStaffDashboard');
     
     if (config.employmentType === 'Daily Wage') {
-        if (fieldWorkerEl) fieldWorkerEl.classList.remove('hidden');
-        if (officeStaffEl) officeStaffEl.classList.add('hidden');
-        loadFieldWorkerDashboard();
+        if (fieldEl) fieldEl.classList.remove('hidden');
+        if (officeEl) officeEl.classList.add('hidden');
+        if (typeof loadFieldWorkerDashboard === 'function') loadFieldWorkerDashboard();
     } else {
-        if (fieldWorkerEl) fieldWorkerEl.classList.add('hidden');
-        if (officeStaffEl) officeStaffEl.classList.remove('hidden');
-        loadOfficeStaffDashboard();
+        if (fieldEl) fieldEl.classList.add('hidden');
+        if (officeEl) officeEl.classList.remove('hidden');
+        if (typeof loadOfficeStaffDashboard === 'function') loadOfficeStaffDashboard();
     }
 }
 
@@ -1011,6 +1028,11 @@ function showLeaveStatus(message, type) {
 let currentApprovalDoc = null;
 
 async function loadApprovalsScreen() {
+    const listEl = document.getElementById('approvalsList');
+    if (!listEl) return; // 👈 SAFE EXIT IF ELEMENT MISSING
+    
+    listEl.innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">Loading approvals...</p>';
+    document.getElementById('approvalDetail')?.classList.add('hidden');
     document.getElementById('approvalsList').innerHTML = '<p style="color: #666; text-align: center;">Loading approvals...</p>';
     document.getElementById('approvalDetail').classList.add('hidden');
     
@@ -1132,15 +1154,17 @@ function showApprovalStatus(message, type) {
 // ============================================
 // ONBOARDING FUNCTIONS
 // ============================================
-
 let currentOnboarding = null;
 let currentActivity = null;
 
 async function loadOnboardingScreen() {
     if (!config.employeeId) return;
     
-    document.getElementById('onboardingActivities').innerHTML = '<p style="color: #666; text-align: center;">Loading...</p>';
+    const activitiesEl = document.getElementById('onboardingActivities');
+    if (!activitiesEl) return;
     
+    activitiesEl.innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">Loading activities...</p>';
+
     try {
         const response = await fetch(`${config.middlewareUrl}/api/onboarding/${config.employeeId}`);
         const result = await response.json();
@@ -1151,25 +1175,46 @@ async function loadOnboardingScreen() {
         } else {
             document.getElementById('onboardingWelcome').textContent = 'No Active Onboarding';
             document.getElementById('onboardingSubtitle').textContent = 'You are not currently in an onboarding program';
-            document.getElementById('onboardingActivities').innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Contact HR if you believe this is an error</p>';
+            activitiesEl.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Contact HR if you believe this is an error</p>';
         }
     } catch (error) {
         console.error('Onboarding error:', error);
-        document.getElementById('onboardingActivities').innerHTML = '<p style="color: #666;">Error loading onboarding</p>';
+        activitiesEl.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Error loading onboarding</p>';
     }
 }
 
 function renderOnboarding(onboarding) {
     // Update welcome
-    document.getElementById('onboardingWelcome').textContent = `Welcome, ${onboarding.employee_name || 'New Team Member'}!`;
-    document.getElementById('onboardingSubtitle').textContent = onboarding.onboarding_template || 'Let\'s get you set up';
+    const welcomeEl = document.getElementById('onboardingWelcome');
+    const subtitleEl = document.getElementById('onboardingSubtitle');
+    
+    if (welcomeEl) {
+        welcomeEl.textContent = `Welcome, ${onboarding.employee_name || 'New Team Member'}!`;
+    }
+    
+    if (subtitleEl) {
+        subtitleEl.textContent = onboarding.onboarding_template || 'Let\'s get you set up';
+    }
     
     // Update progress
-    document.getElementById('onboardingProgress').textContent = `${onboarding.progress}%`;
-    document.getElementById('onboardingProgressBar').style.width = `${onboarding.progress}%`;
-    document.getElementById('onboardingFraction').textContent = `${onboarding.completedActivities} of ${onboarding.totalActivities} activities complete`;
+    const progressEl = document.getElementById('onboardingProgress');
+    const progressBarEl = document.getElementById('onboardingProgressBar');
+    const fractionEl = document.getElementById('onboardingFraction');
     
+    if (progressEl) {
+        progressEl.textContent = `${onboarding.progress}%`;
+    }
+    
+    if (progressBarEl) {
+        progressBarEl.style.width = `${onboarding.progress}%`;
+    }
+    
+    if (fractionEl) {
+        fractionEl.textContent = `${onboarding.completedActivities} of ${onboarding.totalActivities} activities complete`;
+    }
+
     // Render activities
+    const activitiesEl = document.getElementById('onboardingActivities');
     if (onboarding.activities && onboarding.activities.length > 0) {
         let html = '';
         onboarding.activities.forEach(activity => {
@@ -1190,45 +1235,66 @@ function renderOnboarding(onboarding) {
                 </div>
             `;
         });
-        document.getElementById('onboardingActivities').innerHTML = html;
+        activitiesEl.innerHTML = html;
     } else {
-        document.getElementById('onboardingActivities').innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No activities defined in the onboarding template</p>';
+        activitiesEl.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No activities defined in the onboarding template</p>';
     }
 }
 
 function viewOnboardingActivity(name, description, isComplete) {
     currentActivity = { name, description, isComplete };
     
-    document.getElementById('onboardingDetail').classList.remove('hidden');
-    document.getElementById('onboardingDetailTitle').textContent = name;
-    document.getElementById('onboardingDetailContent').innerHTML = `
-        <p style="margin-bottom: 16px;">${description || 'No additional details provided'}</p>
-        <div style="font-size: 14px; color: #666;">
-            Status: <span class="leave-status ${isComplete ? 'status-approved' : 'status-pending'}">${isComplete ? 'Completed' : 'Pending'}</span>
-        </div>
-    `;
-    
+    const detailEl = document.getElementById('onboardingDetail');
+    const titleEl = document.getElementById('onboardingDetailTitle');
+    const contentEl = document.getElementById('onboardingDetailContent');
     const completeBtn = document.getElementById('onboardingCompleteBtn');
-    if (isComplete) {
-        completeBtn.style.display = 'none';
-    } else {
-        completeBtn.style.display = 'block';
-        completeBtn.onclick = () => completeOnboardingActivity(name);
+    
+    if (detailEl) {
+        detailEl.classList.remove('hidden');
     }
     
+    if (titleEl) {
+        titleEl.textContent = name;
+    }
+    
+    if (contentEl) {
+        contentEl.innerHTML = `
+            <p style="margin-bottom: 16px;">${description || 'No additional details provided'}</p>
+            <div style="font-size: 14px; color: #666;">
+                Status: <span class="leave-status ${isComplete ? 'status-approved' : 'status-pending'}">${isComplete ? 'Completed' : 'Pending'}</span>
+            </div>
+        `;
+    }
+
+    if (completeBtn) {
+        if (isComplete) {
+            completeBtn.style.display = 'none';
+        } else {
+            completeBtn.style.display = 'block';
+            completeBtn.onclick = () => completeOnboardingActivity(name);
+        }
+    }
+
     // Scroll to detail
-    document.getElementById('onboardingDetail').scrollIntoView({ behavior: 'smooth' });
+    if (detailEl) {
+        detailEl.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 function hideOnboardingDetail() {
-    document.getElementById('onboardingDetail').classList.add('hidden');
+    const detailEl = document.getElementById('onboardingDetail');
+    if (detailEl) {
+        detailEl.classList.add('hidden');
+    }
     currentActivity = null;
 }
 
 async function completeOnboardingActivity(activityName) {
     const btn = document.getElementById('onboardingCompleteBtn');
-    btn.disabled = true;
-    btn.textContent = 'Completing...';
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Completing...';
+    }
     
     try {
         const response = await fetch(`${config.middlewareUrl}/api/onboarding/complete-activity`, {
@@ -1253,24 +1319,33 @@ async function completeOnboardingActivity(activityName) {
     } catch (error) {
         showOnboardingStatus(`❌ ${error.message}`, 'error');
     } finally {
-        btn.disabled = false;
-        btn.textContent = '✅ Mark as Complete';
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '✅ Mark as Complete';
+        }
     }
 }
 
 function showOnboardingStatus(message, type) {
     const statusDiv = document.getElementById('onboardingStatusMessage');
+    if (!statusDiv) {
+        console.log(`[${type}] ${message}`);
+        return;
+    }
+    
     statusDiv.className = `status ${type}`;
     statusDiv.textContent = message;
     setTimeout(() => {
-        statusDiv.textContent = '';
-        statusDiv.className = '';
+        if (statusDiv) {
+            statusDiv.textContent = '';
+            statusDiv.className = '';
+        }
     }, 5000);
 }
 
 function escapeHtml(text) {
     if (!text) return '';
-    return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    return text.replace(/'/g, "\\'").replace(/"/g, '"');
 }
 
 // ============================================
