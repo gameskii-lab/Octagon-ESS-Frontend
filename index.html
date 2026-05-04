@@ -913,11 +913,11 @@
         <div class="app-container">
             <header class="app-header">
                 <div class="header-top">
-                    <button class="menu-btn" onclick="navigateTo('dashboard')">
-                        <i class="fas fa-arrow-left"></i>
+                    <button class="menu-btn" onclick="openDrawer()">
+                        <i class="fas fa-bars"></i>
                     </button>
-                    <h1 style="font-size: 20px; font-weight: 700;">Leave</h1>
-                    <div style="width: 44px;"></div>
+                    <h1 style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Leave</h1>
+                    <div style="width: 40px;"></div>
                 </div>
             </header>
 
@@ -952,25 +952,6 @@
             <button class="fab" onclick="openLeaveApplyModal()">
                 <i class="fas fa-plus"></i>
             </button>
-
-            <nav class="bottom-nav">
-                <button class="nav-item" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </button>
-                <button class="nav-item active" onclick="navigateTo('leave')">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Leave</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('schedule')">
-                    <i class="fas fa-calendar"></i>
-                    <span>Schedule</span>
-                </button>
-                <button class="nav-item" onclick="navigateTo('profile')">
-                    <i class="fas fa-user"></i>
-                    <span>Profile</span>
-                </button>
-            </nav>
         </div>
     </div>
 
@@ -1028,11 +1009,11 @@
         <div class="app-container">
             <header class="app-header">
                 <div class="header-top">
-                    <button class="menu-btn" onclick="navigateTo('dashboard')">
-                        <i class="fas fa-arrow-left"></i>
+                    <button class="menu-btn" onclick="openDrawer()">
+                        <i class="fas fa-bars"></i>
                     </button>
-                    <h1 style="font-size: 20px; font-weight: 700;">Schedule</h1>
-                    <div style="width: 44px;"></div>
+                    <h1 style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Schedule</h1>
+                    <div style="width: 40px;"></div>
                 </div>
             </header>
 
@@ -1078,16 +1059,99 @@
         </div>
     </div>
 
+    <!-- Approvals Screen -->
+    <div id="approvalsScreen" class="screen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="openDrawer()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Approvals</h1>
+                <div style="width: 40px;"></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="approvalsList">
+                <p style="text-align: center; color: var(--gray-600); padding: 40px;">Loading approvals...</p>
+            </div>
+            
+            <!-- Approval Detail View -->
+            <div id="approvalDetail" class="hidden card" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 id="approvalDetailTitle" style="font-size: 18px; font-weight: 700;">Approval Details</h3>
+                    <button onclick="showApprovalsList()" style="background: var(--gray-100); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                </div>
+                <div id="approvalPrintView"></div>
+                <textarea id="approvalRemark" class="form-textarea" placeholder="Add remark (optional)" style="margin-top: 16px;"></textarea>
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button id="approveBtn" class="btn btn-primary" style="flex: 1; background: var(--success);">✅ Approve</button>
+                    <button id="rejectBtn" class="btn" style="flex: 1; background: var(--danger); color: white;">❌ Reject</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Onboarding Screen -->
+    <div id="onboardingScreen" class="screen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="openDrawer()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Onboarding</h1>
+                <div style="width: 40px;"></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Progress Card -->
+            <div class="card" style="background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px;">
+                <h2 id="onboardingWelcome" style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Welcome!</h2>
+                <p id="onboardingSubtitle" style="color: var(--gray-600); margin-bottom: 24px;">Let's get you set up</p>
+                
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-weight: 600;">Onboarding Progress</span>
+                        <span id="onboardingProgress" style="font-weight: 700; color: var(--primary);">0%</span>
+                    </div>
+                    <div style="background: var(--gray-200); border-radius: 8px; height: 12px; overflow: hidden;">
+                        <div id="onboardingProgressBar" style="background: var(--primary); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    </div>
+                    <p id="onboardingFraction" style="font-size: 13px; color: var(--gray-600); margin-top: 8px;">0 of 0 activities complete</p>
+                </div>
+            </div>
+
+            <!-- Activities List -->
+            <h2 class="section-title">📋 Activities</h2>
+            <div id="onboardingActivities">
+                <p style="text-align: center; color: var(--gray-600); padding: 40px;">Loading activities...</p>
+            </div>
+
+            <!-- Onboarding Detail View -->
+            <div id="onboardingDetail" class="hidden card" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 id="onboardingDetailTitle" style="font-size: 18px; font-weight: 700;">Activity Details</h3>
+                    <button onclick="hideOnboardingDetail()" style="background: var(--gray-100); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                </div>
+                <div id="onboardingDetailContent"></div>
+                <button id="onboardingCompleteBtn" onclick="" style="margin-top: 16px; padding: 14px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; width: 100%; cursor: pointer;">
+                    ✅ Mark as Complete
+                </button>
+            </div>
+        </main>
+    </div>
+
     <!-- Profile Screen -->
     <div id="profileScreen" class="screen">
         <div class="app-container">
             <header class="app-header">
                 <div class="header-top">
-                    <button class="menu-btn" onclick="navigateTo('dashboard')">
-                        <i class="fas fa-arrow-left"></i>
+                    <button class="menu-btn" onclick="openDrawer()">
+                        <i class="fas fa-bars"></i>
                     </button>
-                    <h1 style="font-size: 20px; font-weight: 700;">Profile</h1>
-                    <div style="width: 44px;"></div>
+                    <h1 style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Profile</h1>
+                    <div style="width: 40px;"></div>
                 </div>
             </header>
 
