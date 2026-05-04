@@ -144,6 +144,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeDashboard();
         
         showStatus(`Welcome back, ${employeeName}!`, 'success');
+        // Update greeting with employee name
+        const greetingEl = document.getElementById('greetingText');
+        if (greetingEl) {
+            greetingEl.textContent = `Hi ${employeeName}`;
+        }
     }
 });
 
@@ -279,6 +284,11 @@ async function handleLogin() {
         showAppSection();
         initializeDashboard();
         showStatus(`Welcome, ${employeeName}!`, 'success');
+        // Update greeting with employee name after login
+        const greetingEl = document.getElementById('greetingText');
+        if (greetingEl) {
+            greetingEl.textContent = `Hi ${employeeName}`;
+        }
         
     } catch (error) {
         console.error('Login error:', error);
