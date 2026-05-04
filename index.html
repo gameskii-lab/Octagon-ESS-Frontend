@@ -4,68 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Octagon ESS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* === Global Reset & Base Styles === */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f4f6f9;
             margin: 0;
             padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
-        /* App Container */
+        /* === App Container (The "Phone" Look) === */
         .app-container {
             max-width: 450px;
             margin: 0 auto;
-            background: white;
+            background: #f8f9fc;
             min-height: 100vh;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            box-shadow: 0 0 40px rgba(0,0,0,0.08);
         }
         
-        /* Header */
+        /* === Header (Glassmorphism Style) === */
         .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
-            background: white;
-            border-bottom: 1px solid #eee;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
             z-index: 10;
         }
         .app-header h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
+            color: #1e293b;
+            letter-spacing: -0.3px;
         }
-        .menu-btn {
+        .menu-btn, .profile-btn {
             background: none;
             border: none;
-            font-size: 30px;
+            font-size: 24px;
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 8px;
             width: auto;
-            color: #333;
+            color: #475569;
             line-height: 1;
-            font-weight: 300;
+            transition: color 0.2s;
         }
-        .profile-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            padding: 8px 12px;
-            width: auto;
-            color: #333;
-            line-height: 1;
+        .menu-btn:hover, .profile-btn:hover {
+            color: #1e293b;
         }
         
-        /* Side Drawer */
+        /* === Side Drawer (Modern Slide-in) === */
         .side-drawer {
             position: fixed;
             top: 0;
@@ -73,55 +76,46 @@
             width: 280px;
             height: 100vh;
             background: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            transition: left 0.3s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             overflow-y: auto;
         }
-        .side-drawer.open {
-            left: 0;
-        }
+        .side-drawer.open { left: 0; }
         .drawer-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             z-index: 999;
             display: none;
         }
-        .drawer-overlay.open {
-            display: block;
-        }
+        .drawer-overlay.open { display: block; }
         .drawer-header {
-            padding: 24px 20px;
-            background: linear-gradient(135deg, #2196F3, #1976D2);
+            padding: 32px 20px 20px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
         }
-        .drawer-header h3 {
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-        .drawer-header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        .drawer-menu {
-            padding: 12px 0;
-        }
+        .drawer-header h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+        .drawer-header p { font-size: 14px; opacity: 0.9; font-weight: 400; }
+        .drawer-menu { padding: 8px 0; }
         .drawer-item {
             display: flex;
             align-items: center;
-            padding: 16px 20px;
-            color: #333;
+            padding: 14px 20px;
+            color: #475569;
             text-decoration: none;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
         }
         .drawer-item:hover {
-            background: #f5f7fa;
+            background: #f8fafc;
+            color: #1e293b;
         }
         .drawer-item .icon {
             margin-right: 16px;
@@ -129,243 +123,253 @@
             width: 24px;
         }
         
-        /* Main Content */
-        .main-content {
-            padding: 16px;
+        /* === Main Content Area === */
+        .main-content { padding: 20px 16px; }
+        
+        /* === Screen Management === */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Screen Management */
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
-        
-        /* Login Screen */
+        /* === Login Screen === */
         .login-section {
-            padding: 32px 20px;
+            padding: 40px 20px;
+            text-align: center;
         }
         .login-section h3 {
-            margin-bottom: 24px;
-            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 32px;
+            letter-spacing: -0.5px;
         }
         
-        /* Cards & UI Elements */
+        /* === Modern Cards === */
         .card {
             background: white;
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
         }
         .card-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 12px;
-            color: #333;
+            margin-bottom: 16px;
+            color: #1e293b;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        
+        /* === Employee Info Card === */
         .employee-info {
-            background: #e8f0fe;
-            padding: 14px;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            padding: 20px;
+            border-radius: 20px;
             margin-bottom: 20px;
+            border: 1px solid #bfdbfe;
         }
         .worksite-info {
-            background: #fff3e0;
-            padding: 10px 14px;
-            border-radius: 12px;
+            background: #fffbeb;
+            padding: 14px 18px;
+            border-radius: 16px;
             margin-bottom: 16px;
             font-size: 14px;
+            border: 1px solid #fde68a;
+            color: #92400e;
         }
+        
+        /* === Check-in Button (Hero Element) === */
         .check-btn {
             width: 100%;
-            padding: 50px 20px;
-            font-size: 28px;
-            font-weight: bold;
+            padding: 40px 20px;
+            font-size: 24px;
+            font-weight: 700;
             border: none;
-            border-radius: 20px;
+            border-radius: 24px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 16px 0;
+            letter-spacing: -0.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
         }
+        .check-btn:active { transform: scale(0.97); }
         .check-in {
-            background: #4CAF50;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
             color: white;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
         }
         .check-out {
-            background: #f44336;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
         }
         .check-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
+            filter: grayscale(30%);
         }
+        
+        /* === Status Messages === */
         .status {
             margin-top: 16px;
-            padding: 14px;
-            border-radius: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
             text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease;
         }
-        .success {
-            background: #d4edda;
-            color: #155724;
-        }
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .info {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-        .location {
-            font-size: 12px;
-            color: #666;
-            margin-top: 8px;
-            text-align: center;
-        }
-        .hours-card, .leave-card, .attendance-card {
-            background: #f8f9fa;
-            padding: 16px;
-            border-radius: 12px;
-            margin: 12px 0;
-        }
-        .hours-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
-        }
-        .hours-total {
-            font-weight: bold;
-            font-size: 18px;
-            border-top: 1px solid #ddd;
-            padding-top: 8px;
-            margin-top: 8px;
-        }
+        .success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        
+        /* === Form Elements (Modern & Clean) === */
         input, select, textarea, button {
             width: 100%;
-            padding: 14px;
+            padding: 14px 16px;
             margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
             box-sizing: border-box;
-            font-size: 16px;
+            font-size: 15px;
+            font-family: inherit;
+            background: #f8fafc;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
         }
         button {
-            background: #2196F3;
+            background: #3b82f6;
             color: white;
             border: none;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            letter-spacing: -0.2px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
         }
-        button.secondary {
-            background: #6c757d;
-        }
-        .logout-btn {
-            background: #dc3545;
-            margin-top: 20px;
-        }
+        button:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        button:active { transform: scale(0.98); }
+        button.secondary { background: #f1f5f9; color: #475569; box-shadow: none; }
+        button.secondary:hover { background: #e2e8f0; }
+        .logout-btn { background: #fee2e2; color: #991b1b; box-shadow: none; margin-top: 20px; }
+        .logout-btn:hover { background: #fecaca; }
+        
+        /* === Badges (Modern Pill Shapes) === */
         .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .badge-field { background: #fef3c7; color: #92400e; }
+        .badge-office { background: #dbeafe; color: #1e40af; }
+        .badge-warning { background: #f3f4f6; color: #374151; }
+        
+        /* === Utility Classes === */
+        .hidden { display: none !important; }
+        .flex-row { display: flex; gap: 10px; }
+        .flex-row button { flex: 1; }
+        
+        /* === Leave & Request Items (Modern List View) === */
+        .leave-request-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 8px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+        .leave-request-item:hover { background: #f1f5f9; transform: translateX(2px); }
+        .leave-status {
             display: inline-block;
             padding: 4px 10px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
-        .badge-field {
-            background: #ff9800;
-            color: white;
-        }
-        .badge-office {
-            background: #2196F3;
-            color: white;
-        }
-        .badge-warning {
-            background: #ffc107;
-            color: #333;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .flex-row {
-            display: flex;
-            gap: 10px;
-        }
-        .flex-row button {
-            flex: 1;
-        }
+        .status-approved { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .status-pending { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .status-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         
-        /* Leave Balance Summary */
+        /* === Leave Balance Summary === */
         .leave-balance-summary {
             display: flex;
             justify-content: space-around;
             text-align: center;
             margin-bottom: 20px;
+            gap: 8px;
         }
         .leave-type {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 16px 10px;
+            border-radius: 16px;
             flex: 1;
-            margin: 0 4px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s;
         }
+        .leave-type:hover { transform: translateY(-2px); }
         .leave-type .count {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2196F3;
+            font-size: 26px;
+            font-weight: 700;
+            color: #3b82f6;
+            letter-spacing: -0.5px;
         }
         .leave-type .label {
-            font-size: 12px;
-            color: #666;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
         }
         
-        /* Leave List */
-        .leave-request-item {
-            background: #f8f9fa;
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 10px;
+        /* === Calendar (Modern Grid) === */
+        #calendarGrid > div {
+            padding: 8px 4px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 13px;
+            transition: transform 0.15s;
         }
-        .leave-status {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-        }
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .app-header.hidden {
-            display: none !important;
-        }
-        /* Force login screen to be the only visible screen on INITIAL page load */
-        #loginScreen {
-            display: block;
-        }
-        #dashboardScreen, #leaveScreen, #payslipsScreen, #scheduleScreen, #profileScreen, #approvalsScreen, #onboardingScreen {
-            display: none;
-        }
-        .screen.active {
-            display: block !important;
-        }
-        #appHeader {
-            display: none;
-        }
-        #appHeader.visible {
-            display: flex !important;
-        }
+        #calendarGrid > div:hover { transform: scale(1.05); }
+        
+        /* === Special CSS for the App Header === */
+        .app-header.hidden { display: none !important; }
+        
+        /* === Initial Load === */
+        #loginScreen { display: block; }
+        #dashboardScreen, #leaveScreen, #payslipsScreen, #scheduleScreen, #profileScreen, #approvalsScreen, #onboardingScreen { display: none; }
+        .screen.active { display: block !important; }
+        #appHeader { display: none; }
+        #appHeader.visible { display: flex !important; }
     </style>
 </head>
 <body>
