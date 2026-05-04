@@ -285,11 +285,11 @@ async function handleLogin() {
         initializeDashboard();
         showStatus(`Welcome, ${employeeName}!`, 'success');
         // Update greeting with employee name after login
+        const nameToShow = currentEmployee.employee_name || currentEmployee.name || 'Employee';
         const greetingEl = document.getElementById('greetingText');
         if (greetingEl) {
-            greetingEl.textContent = `Hi ${employeeName}`;
+            greetingEl.textContent = `Hi, ${nameToShow}`;
         }
-        
     } catch (error) {
         console.error('Login error:', error);
         showStatus(`Login error: ${error.message}`, 'error');
