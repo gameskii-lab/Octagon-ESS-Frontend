@@ -2,462 +2,587 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Octagon ESS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Octagon ESS - Employee Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* =========================================
-        1. DESIGN TOKENS & RESET
-        ========================================= */
-        :root {
-            --primary: #1a2744;
-            --primary-light: #2d3748;
-            --accent: #4f46e5;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
         }
 
-        html {
-            font-size: 16px;
-            -webkit-text-size-adjust: 100%;
-            scroll-behavior: smooth;
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #818cf8;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--gray-800);
+            min-height: 100vh;
             overflow-x: hidden;
-            max-width: 100vw;
-            line-height: 1.5;
         }
 
-        /* =========================================
-        ERPNext-Style Header
-        ========================================= */
-        .app-header {
-            background: #1e2a3a; /* ERPNext dark navy */
+        /* ===== LOGIN SCREEN ===== */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
             color: white;
-            padding: 0;
-            border-radius: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 28px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* ===== MAIN APP LAYOUT ===== */
+        .app-container {
+            min-height: 100vh;
+            background: var(--gray-100);
+            padding-bottom: 80px;
+        }
+
+        /* ===== HEADER ===== */
+        .app-header {
+            background: var(--white);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
-        .header-main {
+        .header-top {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 12px 20px;
-            gap: 16px;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .menu-btn {
-            background: rgba(255,255,255,0.1);
+            width: 44px;
+            height: 44px;
             border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: var(--gray-200);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: var(--radius);
             cursor: pointer;
             font-size: 18px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        .menu-btn:active { background: rgba(255,255,255,0.2); }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex: 1;
+            color: var(--gray-700);
+            position: relative;
+            transition: all 0.2s;
         }
 
-        .header-greeting {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.3;
+        .icon-btn:hover {
+            background: var(--gray-200);
         }
 
-        .header-greeting .name {
-            font-size: 16px;
+        .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
             font-weight: 600;
-            margin: 0;
         }
 
-        .header-greeting .time {
-            font-size: 13px;
-            opacity: 0.85;
-            margin: 0;
+        .greeting-section {
+            margin-bottom: 16px;
         }
 
-        .header-date {
-            background: rgba(255,255,255,0.1);
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            white-space: nowrap;
+        .greeting-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 4px;
         }
 
-        .header-title {
-            font-size: 18px;
+        .greeting-sub {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .date-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: 600;
-            margin: 0;
-            white-space: nowrap;
         }
 
-        /* =========================================
-        ERPNext-Style Grid Menu
-        ========================================= */
+        /* ===== DASHBOARD CARDS ===== */
         .main-content {
             padding: 20px;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .erp-menu-grid {
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon.green { background: #d1fae5; color: var(--success); }
+        .stat-icon.red { background: #fee2e2; color: var(--danger); }
+        .stat-icon.orange { background: #ffedd5; color: #f97316; }
+        .stat-icon.blue { background: #dbeafe; color: var(--secondary); }
+        .stat-icon.purple { background: #e9d5ff; color: #a855f7; }
+        .stat-icon.yellow { background: #fef3c7; color: var(--warning); }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .checkin-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        }
+
+        .checkin-btn.checkout {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        }
+
+        .checkin-btn:active {
+            transform: scale(0.98);
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        /* ===== ATTENDANCE SUMMARY ===== */
+        .attendance-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-bottom: 24px;
         }
 
-        @media (max-width: 480px) {
-            .erp-menu-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .attendance-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
         }
 
-        .erp-menu-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
+        .attendance-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .attendance-value.present { color: var(--success); }
+        .attendance-value.late { color: var(--warning); }
+        .attendance-value.absent { color: var(--danger); }
+
+        .attendance-label {
+            font-size: 13px;
+            color: var(--gray-600);
+            font-weight: 600;
+        }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            min-height: 80px;
-            justify-content: center;
-        }
-
-        .erp-menu-card:active {
-            transform: scale(0.98);
-            border-color: #3b82f6;
-            background: #f8fafc;
-        }
-
-        .erp-menu-card i {
-            font-size: 20px;
-            color: #475569;
-        }
-
-        .erp-menu-card .label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .erp-menu-card.signout {
-            background: #fef2f2;
-            border-color: #fecaca;
-            color: #dc2626;
-        }
-
-        .erp-menu-card.signout i,
-        .erp-menu-card.signout .label {
-            color: #dc2626;
-        }
-
-        /* Section Title */
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #475569;
-            margin: 24px 0 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        /* Check-in Button */
-        .checkin-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .checkin-btn {
-            background: #16a34a;
-            color: white;
+            gap: 4px;
+            padding: 8px 16px;
             border: none;
-            padding: 16px 40px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            background: none;
             cursor: pointer;
-            width: 100%;
-            max-width: 300px;
+            color: var(--gray-600);
             transition: all 0.2s;
+            border-radius: var(--radius);
         }
 
-        .checkin-btn:active {
-            transform: scale(0.98);
-            opacity: 0.9;
+        .nav-item.active {
+            color: var(--primary);
         }
 
-        .checkin-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .nav-item i {
+            font-size: 22px;
         }
 
-        /* Cards Grid (for dashboard stats) */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        @media (min-width: 480px) {
-            .cards-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .action-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 20px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .action-card:active {
-            transform: scale(0.97);
-            border-color: #3b82f6;
-        }
-
-        .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 20px;
-        }
-
-        .card-icon.green { background: #dcfce7; color: #16a34a; }
-        .card-icon.red { background: #fee2e2; color: #dc2626; }
-        .card-icon.orange { background: #ffedd5; color: #ea580c; }
-        .card-icon.blue { background: #dbeafe; color: #2563eb; }
-        .card-icon.purple { background: #f3e8ff; color: #9333ea; }
-        .card-icon.yellow { background: #fef9c3; color: #ca8a04; }
-
-        .card-label {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .card-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-
-        /* =========================================
-        5. TABS, MODALS & FORMS
-        ========================================= */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            background: var(--bg);
-            padding: 6px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .tab {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-size: 14px;
+        .nav-item span {
+            font-size: 11px;
             font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tab.active {
-            background: white;
-            color: var(--accent);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .modal-overlay {
+        /* ===== SIDE DRAWER ===== */
+        .drawer-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 3000;
-            backdrop-filter: blur(4px);
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: white;
-            border-radius: 24px 24px 0 0;
-            padding: 24px 20px calc(24px + var(--safe-bottom));
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .modal-title { font-size: 20px; font-weight: 700; }
-        .close-modal {
-            background: var(--bg);
-            border: none;
-            font-size: 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 16px; /* Prevents iOS zoom on focus */
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        .form-textarea { resize: vertical; min-height: 100px; }
-
-        .submit-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            width: 100%;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .submit-btn:active { transform: scale(0.98); }
-
-        /* =========================================
-        6. DRAWER, STATUS & UTILITIES
-        ========================================= */
-        #sideDrawer {
-            position: fixed;
-            top: 0; left: 0;
-            width: 85vw;
-            max-width: 320px;
-            height: 100%;
-            background: white;
-            z-index: 2000;
-            transform: translateX(-100%);
-            transition: transform 0.3s;
-            box-shadow: var(--shadow-lg);
-            padding: calc(20px + var(--safe-top)) 20px 20px;
-            overflow-y: auto;
-        }
-        #sideDrawer.open { transform: translateX(0); }
-        #drawerOverlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1999;
             display: none;
             backdrop-filter: blur(4px);
         }
-        #drawerOverlay.open { display: block; }
 
-        .status {
+        .drawer-overlay.open {
+            display: block;
+        }
+
+        .side-drawer {
             position: fixed;
-            top: calc(80px + var(--safe-top));
+            top: 0;
+            left: 0;
+            width: 85vw;
+            max-width: 320px;
+            height: 100%;
+            background: var(--white);
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            box-shadow: var(--shadow-xl);
+            padding: calc(20px + env(safe-area-inset-top)) 20px 20px;
+            overflow-y: auto;
+        }
+
+        .side-drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 20px;
+        }
+
+        .drawer-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .drawer-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+
+        .drawer-dept {
+            color: var(--gray-600);
+            font-size: 13px;
+        }
+
+        .drawer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .drawer-item {
+            padding: 14px 16px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            text-align: left;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+
+        .drawer-item:hover {
+            background: var(--gray-200);
+        }
+
+        .drawer-item i {
+            width: 24px;
+            color: var(--primary);
+        }
+
+        .drawer-item.danger {
+            background: #fee2e2;
+            color: var(--danger);
+            margin-top: 20px;
+        }
+
+        .drawer-item.danger i {
+            color: var(--danger);
+        }
+
+        /* ===== SCREENS ===== */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== STATUS TOAST ===== */
+        .status-toast {
+            position: fixed;
+            top: 80px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 12px;
+            padding: 14px 28px;
+            border-radius: var(--radius);
             font-size: 14px;
             font-weight: 600;
             z-index: 4000;
@@ -466,271 +591,487 @@
             max-width: 90vw;
             text-align: center;
         }
+
         @keyframes slideDown {
             from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
             to { transform: translateX(-50%) translateY(0); opacity: 1; }
         }
-        .status.success { background: var(--success); color: white; }
-        .status.error { background: var(--danger); color: white; }
-        .status.info { background: var(--accent); color: white; }
 
-        .screen { display: none; }
-        .screen.active { display: block; }
-        .hidden { display: none !important; }
+        .status-toast.success { background: var(--success); color: white; }
+        .status-toast.error { background: var(--danger); color: white; }
+        .status-toast.info { background: var(--primary); color: white; }
 
-        /* =========================================
-        7. MOBILE & VIEWPORT FIXES
-        ========================================= */
-        /* Prevent horizontal scroll */
-        body, .main-content { max-width: 100vw; overflow-x: hidden; }
-
-        /* Touch targets >= 44px (Apple HIG) */
-        button, .action-card, .tab, .fab, .checkin-btn, .submit-btn, .menu-btn, .close-modal {
-            min-height: 44px;
-            min-width: 44px;
+        .hidden {
+            display: none !important;
         }
 
-        /* iOS Input Zoom Prevention */
-        input, select, textarea { font-size: 16px !important; }
-
-        /* Small Screens */
-        @media (max-width: 380px) {
-            .header-greeting { font-size: 14px; }
-            .header-subtitle { font-size: 12px; }
-            .header-date { font-size: 11px; padding: 6px 10px; }
-            .card-label { font-size: 11px; }
-            .card-value { font-size: 18px; }
-            .stat-value { font-size: 20px; }
+        /* ===== LEAVE & OTHER SCREENS ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
         }
 
-        /* Tablets & Desktop */
-        @media (min-width: 480px) {
-            .cards-grid { grid-template-columns: repeat(3, 1fr); }
-            .header-greeting { font-size: 18px; }
-            .header-subtitle { font-size: 14px; }
-            .header-date { font-size: 13px; padding: 10px 14px; }
-            .main-content { max-width: 600px; margin: 0 auto; }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--gray-100);
+            padding: 6px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
         }
 
-        /* Landscape Mode */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .modal-content { max-height: 90vh; }
-            .app-header { padding: 8px 16px; }
-            .header-center { display: none; }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Calendar Mobile Fix */
-        #calendarGrid {
+        .tab.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .fab {
+            position: fixed;
+            bottom: calc(90px + env(safe-area-inset-bottom));
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            transition: all 0.2s;
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: var(--gray-100);
+            border: none;
+            font-size: 20px;
+            color: var(--gray-600);
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 16px;
+            background: var(--white);
+        }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .calendar-nav-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--gray-700);
+        }
+
+        .calendar-month {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
         }
-        #calendarGrid > div {
-            padding: 6px 2px;
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
             font-size: 12px;
-            border-radius: 8px;
-            text-align: center;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: all 0.2s;
         }
-        #calendarGrid > div:active { transform: scale(0.95); }
+
+        .calendar-day:active {
+            transform: scale(0.95);
+        }
+
+        .calendar-day.work { background: #d1fae5; color: #065f46; }
+        .calendar-day.leave { background: #fef3c7; color: #92400e; }
+        .calendar-day.holiday { background: #fee2e2; color: #991b1b; }
+        .calendar-day.off { background: var(--gray-100); color: var(--gray-600); }
+        .calendar-day.today { border: 2px solid var(--primary); }
+
+        .calendar-legend {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.work { background: var(--success); }
+        .legend-dot.leave { background: var(--warning); }
+        .legend-dot.holiday { background: var(--danger); }
+        .legend-dot.off { background: var(--gray-300); }
     </style>
 </head>
 <body>
-    <!-- Status Messages -->
+    <!-- Status Toast -->
     <div id="statusMessage"></div>
-    <div id="leaveStatusMessage"></div>
-    <div id="approvalStatusMessage"></div>
-    <div id="payslipStatusMessage"></div>
-    <div id="onboardingStatusMessage"></div>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="screen active">
         <div class="login-container">
             <div class="login-card">
-                <h1 class="login-title">Octagon ESS</h1>
-                <p class="login-subtitle">Employee Self Service Portal</p>
+                <div class="login-header">
+                    <div class="login-logo">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h1 class="login-title">Octagon ESS</h1>
+                    <p class="login-subtitle">Employee Self Service Portal</p>
+                </div>
+                
                 <div class="form-group">
-                    <label class="form-label">Email</label>
+                    <label class="form-label">Email Address</label>
                     <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email">
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <input type="password" id="loginPassword" class="form-input" placeholder="Enter password">
                 </div>
-                <button onclick="handleLogin()" class="submit-btn">Sign In</button>
-                <div id="worksiteDisplay" style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 13px;"></div>
-                <div id="locationDisplay" style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);"></div>
+                
+                <button onclick="handleLogin()" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+                
+                <div id="worksiteDisplay" style="margin-top: 20px; padding: 16px; background: var(--gray-100); border-radius: var(--radius); font-size: 13px;"></div>
+                <div id="locationDisplay" style="margin-top: 12px; font-size: 13px; color: var(--gray-600); text-align: center;"></div>
             </div>
         </div>
     </div>
 
     <!-- Dashboard Screen -->
     <div id="dashboardScreen" class="screen">
-        <header class="app-header" id="appHeader">
-            <div class="header-main">
-                <button class="menu-btn" onclick="openDrawer()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <div class="header-left">
-                    <div class="header-greeting">
-                        <h1 class="name" id="greetingText">Hi, Employee</h1>
-                        <p class="time" id="greetingSub">Good Morning</p>
+        <div class="app-container">
+            <header class="app-header" id="appHeader">
+                <div class="header-top">
+                    <button class="menu-btn" onclick="openDrawer()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="header-actions">
+                        <button class="icon-btn">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge">3</span>
+                        </button>
                     </div>
-                    <div class="header-date" id="currentDate">Mon, May 4, 2026</div>
                 </div>
                 
-                <h2 class="header-title" id="screenTitle">Dashboard</h2>
-            </div>
-        </header>
-        <main class="main-content">
-            <!-- ERPNext-Style Menu Grid -->
-            <div class="erp-menu-grid">
-                <div class="erp-menu-card" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-chart-bar"></i>
-                    <span class="label">Dashboard</span>
+                <div class="greeting-section">
+                    <h1 class="greeting-text" id="greetingText">Hi, Employee</h1>
+                    <p class="greeting-sub" id="greetingSub">Good Morning</p>
                 </div>
-                <div class="erp-menu-card" onclick="navigateTo('leave')">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span class="label">Leave</span>
-                </div>
-                <div class="erp-menu-card" onclick="navigateTo('schedule')">
+                
+                <div class="date-pill">
                     <i class="fas fa-calendar"></i>
-                    <span class="label">Schedule</span>
+                    <span id="currentDate">Loading...</span>
                 </div>
-                <div class="erp-menu-card" onclick="navigateTo('approvals')">
-                    <i class="fas fa-check-circle"></i>
-                    <span class="label">Approvals</span>
-                </div>
-                <div class="erp-menu-card" onclick="navigateTo('onboarding')">
-                    <i class="fas fa-rocket"></i>
-                    <span class="label">Onboarding</span>
-                </div>
-                <div class="erp-menu-card" onclick="navigateTo('profile')">
-                    <i class="fas fa-user"></i>
-                    <span class="label">Profile</span>
-                </div>
-                <div class="erp-menu-card signout" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="label">Sign Out</span>
-                </div>
-            </div>
+            </header>
 
-            <!-- Dashboard Stats (shown when on dashboard) -->
-            <div id="dashboardContent">
-                <div class="cards-grid">
-                    <div class="action-card" onclick="navigateTo('leave')">
-                        <div class="card-icon green"><i class="fas fa-envelope"></i></div>
-                        <div class="card-label">Request</div>
-                        <div class="card-value" id="requestCount">0</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('leave')">
-                        <div class="card-icon red"><i class="fas fa-calendar-times"></i></div>
-                        <div class="card-label">Leave</div>
-                        <div class="card-value" id="leaveCount">0</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('schedule')">
-                        <div class="card-icon orange"><i class="fas fa-clipboard-check"></i></div>
-                        <div class="card-label">Attendance</div>
-                        <div class="card-value" id="attendanceCount">0</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('schedule')">
-                        <div class="card-icon blue"><i class="fas fa-file-invoice-dollar"></i></div>
-                        <div class="card-label">Pay Slip</div>
-                        <div class="card-value" id="payslipCount">1</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('approvals')">
-                        <div class="card-icon purple"><i class="fas fa-tasks"></i></div>
-                        <div class="card-label">Tasks</div>
-                        <div class="card-value" id="taskCount">0</div>
-                    </div>
-                    <div class="action-card" onclick="navigateTo('profile')">
-                        <div class="card-icon yellow"><i class="fas fa-users"></i></div>
-                        <div class="card-label">Team</div>
-                        <div class="card-value" id="teamCount">0</div>
-                    </div>
-                </div>
-
-                <div class="checkin-container" id="checkinContainer">
-                    <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()" disabled>CHECK IN</button>
-                    <div style="margin-top: 12px; font-size: 13px; color: #64748b;">
-                        <i class="fas fa-circle-notch fa-spin"></i> Getting location...
-                    </div>
-                </div>
-
-                <h2 class="section-title">Today's Attendance</h2>
+            <main class="main-content">
+                <!-- Stats Grid -->
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-value" style="color: #16a34a;" id="presentCount">100</div><div class="stat-label">Present</div></div>
-                    <div class="stat-card"><div class="stat-value" style="color: #ca8a04;" id="lateCount">20</div><div class="stat-label">Late</div></div>
-                    <div class="stat-card"><div class="stat-value" style="color: #dc2626;" id="absentCount">10</div><div class="stat-label">Absent</div></div>
+                    <div class="stat-card" onclick="navigateTo('leave')">
+                        <div class="stat-icon green">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-label">Requests</div>
+                        <div class="stat-value" id="requestCount">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('leave')">
+                        <div class="stat-icon red">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <div class="stat-label">Leave</div>
+                        <div class="stat-value" id="leaveCount">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('schedule')">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="stat-label">Attendance</div>
+                        <div class="stat-value" id="attendanceCount">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('schedule')">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="stat-label">Pay Slip</div>
+                        <div class="stat-value" id="payslipCount">1</div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('approvals')">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stat-label">Tasks</div>
+                        <div class="stat-value" id="taskCount">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('profile')">
+                        <div class="stat-icon yellow">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-label">Team</div>
+                        <div class="stat-value" id="teamCount">0</div>
+                    </div>
                 </div>
-            </div>
-        </main>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions" id="checkinContainer">
+                    <button class="checkin-btn" id="checkBtn" onclick="handleCheckIn()" disabled>
+                        <i class="fas fa-clock"></i> CHECK IN
+                    </button>
+                    <div class="location-status">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <span>Getting location...</span>
+                    </div>
+                </div>
+
+                <!-- Attendance Summary -->
+                <h2 class="section-title">Today's Attendance</h2>
+                <div class="attendance-cards">
+                    <div class="attendance-card">
+                        <div class="attendance-value present" id="presentCount">100</div>
+                        <div class="attendance-label">Present</div>
+                    </div>
+                    <div class="attendance-card">
+                        <div class="attendance-value late" id="lateCount">20</div>
+                        <div class="attendance-label">Late</div>
+                    </div>
+                    <div class="attendance-card">
+                        <div class="attendance-value absent" id="absentCount">10</div>
+                        <div class="attendance-label">Absent</div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('leave')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Leave</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('schedule')">
+                    <i class="fas fa-calendar"></i>
+                    <span>Schedule</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('profile')">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+        </div>
     </div>
 
     <!-- Leave Screen -->
     <div id="leaveScreen" class="screen">
-        <header class="app-header">
-            <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Leave</h1>
-                <div style="width: 40px;"></div>
-            </div>
-        </header>
-        <main class="main-content">
-            <div class="tabs">
-                <button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">💰 Balance</button>
-                <button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">📋 Requests</button>
-            </div>
-            <div id="leaveBalanceTab">
-                <h2 class="section-title">Leave Balance</h2>
-                <div id="leaveBalanceSummary" class="leave-balance-grid">
-                    <p style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading...</p>
+        <div class="app-container">
+            <header class="app-header">
+                <div class="header-top">
+                    <button class="menu-btn" onclick="navigateTo('dashboard')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1 style="font-size: 20px; font-weight: 700;">Leave</h1>
+                    <div style="width: 44px;"></div>
                 </div>
-                <h2 class="section-title">Upcoming Leave</h2>
-                <div id="upcomingLeaveList">
-                    <div class="leave-request-item"><p style="color: var(--text-secondary); text-align: center;">Loading...</p></div>
+            </header>
+
+            <main class="main-content">
+                <div class="card">
+                    <div class="tabs">
+                        <button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">💰 Balance</button>
+                        <button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">📋 Requests</button>
+                    </div>
+
+                    <div id="leaveBalanceTab">
+                        <h2 class="section-title">Leave Balance</h2>
+                        <div id="leaveBalanceSummary" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;">
+                            <p style="text-align: center; padding: 40px; color: var(--gray-600);">Loading...</p>
+                        </div>
+
+                        <h2 class="section-title">Upcoming Leave</h2>
+                        <div id="upcomingLeaveList">
+                            <div style="padding: 20px; text-align: center; color: var(--gray-600);">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div id="leaveRequestsTab" style="display: none;">
+                        <h2 class="section-title">Recent Requests</h2>
+                        <div id="leaveRequestsList">
+                            <div style="padding: 20px; text-align: center; color: var(--gray-600);">Loading...</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div id="leaveRequestsTab" style="display: none;">
-                <h2 class="section-title">Recent Requests</h2>
-                <div id="leaveRequestsList">
-                    <div class="leave-request-item"><p style="color: var(--text-secondary); text-align: center;">Loading...</p></div>
-                </div>
-            </div>
-            <!-- Leave Detail View -->
-            <div id="leaveDetailView" class="hidden detail-view">
-                <div class="detail-header">
-                    <h3 id="leaveDetailTitle" style="font-size: 18px; font-weight: 700;">Leave Details</h3>
-                    <button class="detail-close-btn" onclick="closeLeaveDetail()">✕</button>
-                </div>
-                <div id="leaveDetailContent"></div>
-            </div>
-        </main>
-        <button class="fab" onclick="openLeaveApplyModal()"><i class="fas fa-plus"></i></button>
+            </main>
+
+            <button class="fab" onclick="openLeaveApplyModal()">
+                <i class="fas fa-plus"></i>
+            </button>
+
+            <nav class="bottom-nav">
+                <button class="nav-item" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item active" onclick="navigateTo('leave')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Leave</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('schedule')">
+                    <i class="fas fa-calendar"></i>
+                    <span>Schedule</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('profile')">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+        </div>
     </div>
 
-    <!-- Leave Apply Modal -->
-    <div class="modal-overlay" id="leaveModalOverlay">
-        <div class="modal-content" id="leaveApplyModal">
+    <!-- Leave Modal -->
+    <div class="modal-overlay" id="leaveModalOverlay" onclick="if(event.target === this) closeLeaveApplyModal()">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">📝 Apply for Leave</h2>
-                <button class="close-modal" onclick="closeLeaveApplyModal()"><i class="fas fa-times"></i></button>
+                <button class="close-modal" onclick="closeLeaveApplyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div id="leaveModalError" style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none;"></div>
+            
+            <div id="leaveModalError" style="background: #fee2e2; color: var(--danger); padding: 12px; border-radius: var(--radius); margin-bottom: 16px; display: none;"></div>
+            
             <div class="form-group">
                 <label class="form-label">Leave Type</label>
-                <select id="leaveType" class="form-select"><option value="">Select Leave Type</option></select>
+                <select id="leaveType" class="form-select">
+                    <option value="">Select Leave Type</option>
+                </select>
             </div>
+            
             <div class="form-group">
                 <label class="form-label">From Date</label>
                 <input type="date" id="leaveFromDate" class="form-input">
             </div>
+            
             <div class="form-group">
                 <label class="form-label">To Date</label>
                 <input type="date" id="leaveToDate" class="form-input">
             </div>
+            
             <div class="form-group">
                 <label class="form-label">Half Day?</label>
                 <select id="leaveHalfDay" class="form-select">
@@ -739,171 +1080,201 @@
                     <option value="2">Second Half</option>
                 </select>
             </div>
+            
             <div class="form-group">
                 <label class="form-label">Reason</label>
                 <textarea id="leaveReason" class="form-textarea" placeholder="Enter reason for leave..."></textarea>
             </div>
-            <button onclick="submitLeaveApplication()" class="submit-btn">Submit Leave Request</button>
+            
+            <button onclick="submitLeaveApplication()" class="btn btn-primary">
+                Submit Leave Request
+            </button>
+        </div>
+    </div>
+
+    <!-- Schedule Screen -->
+    <div id="scheduleScreen" class="screen">
+        <div class="app-container">
+            <header class="app-header">
+                <div class="header-top">
+                    <button class="menu-btn" onclick="navigateTo('dashboard')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1 style="font-size: 20px; font-weight: 700;">Schedule</h1>
+                    <div style="width: 44px;"></div>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <div class="card">
+                    <div class="calendar-header">
+                        <button class="calendar-nav-btn" onclick="changeMonth(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2 class="calendar-month" id="calendarMonth">Loading...</h2>
+                        <button class="calendar-nav-btn" onclick="changeMonth(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="calendarGrid" class="calendar-grid"></div>
+                    
+                    <div class="calendar-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot work"></div>
+                            <span>Work</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot leave"></div>
+                            <span>Leave</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot holiday"></div>
+                            <span>Holiday</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot off"></div>
+                            <span>Off</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">📋 Upcoming Shifts</h2>
+                <div id="scheduleList">
+                    <div style="padding: 40px; text-align: center; color: var(--gray-600);">Loading schedule...</div>
+                </div>
+            </main>
+
+            <nav class="bottom-nav">
+                <button class="nav-item" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('leave')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Leave</span>
+                </button>
+                <button class="nav-item active" onclick="navigateTo('schedule')">
+                    <i class="fas fa-calendar"></i>
+                    <span>Schedule</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('profile')">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
         </div>
     </div>
 
     <!-- Profile Screen -->
     <div id="profileScreen" class="screen">
-        <header class="app-header">
-            <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Profile</h1>
-                <div style="width: 40px;"></div>
-            </div>
-        </header>
-        <main class="main-content">
-            <div class="profile-card" id="profileInfo">
-                <div class="profile-header">
-                    <div class="profile-avatar">👤</div>
-                    <div class="profile-name" id="profileName">Loading...</div>
-                    <div class="profile-designation" id="profileDesignation">Loading...</div>
+        <div class="app-container">
+            <header class="app-header">
+                <div class="header-top">
+                    <button class="menu-btn" onclick="navigateTo('dashboard')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1 style="font-size: 20px; font-weight: 700;">Profile</h1>
+                    <div style="width: 44px;"></div>
                 </div>
-                <div style="border-top: 1px solid var(--border); padding-top: 16px;">
-                    <div class="profile-info-row"><span class="profile-info-label">Employee ID</span><span class="profile-info-value" id="profileEmployeeId">-</span></div>
-                    <div class="profile-info-row"><span class="profile-info-label">Department</span><span class="profile-info-value" id="profileDepartment">-</span></div>
-                    <div class="profile-info-row"><span class="profile-info-label">Employment Type</span><span class="profile-info-value" id="profileEmploymentType">-</span></div>
-                    <div class="profile-info-row"><span class="profile-info-label">Email</span><span class="profile-info-value" id="profileEmail">-</span></div>
-                </div>
-            </div>
-            <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
-        </main>
-    </div>
+            </header>
 
-    <!-- Schedule Screen -->
-    <div id="scheduleScreen" class="screen">
-        <header class="app-header">
-            <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Schedule</h1>
-                <div style="width: 40px;"></div>
-            </div>
-        </header>
-        <main class="main-content">
-            <!-- Calendar Card -->
-            <div class="calendar-card">
-                <div class="calendar-header">
-                    <button class="calendar-nav-btn" onclick="changeMonth(-1)">◀</button>
-                    <h2 id="calendarMonth" style="font-size: 18px; font-weight: 700;">Loading...</h2>
-                    <button class="calendar-nav-btn" onclick="changeMonth(1)">▶</button>
-                </div>
-                <div id="calendarGrid"></div>
-                <div class="calendar-legend">
-                    <div class="legend-item"><div class="legend-dot work"></div><span>Work</span></div>
-                    <div class="legend-item"><div class="legend-dot leave"></div><span>Leave</span></div>
-                    <div class="legend-item"><div class="legend-dot holiday"></div><span>Holiday</span></div>
-                    <div class="legend-item"><div class="legend-dot off"></div><span>Off</span></div>
-                </div>
-            </div>
-            <!-- Day Detail View -->
-            <div id="dayDetail" class="hidden detail-view">
-                <div class="detail-header">
-                    <h3 id="dayDetailTitle" style="font-size: 18px; font-weight: 700;">Day Detail</h3>
-                    <button class="detail-close-btn" onclick="hideDayDetail()">✕</button>
-                </div>
-                <div id="dayDetailContent"></div>
-            </div>
-            <!-- Upcoming Shifts -->
-            <h2 class="section-title">📋 Upcoming Shifts</h2>
-            <div id="scheduleList">
-                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading schedule...</p>
-            </div>
-        </main>
-    </div>
-
-    <!-- Approvals Screen -->
-    <div id="approvalsScreen" class="screen">
-        <header class="app-header">
-            <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Approvals</h1>
-                <div style="width: 40px;"></div>
-            </div>
-        </header>
-        <main class="main-content">
-            <div id="approvalsList">
-                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading approvals...</p>
-            </div>
-            <!-- Approval Detail View -->
-            <div id="approvalDetail" class="hidden detail-view">
-                <div class="detail-header">
-                    <h3 id="approvalDetailTitle" style="font-size: 18px; font-weight: 700;">Approval Details</h3>
-                    <button class="detail-close-btn" onclick="showApprovalsList()">✕</button>
-                </div>
-                <div id="approvalPrintView"></div>
-                <textarea id="approvalRemark" class="form-textarea" placeholder="Add remark (optional)" style="margin-top: 16px;"></textarea>
-                <div style="display: flex; gap: 12px; margin-top: 16px;">
-                    <button id="approveBtn" class="submit-btn" style="background: var(--success); flex: 1;">✅ Approve</button>
-                    <button id="rejectBtn" class="submit-btn" style="background: var(--danger); flex: 1;">❌ Reject</button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Onboarding Screen -->
-    <div id="onboardingScreen" class="screen">
-        <header class="app-header">
-            <div class="header-top">
-                <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                <h1 id="screenTitle" style="font-size: 20px; font-weight: 700; flex: 1; text-align: center;">Onboarding</h1>
-                <div style="width: 40px;"></div>
-            </div>
-        </header>
-        <main class="main-content">
-            <div class="card" style="background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px;">
-                <h2 id="onboardingWelcome" style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Welcome!</h2>
-                <p id="onboardingSubtitle" style="color: var(--text-secondary); margin-bottom: 24px;">Let's get you set up</p>
-                <div style="margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-weight: 600;">Onboarding Progress</span>
-                        <span id="onboardingProgress" style="font-weight: 700; color: var(--accent);">0%</span>
+            <main class="main-content">
+                <div class="card" id="profileInfo">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
+                            👤
+                        </div>
+                        <h2 id="profileName" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">Loading...</h2>
+                        <p id="profileDesignation" style="color: var(--gray-600);">Loading...</p>
                     </div>
-                    <div class="progress-bar"><div id="onboardingProgressBar" class="progress-fill"></div></div>
-                    <p id="onboardingFraction" style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">0 of 0 activities complete</p>
+                    
+                    <div style="border-top: 1px solid var(--gray-200); padding-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-100);">
+                            <span style="font-weight: 600; color: var(--gray-600);">Employee ID</span>
+                            <span id="profileEmployeeId" style="font-weight: 500;">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-100);">
+                            <span style="font-weight: 600; color: var(--gray-600);">Department</span>
+                            <span id="profileDepartment" style="font-weight: 500;">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-100);">
+                            <span style="font-weight: 600; color: var(--gray-600);">Employment Type</span>
+                            <span id="profileEmploymentType" style="font-weight: 500;">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                            <span style="font-weight: 600; color: var(--gray-600);">Email</span>
+                            <span id="profileEmail" style="font-weight: 500;">-</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <h2 class="section-title">📋 Activities</h2>
-            <div id="onboardingActivities">
-                <p style="text-align: center; color: var(--text-secondary); padding: 40px;">Loading activities...</p>
-            </div>
-            <!-- Onboarding Detail View -->
-            <div id="onboardingDetail" class="hidden detail-view">
-                <div class="detail-header">
-                    <h3 id="onboardingDetailTitle" style="font-size: 18px; font-weight: 700;">Activity Details</h3>
-                    <button class="detail-close-btn" onclick="hideOnboardingDetail()">✕</button>
-                </div>
-                <div id="onboardingDetailContent"></div>
-                <button id="onboardingCompleteBtn" onclick="" style="margin-top: 16px; padding: 14px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; width: 100%; cursor: pointer;">✅ Mark as Complete</button>
-            </div>
-        </main>
+
+                <button onclick="logout()" class="btn" style="background: #fee2e2; color: var(--danger); margin-top: 16px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sign Out
+                </button>
+            </main>
+
+            <nav class="bottom-nav">
+                <button class="nav-item" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('leave')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Leave</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('schedule')">
+                    <i class="fas fa-calendar"></i>
+                    <span>Schedule</span>
+                </button>
+                <button class="nav-item active" onclick="navigateTo('profile')">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+        </div>
     </div>
 
     <!-- Side Drawer -->
-    <div id="drawerOverlay" onclick="closeDrawer()"></div>
-    <div id="sideDrawer">
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div class="side-drawer" id="sideDrawer">
         <div class="drawer-header">
             <div class="drawer-avatar">👤</div>
-            <div id="drawerEmployeeName" style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Employee Name</div>
-            <div id="drawerEmployeeDept" style="color: var(--text-secondary); font-size: 13px;">Department</div>
+            <div class="drawer-name" id="drawerEmployeeName">Employee Name</div>
+            <div class="drawer-dept" id="drawerEmployeeDept">Department</div>
         </div>
+        
         <nav class="drawer-nav">
-            <button onclick="navigateTo('dashboard')"><i class="fas fa-chart-bar"></i> Dashboard</button>
-            <button onclick="navigateTo('leave')"><i class="fas fa-calendar-alt"></i> Leave</button>
-            <button onclick="navigateTo('schedule')"><i class="fas fa-calendar"></i> Schedule</button>
-            <button onclick="navigateTo('approvals')"><i class="fas fa-check-circle"></i> Approvals</button>
-            <button onclick="navigateTo('onboarding')"><i class="fas fa-rocket"></i> Onboarding</button>
-            <button onclick="navigateTo('profile')"><i class="fas fa-user"></i> Profile</button>
-            <button onclick="logout()" style="background: #fee2e2; color: var(--danger); margin-top: 20px;">
-                <i class="fas fa-sign-out-alt"></i> Sign Out
+            <button class="drawer-item" onclick="navigateTo('dashboard'); closeDrawer();">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </button>
+            <button class="drawer-item" onclick="navigateTo('leave'); closeDrawer();">
+                <i class="fas fa-calendar-alt"></i>
+                Leave
+            </button>
+            <button class="drawer-item" onclick="navigateTo('schedule'); closeDrawer();">
+                <i class="fas fa-calendar"></i>
+                Schedule
+            </button>
+            <button class="drawer-item" onclick="navigateTo('approvals'); closeDrawer();">
+                <i class="fas fa-check-circle"></i>
+                Approvals
+            </button>
+            <button class="drawer-item" onclick="navigateTo('profile'); closeDrawer();">
+                <i class="fas fa-user"></i>
+                Profile
+            </button>
+            <button class="drawer-item danger" onclick="logout(); closeDrawer();">
+                <i class="fas fa-sign-out-alt"></i>
+                Sign Out
             </button>
         </nav>
     </div>
 
     <script src="ess.js"></script>
+    
     <script>
         // Initialize greeting
         function updateGreeting() {
@@ -915,6 +1286,7 @@
                 else greetingSub.textContent = 'Good Evening';
             }
         }
+
         function updateDate() {
             const dateEl = document.getElementById('currentDate');
             if (dateEl) {
@@ -922,6 +1294,7 @@
                 dateEl.textContent = new Date().toLocaleDateString('en-US', options);
             }
         }
+
         updateGreeting();
         updateDate();
         setInterval(updateDate, 60000);
