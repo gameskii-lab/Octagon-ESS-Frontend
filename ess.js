@@ -283,28 +283,49 @@ function closeLeaveApplyModal() { if($('leaveModalOverlay')) $('leaveModalOverla
 async function loadLeaveScreen() { if(!config.employeeId) return; switchLeaveTab('balance'); }
 async function loadLeaveBalance() {
     try {
-        const res = await fetch(`${config.middlewareUrl}/api/leave-balance/${config.employeeId}`);
-        const data = await res.json();
-        const el = $('leaveBalanceSummary'); const sel = $('leaveType');
-        if(data.success && data.balances?.length) {
+        const response = await fetch(`${config.middlewareUrl}/api/leave-balance/${config.employeeId}`);
+        const result = await response.json();
+        
+        const summaryEl = document.getElementById('leaveBalanceSummary');
+        const leaveTypeSelect = document.getElementById('leaveType');
+        if (!summaryEl) return;
+
+        if (result.success && result.balances && result.balances.length > 0) {
             let html = '';
-            data.balances.forEach(b => {
-                const rem = (b.leaves_allocated||0) - (b.leaves_taken||0);
-                html += `<div style="background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:var(--shadow);"><div style="font-size:28px;font-weight:700;color:var(--primary);">${rem}</div><div style="font-size:13px;color:var(--text-secondary);">${b.leave_type}</div></div>`;
+            result.balances.forEach(b => {
+                const allocated = b.leaves_allocated || 0;
+                const taken = b.leaves_taken || 0;
+                const available = allocated - taken;
+                html += `
+                    <div class="leave-type">
+                        <div class="count">${available}</div>
+                        <div class="label">${b.leave_type} (Available)</div>
+                    </div>
+                `;
             });
-            if(el) el.innerHTML = html;
-            if(sel) {
-                sel.innerHTML = '<option value="">Select</option>';
-                data.balances.forEach(b => {
-                    const rem = (b.leaves_allocated||0) - (b.leaves_taken||0);
-                    if(rem>0) sel.add(new Option(`${b.leave_type} (${rem})`, b.leave_type));
+            summaryEl.innerHTML = html;
+
+            if (leaveTypeSelect) {
+                leaveTypeSelect.innerHTML = '<option value="">Select Leave Type</option>';
+                result.balances.forEach(b => {
+                    const allocated = b.leaves_allocated || 0;
+                    const taken = b.leaves_taken || 0;
+                    const available = allocated - taken;
+                    if (available > 0) {
+                        leaveTypeSelect.innerHTML += `<option value="${b.leave_type}">${b.leave_type} (${available} days)</option>`;
+                    }
                 });
             }
+            loadUpcomingLeave();
         } else {
-            if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No allocations found</p>';
-            if(sel) sel.innerHTML = '<option value="">No leave available</option>';
+            summaryEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No leave allocations found</p>';
+            if (leaveTypeSelect) leaveTypeSelect.innerHTML = '<option value="">No leave available</option>';
         }
-    } catch(e) { if($('leaveBalanceSummary')) $('leaveBalanceSummary').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
+    } catch (error) {
+        console.error('Error loading leave balance:', error);
+        const summaryEl = document.getElementById('leaveBalanceSummary');
+        if (summaryEl) summaryEl.innerHTML = '<p style="text-align:center;padding:20px;">Error loading balance</p>';
+    }
 }
 async function loadLeaveRequests() {
     try {
