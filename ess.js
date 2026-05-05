@@ -327,6 +327,37 @@ async function loadLeaveBalance() {
         if (summaryEl) summaryEl.innerHTML = '<p style="text-align:center;padding:20px;">Error loading balance</p>';
     }
 }
+
+async function loadUpcomingLeave() {
+    try {
+        const response = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
+        const result = await response.json();
+        const upcomingList = document.getElementById('upcomingLeaveList');
+        if (!upcomingList) return;
+        
+        if (result.success && result.requests && result.requests.length > 0) {
+            const approved = result.requests.filter(r => r.status === 'Approved');
+            if (approved.length > 0) {
+                upcomingList.innerHTML = '';
+                approved.slice(0, 3).forEach(req => {
+                    const div = document.createElement('div');
+                    div.className = 'leave-request-item';
+                    div.innerHTML = `<div style="display:flex;justify-content:space-between;"><strong>${req.leave_type}</strong><span>${req.from_date} → ${req.to_date}</span></div>`;
+                    upcomingList.appendChild(div);
+                });
+            } else {
+                upcomingList.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">No upcoming leave</p>';
+            }
+        } else {
+            upcomingList.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">No upcoming leave</p>';
+        }
+    } catch (error) {
+        console.error('Error loading upcoming leave:', error);
+        const upcomingList = document.getElementById('upcomingLeaveList');
+        if (upcomingList) upcomingList.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Error loading</p>';
+    }
+}
+
 async function loadLeaveRequests() {
     try {
         const res = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
