@@ -241,18 +241,37 @@ function closeDrawer() {
 
 function navigateTo(screen) {
     closeDrawer();
-    ['loginScreen','dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen'].forEach(id => {
+    
+    // 1. Hide all screens (Added approvalsScreen & onboardingScreen)
+    ['loginScreen','dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen','approvalsScreen','onboardingScreen'].forEach(id => {
         if($(id)) { $(id).classList.remove('active'); $(id).style.display = 'none'; }
     });
+
+    // 2. Show target screen
     const target = $(screen + 'Screen');
     if(target) { target.classList.add('active'); target.style.display = 'block'; }
-    const titles = {dashboard:'Dashboard',leave:'Leave',payslips:'Payslips',schedule:'Schedule',profile:'Profile'};
+
+    // 3. Update Header Title (Added approvals & onboarding)
+    const titles = {
+        dashboard:'Dashboard',
+        leave:'Leave',
+        payslips:'Payslips',
+        schedule:'Schedule',
+        profile:'Profile',
+        approvals:'Approvals',
+        onboarding:'Onboarding'
+    };
     if($('screenTitle')) $('screenTitle').textContent = titles[screen] || 'Octagon ESS';
-    
+
+    // 4. Load Data for specific screens (Added approvals & onboarding)
     if(screen==='leave' && typeof loadLeaveScreen==='function') loadLeaveScreen();
     if(screen==='schedule' && typeof loadScheduleScreen==='function') loadScheduleScreen();
     if(screen==='payslips' && typeof loadPayslipsScreen==='function') loadPayslipsScreen();
     if(screen==='profile' && typeof loadProfileScreen==='function') loadProfileScreen();
+    
+    // 🔥 ADDED: Approvals & Onboarding loaders
+    if(screen==='approvals' && typeof loadApprovalsScreen==='function') loadApprovalsScreen();
+    if(screen==='onboarding' && typeof loadOnboardingScreen==='function') loadOnboardingScreen();
 }
 
 function updateDrawerInfo() {
@@ -616,10 +635,15 @@ async function loadApprovalsScreen() {
     const detailEl = document.getElementById('approvalDetail');
     
     // Reset view
-    if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading approvals...</p>';
+    if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Loading approvals...</p>';
     if (detailEl) { detailEl.classList.add('hidden'); detailEl.style.display = 'none'; }
 
     try {
+        if (!userEmail) {
+            console.error('User email not set');
+            return;
+        }
+        
         const response = await fetch(`${config.middlewareUrl}/api/approvals/${encodeURIComponent(userEmail)}`);
         const result = await response.json();
 
@@ -640,24 +664,22 @@ async function loadApprovalsScreen() {
             });
             if (listEl) listEl.innerHTML = html;
         } else {
-            if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No pending approvals</p>';
+            if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">No pending approvals</p>';
         }
     } catch (error) {
         console.error('Approval load error:', error);
-        if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Error loading approvals</p>';
+        if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Error loading approvals</p>';
     }
 }
 
 async function viewApproval(doctype, docname, nextAction) {
     currentApprovalDoc = { doctype, docname, nextAction };
-    
     const detailEl = document.getElementById('approvalDetail');
     const titleEl = document.getElementById('approvalDetailTitle');
     const printViewEl = document.getElementById('approvalPrintView');
     const approveBtn = document.getElementById('approveBtn');
     const rejectBtn = document.getElementById('rejectBtn');
 
-    // Show Detail View
     if (detailEl) { 
         detailEl.classList.remove('hidden'); 
         detailEl.style.display = 'block'; 
