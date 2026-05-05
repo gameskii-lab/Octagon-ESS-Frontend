@@ -606,6 +606,126 @@ async function loadPayslipsScreen() {
     } catch(e) { if($('payslipsList')) $('payslipsList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
 }
 
+// ============================================
+// APPROVAL FUNCTIONS
+// ============================================
+let currentApprovalDoc = null;
+
+async function loadApprovalsScreen() {
+    const listEl = document.getElementById('approvalsList');
+    const detailEl = document.getElementById('approvalDetail');
+    if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Loading approvals...</p>';
+    if (detailEl) detailEl.classList.add('hidden');
+
+    try {
+        const response = await fetch(`${config.middlewareUrl}/api/approvals/${encodeURIComponent(userEmail)}`);
+        const result = await response.json();
+
+        if (result.success && result.approvals && result.approvals.length > 0) {
+            let html = '';
+            result.approvals.forEach(approval => {
+                html += `
+                    <div class="leave-request-item" style="cursor:pointer;margin-bottom:10px;" onclick="viewApproval('${approval.doctype}', '${approval.docname}', '${approval.next_action || 'Approve'}')">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <strong style="font-size:15px;">${approval.title}</strong>
+                                <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${approval.doctype} • ${approval.state || 'Pending'}</div>
+                            </div>
+                            <span class="leave-status status-pending">View →</span>
+                        </div>
+                    </div>
+                `;
+            });
+            if (listEl) listEl.innerHTML = html;
+        } else {
+            if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">No pending approvals</p>';
+        }
+    } catch (error) {
+        console.error('Approval load error:', error);
+        if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Error loading approvals</p>';
+    }
+}
+
+async function viewApproval(doctype, docname, nextAction) {
+    currentApprovalDoc = { doctype, docname, nextAction };
+    const detailEl = document.getElementById('approvalDetail');
+    const titleEl = document.getElementById('approvalDetailTitle');
+    const printViewEl = document.getElementById('approvalPrintView');
+    const approveBtn = document.getElementById('approveBtn');
+    const rejectBtn = document.getElementById('rejectBtn');
+
+    if (detailEl) detailEl.classList.remove('hidden');
+    if (titleEl) titleEl.textContent = `${doctype}: ${docname}`;
+    if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading document...</p>';
+    if (approveBtn) { approveBtn.style.display = 'block'; approveBtn.textContent = `✅ ${nextAction || 'Approve'}`; }
+    if (rejectBtn) rejectBtn.style.display = 'block';
+
+    try {
+        const response = await fetch(`${config.middlewareUrl}/api/print-format/${doctype}/${docname}`);
+        const result = await response.json();
+        if (result.success && result.html) {
+            if (printViewEl) printViewEl.innerHTML = result.html;
+        } else {
+            if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Could not load document view</p>';
+        }
+    } catch (error) {
+        console.error('Print format error:', error);
+        if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Error loading document</p>';
+    }
+
+    if (approveBtn) approveBtn.onclick = () => submitWorkflowAction('Approve');
+    if (rejectBtn) rejectBtn.onclick = () => submitWorkflowAction('Reject');
+}
+
+function showApprovalsList() {
+    const detailEl = document.getElementById('approvalDetail');
+    if (detailEl) detailEl.classList.add('hidden');
+    currentApprovalDoc = null;
+}
+
+async function submitWorkflowAction(action) {
+    if (!currentApprovalDoc) return;
+    const remark = document.getElementById('approvalRemark')?.value || '';
+    const btn = action === 'Approve' ? document.getElementById('approveBtn') : document.getElementById('rejectBtn');
+
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+    }
+
+    try {
+        const response = await fetch(`${config.middlewareUrl}/api/workflow-action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                doctype: currentApprovalDoc.doctype,
+                docname: currentApprovalDoc.docname,
+                action: action,
+                remark: remark
+            })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            showStatus(`✅ ${action}d successfully!`, 'success');
+            const remarkEl = document.getElementById('approvalRemark');
+            if (remarkEl) remarkEl.value = '';
+            showApprovalsList();
+            setTimeout(() => loadApprovalsScreen(), 500);
+        } else {
+            throw new Error(result.error || 'Action failed');
+        }
+    } catch (error) {
+        console.error('Workflow action error:', error);
+        showStatus(`❌ ${error.message}`, 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = action === 'Approve' ? '✅ Approve' : '❌ Reject';
+        }
+    }
+}
+
 // PROFILE
 function loadProfileScreen() {
     if(!currentEmployee) return;
