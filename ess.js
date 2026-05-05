@@ -21,14 +21,14 @@ const $ = id => document.getElementById(id);
 document.addEventListener('DOMContentLoaded', async () => {
     // Force initial state
     if($('loginScreen')) $('loginScreen').style.display = 'block';
-    ['dashboardScreen','leaveScreen','scheduleScreen','profileScreen','approvalsScreen','onboardingScreen'].forEach(id => {
+    ['dashboardScreen','leaveScreen','scheduleScreen','payslipsScreen','profileScreen'].forEach(id => {
         if($(id)) $(id).style.display = 'none';
     });
     if($('appHeader')) $('appHeader').style.display = 'none';
 
     getLocation();
 
-    // Attach check-in listener
+    // Attach check-in listener safely
     const checkBtn = $('checkBtn');
     if (checkBtn) {
         checkBtn.addEventListener('click', async () => {
@@ -84,7 +84,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateDrawerInfo();
         showAppSection();
         await fetchTodaysShiftAssignment();
-        initializeDashboard();
     }
 });
 
@@ -92,11 +91,6 @@ function updateGreetingName() {
     const name = currentEmployee?.name || currentEmployee?.employee_name || 'Employee';
     const el = $('greetingText');
     if (el) el.textContent = `Hi, ${name}`;
-}
-
-function displayDate() {
-    const el = $('dateDisplay');
-    if (el) el.textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -123,7 +117,7 @@ async function handleLogin() {
     const email = $('loginEmail').value.trim();
     const password = $('loginPassword').value;
     if (!email || !password) return showStatus('Enter email and password', 'error');
-    const btn = $('loginScreen').querySelector('button');
+    const btn = $('loginScreen').querySelector('button.submit-btn');
     if(btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
     try {
         const loginRes = await fetch(`${config.middlewareUrl}/api/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email, password}) });
@@ -147,7 +141,6 @@ async function handleLogin() {
         updateDrawerInfo();
         showAppSection();
         await fetchTodaysShiftAssignment();
-        initializeDashboard();
         showStatus(`Welcome, ${currentEmployee.name}!`, 'success');
     } catch (err) {
         showStatus(`Login error: ${err.message}`, 'error');
@@ -194,10 +187,6 @@ function showAppSection() {
     }
 }
 
-function initializeDashboard() {
-    // Safe initialization
-}
-
 async function checkCurrentStatus() {
     try {
         const res = await fetch(`${config.middlewareUrl}/api/today-checkins/${config.employeeId}`);
@@ -224,7 +213,7 @@ function logout() {
     localStorage.removeItem('userEmail');
     currentEmployee = null; userEmail = ''; config.employeeId = '';
     if($('appHeader')) $('appHeader').style.display = 'none';
-    ['dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen','approvalsScreen','onboardingScreen'].forEach(id => {
+    ['dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen'].forEach(id => {
         if($(id)) { $(id).classList.remove('active'); $(id).style.display = 'none'; }
     });
     if($('loginScreen')) { $('loginScreen').classList.add('active'); $('loginScreen').style.display = 'block'; }
@@ -252,20 +241,18 @@ function closeDrawer() {
 
 function navigateTo(screen) {
     closeDrawer();
-    ['loginScreen','dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen','approvalsScreen','onboardingScreen'].forEach(id => {
+    ['loginScreen','dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen'].forEach(id => {
         if($(id)) { $(id).classList.remove('active'); $(id).style.display = 'none'; }
     });
     const target = $(screen + 'Screen');
     if(target) { target.classList.add('active'); target.style.display = 'block'; }
-    const titles = {dashboard:'Dashboard',leave:'Leave',payslips:'Payslips',schedule:'Schedule',profile:'Profile',approvals:'Approvals',onboarding:'Onboarding'};
+    const titles = {dashboard:'Dashboard',leave:'Leave',payslips:'Payslips',schedule:'Schedule',profile:'Profile'};
     if($('screenTitle')) $('screenTitle').textContent = titles[screen] || 'Octagon ESS';
     
     if(screen==='leave' && typeof loadLeaveScreen==='function') loadLeaveScreen();
     if(screen==='schedule' && typeof loadScheduleScreen==='function') loadScheduleScreen();
-    if(screen==='profile' && typeof loadProfileScreen==='function') loadProfileScreen();
-    if(screen==='approvals' && typeof loadApprovalsScreen==='function') loadApprovalsScreen();
-    if(screen==='onboarding' && typeof loadOnboardingScreen==='function') loadOnboardingScreen();
     if(screen==='payslips' && typeof loadPayslipsScreen==='function') loadPayslipsScreen();
+    if(screen==='profile' && typeof loadProfileScreen==='function') loadProfileScreen();
 }
 
 function updateDrawerInfo() {
@@ -281,11 +268,11 @@ function switchLeaveTab(tab) {
     currentLeaveTab = tab;
     const tb = $('tabBalance'), tr = $('tabRequests'), bb = $('leaveBalanceTab'), rb = $('leaveRequestsTab');
     if(tab==='balance') {
-        if(tb) { tb.classList.add('active'); } if(tr) tr.classList.remove('active');
+        if(tb) tb.classList.add('active'); if(tr) tr.classList.remove('active');
         if(bb) bb.style.display='block'; if(rb) rb.style.display='none';
         loadLeaveBalance();
     } else {
-        if(tr) { tr.classList.add('active'); } if(tb) tb.classList.remove('active');
+        if(tr) tr.classList.add('active'); if(tb) tb.classList.remove('active');
         if(rb) rb.style.display='block'; if(bb) bb.style.display='none';
         loadLeaveRequests();
     }
@@ -303,7 +290,7 @@ async function loadLeaveBalance() {
             let html = '';
             data.balances.forEach(b => {
                 const rem = (b.leaves_allocated||0) - (b.leaves_taken||0);
-                html += `<div class="leave-type"><div class="count">${rem}</div><div class="label">${b.leave_type}</div></div>`;
+                html += `<div style="background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:var(--shadow);"><div style="font-size:28px;font-weight:700;color:var(--primary);">${rem}</div><div style="font-size:13px;color:var(--text-secondary);">${b.leave_type}</div></div>`;
             });
             if(el) el.innerHTML = html;
             if(sel) {
@@ -313,31 +300,11 @@ async function loadLeaveBalance() {
                     if(rem>0) sel.add(new Option(`${b.leave_type} (${rem})`, b.leave_type));
                 });
             }
-            loadUpcomingLeave();
         } else {
             if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No allocations found</p>';
             if(sel) sel.innerHTML = '<option value="">No leave available</option>';
         }
     } catch(e) { if($('leaveBalanceSummary')) $('leaveBalanceSummary').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
-}
-async function loadUpcomingLeave() {
-    try {
-        const res = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
-        const data = await res.json();
-        const el = $('upcomingLeaveList');
-        if(data.success && data.requests?.length) {
-            const approved = data.requests.filter(r=>r.status==='Approved');
-            if(approved.length) {
-                el.innerHTML = '';
-                approved.slice(0,3).forEach(req => {
-                    const div = document.createElement('div'); div.className='leave-request-item'; div.style.cursor='pointer';
-                    div.innerHTML = `<div style="display:flex;justify-content:space-between;"><strong>${req.leave_type}</strong><span>${req.from_date} → ${req.to_date}</span></div>`;
-                    div.onclick = () => viewLeaveDetail(req.name);
-                    el.appendChild(div);
-                });
-            } else { if(el) el.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">None</p>'; }
-        } else { if(el) el.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">None</p>'; }
-    } catch(e) {}
 }
 async function loadLeaveRequests() {
     try {
@@ -348,100 +315,60 @@ async function loadLeaveRequests() {
             el.innerHTML = '';
             data.requests.forEach(req => {
                 const cls = req.status==='Approved'?'status-approved':req.status==='Rejected'?'status-rejected':'status-pending';
-                const div = document.createElement('div'); div.className='leave-request-item'; div.style.cursor='pointer';
-                div.innerHTML = `<div style="display:flex;justify-content:space-between;"><div><strong>${req.leave_type}</strong><div style="font-size:12px;color:var(--text-secondary);">${req.from_date} → ${req.to_date}</div></div><span class="leave-status ${cls}">${req.status}</span></div>`;
-                div.onclick = () => viewLeaveDetail(req.name);
-                el.appendChild(div);
+                el.innerHTML += `<div class="leave-request-item"><div style="display:flex;justify-content:space-between;"><div><strong>${req.leave_type}</strong><div style="font-size:12px;color:var(--text-secondary);">${req.from_date} → ${req.to_date}</div></div><span class="leave-status ${cls}">${req.status}</span></div></div>`;
             });
         } else { if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No requests</p>'; }
-    } catch(e) {}
-}
-async function viewLeaveDetail(docname) {
-    try {
-        const res = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
-        const data = await res.json();
-        const req = (data.requests||[]).find(r=>r.name===docname);
-        if(!req) return;
-        $('leaveBalanceTab').style.display='none'; $('leaveRequestsTab').style.display='none'; $('leaveDetailView').classList.remove('hidden');
-        $('leaveDetailTitle').textContent = req.leave_type;
-        const cls = req.status==='Approved'?'status-approved':req.status==='Rejected'?'status-rejected':'status-pending';
-        $('leaveDetailContent').innerHTML = `<div style="text-align:center;margin-bottom:12px;"><span class="leave-status ${cls}">${req.status}</span></div><p>From: ${req.from_date}</p><p>To: ${req.to_date}</p><p>Days: ${req.total_leave_days||'N/A'}</p>`;
-    } catch(e) {}
-}
-function closeLeaveDetail() {
-    $('leaveDetailView').classList.add('hidden');
-    switchLeaveTab(currentLeaveTab);
+    } catch(e) { if($('leaveRequestsList')) $('leaveRequestsList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
 }
 async function submitLeaveApplication() {
-    const type = $('leaveType').value; const from = $('leaveFromDate').value; const to = $('leaveToDate').value;
-    const half = $('leaveHalfDay').value; const reason = $('leaveReason').value;
+    const type = $('leaveType').value; const from = $('leaveFromDate').value; const to = $('leaveToDate').value; const reason = $('leaveReason').value;
     if(!type||!from||!to||!reason) return showStatus('Fill all fields', 'error');
     const btn = $('leaveApplyModal').querySelector('button.submit-btn');
     btn.disabled=true; btn.textContent='Submitting...';
     try {
         const res = await fetch(`${config.middlewareUrl}/api/leave-application`, {
             method:'POST', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({employeeId:config.employeeId, leaveType:type, fromDate:from, toDate:to, halfDay:half!=='0', reason})
+            body:JSON.stringify({employeeId:config.employeeId, leaveType:type, fromDate:from, toDate:to, reason})
         });
         const data = await res.json();
         if(data.success) {
             closeLeaveApplyModal(); showStatus('Submitted!', 'success');
-            $('leaveType').value=''; $('leaveFromDate').value=''; $('leaveToDate').value=''; $('leaveHalfDay').value='0'; $('leaveReason').value='';
-            if(currentLeaveTab==='balance') loadLeaveBalance(); else loadLeaveRequests();
+            $('leaveType').value=''; $('leaveFromDate').value=''; $('leaveToDate').value=''; $('leaveReason').value='';
+            loadLeaveBalance();
         } else { showStatus(data.error, 'error'); }
     } catch(e) { showStatus(e.message, 'error'); } finally { btn.disabled=false; btn.textContent='Submit Request'; }
 }
 
 // SCHEDULE
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let scheduleData = { shifts:[], leaves:[], holidays:[] };
-function changeMonth(d) { currentMonth+=d; if(currentMonth>11){currentMonth=0;currentYear++;} if(currentMonth<0){currentMonth=11;currentYear--;} renderCalendar(); }
 async function loadScheduleScreen() {
     if(!config.employeeId) return;
     try {
         const res = await fetch(`${config.middlewareUrl}/api/schedule/${config.employeeId}`);
         const data = await res.json();
-        if(data.success) { scheduleData=data; currentMonth=new Date().getMonth(); currentYear=new Date().getFullYear(); renderCalendar(); renderUpcomingShifts(); }
-    } catch(e) { if($('scheduleList')) $('scheduleList').innerHTML='<p style="text-align:center;padding:20px;">Error</p>'; }
+        const el = $('scheduleList');
+        if(data.success && data.shifts?.length) {
+            el.innerHTML = '';
+            data.shifts.forEach(s => {
+                el.innerHTML += `<div class="leave-request-item"><strong>${s.shift_type||'Shift'}</strong><div style="font-size:12px;color:var(--text-secondary);">${s.start_date} → ${s.end_date}</div></div>`;
+            });
+        } else { if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No shifts</p>'; }
+    } catch(e) { if($('scheduleList')) $('scheduleList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
 }
-function renderCalendar() {
-    const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    if($('calendarMonth')) $('calendarMonth').textContent = `${names[currentMonth]} ${currentYear}`;
-    const first = new Date(currentYear, currentMonth, 1).getDay();
-    const days = new Date(currentYear, currentMonth+1, 0).getDate();
-    const today = new Date().toISOString().split('T')[0];
-    let html = '';
-    for(let i=0;i<first;i++) html+='<div></div>';
-    for(let d=1;d<=days;d++) {
-        const ds = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        let st='off', lbl='';
-        for(const s of scheduleData.shifts) if(ds>=s.start_date && ds<=s.end_date) { st='work'; lbl=s.shift_type||'Shift'; break; }
-        for(const l of scheduleData.leaves) if(ds>=l.from_date && ds<=l.to_date) { st='leave'; lbl=l.leave_type||'Leave'; break; }
-        for(const h of scheduleData.holidays) if(ds===h.holiday_date) { st='holiday'; lbl=h.description||'Holiday'; break; }
-        const colors = {work:'#d1fae5',leave:'#fef3c7',holiday:'#fee2e2',off:'#f1f5f9'};
-        const isToday = ds===today;
-        html += `<div onclick="showDayDetail('${ds}')" class="calendar-day ${st}" style="${isToday?'border:2px solid var(--primary);':''}"><div style="font-weight:${isToday?'bold':'normal'};">${d}</div><div style="font-size:9px;color:var(--text-secondary);">${lbl}</div></div>`;
-    }
-    if($('calendarGrid')) $('calendarGrid').innerHTML = html;
-}
-function showDayDetail(ds) {
-    $('leaveBalanceTab')?.style && $('leaveBalanceTab').style.display='none'; // Hide if on leave screen
-    $('dayDetail').classList.remove('hidden');
-    $('dayDetailTitle').textContent = `📅 ${ds}`;
-    let html='', found=false;
-    for(const s of scheduleData.shifts) if(ds>=s.start_date && ds<=s.end_date) { found=true; html+=`<p>🟢 Shift: ${s.shift_type}</p>`; }
-    for(const l of scheduleData.leaves) if(ds>=l.from_date && ds<=l.to_date) { found=true; html+=`<p>🟡 Leave: ${l.leave_type}</p>`; }
-    for(const h of scheduleData.holidays) if(ds===h.holiday_date) { found=true; html+=`<p>🔴 Holiday: ${h.description}</p>`; }
-    $('dayDetailContent').innerHTML = found ? html : '<p>⚪ No schedule</p>';
-}
-function hideDayDetail() { $('dayDetail').classList.add('hidden'); }
-function renderUpcomingShifts() {
-    let html='';
-    scheduleData.shifts.slice(0,5).forEach(s => {
-        html+=`<div class="leave-request-item"><strong>${s.shift_type||'Shift'}</strong><div style="font-size:12px;color:var(--text-secondary);">${s.start_date} → ${s.end_date}</div></div>`;
-    });
-    if($('scheduleList')) $('scheduleList').innerHTML = html || '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No shifts</p>';
+
+// PAYSLIPS
+async function loadPayslipsScreen() {
+    if(!config.employeeId) return;
+    try {
+        const res = await fetch(`${config.middlewareUrl}/api/payslips/${config.employeeId}`);
+        const data = await res.json();
+        const el = $('payslipsList');
+        if(data.success && data.payslips?.length) {
+            el.innerHTML = '';
+            data.payslips.forEach(s => {
+                el.innerHTML += `<div class="leave-request-item"><div style="display:flex;justify-content:space-between;"><strong>${s.period}</strong><span style="font-weight:700;color:var(--success);">${new Intl.NumberFormat('en-US',{style:'currency',currency:'BND'}).format(s.net_pay)}</span></div><div style="font-size:12px;color:var(--text-secondary);">Gross: ${new Intl.NumberFormat('en-US',{style:'currency',currency:'BND'}).format(s.gross_pay)} • Ded: ${new Intl.NumberFormat('en-US',{style:'currency',currency:'BND'}).format(s.total_deduction)}</div></div>`;
+            });
+        } else { if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No payslips</p>'; }
+    } catch(e) { if($('payslipsList')) $('payslipsList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
 }
 
 // PROFILE
@@ -454,114 +381,4 @@ function loadProfileScreen() {
     if($('profileDepartment')) $('profileDepartment').textContent = currentEmployee.department || 'N/A';
     if($('profileEmploymentType')) $('profileEmploymentType').textContent = config.employmentType;
     if($('profileEmail')) $('profileEmail').textContent = userEmail;
-}
-
-// APPROVALS
-let currentApprovalDoc = null;
-async function loadApprovalsScreen() {
-    const el = $('approvalsList'); if(!el) return;
-    el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p>';
-    $('approvalDetail')?.classList.add('hidden');
-    try {
-        const res = await fetch(`${config.middlewareUrl}/api/approvals/${encodeURIComponent(userEmail)}`);
-        const data = await res.json();
-        if(data.success && data.approvals?.length) {
-            el.innerHTML = '';
-            data.approvals.forEach(a => {
-                const div = document.createElement('div'); div.className='leave-request-item'; div.style.cursor='pointer';
-                div.innerHTML = `<div style="display:flex;justify-content:space-between;"><div><strong>${a.title}</strong><div style="font-size:12px;color:var(--text-secondary);">${a.doctype}</div></div><span class="leave-status status-pending">${a.state||'Pending'}</span></div>`;
-                div.onclick = () => viewApproval(a.doctype, a.docname, a.next_action);
-                el.appendChild(div);
-            });
-        } else { el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No approvals</p>'; }
-    } catch(e) { el.innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
-}
-async function viewApproval(dt, dn, na) {
-    currentApprovalDoc = {doctype:dt, docname:dn, nextAction:na};
-    $('approvalDetail').classList.remove('hidden');
-    $('approvalDetailTitle').textContent = `${dt}: ${dn}`;
-    $('approvalPrintView').innerHTML = '<p style="text-align:center;padding:20px;">Loading...</p>';
-    try {
-        const res = await fetch(`${config.middlewareUrl}/api/print-format/${dt}/${dn}`);
-        const data = await res.json();
-        $('approvalPrintView').innerHTML = data.success ? data.html : '<p>Could not load</p>';
-    } catch(e) { $('approvalPrintView').innerHTML = '<p>Error loading</p>'; }
-}
-function showApprovalsList() { $('approvalDetail').classList.add('hidden'); currentApprovalDoc=null; }
-async function submitWorkflowAction(action) {
-    if(!currentApprovalDoc) return;
-    const remark = $('approvalRemark')?.value || '';
-    const btn = action==='Approve' ? $('approveBtn') : $('rejectBtn');
-    btn.disabled=true; btn.textContent='Processing...';
-    try {
-        const res = await fetch(`${config.middlewareUrl}/api/workflow-action`, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({doctype:currentApprovalDoc.doctype, docname:currentApprovalDoc.docname, action, remark})
-        });
-        const data = await res.json();
-        if(data.success) { showStatus(`${action}d!`, 'success'); $('approvalRemark').value=''; showApprovalsList(); loadApprovalsScreen(); }
-        else throw new Error(data.error);
-    } catch(e) { showStatus(e.message, 'error'); } finally { btn.disabled=false; btn.textContent=action==='Approve'?'✅ Approve':'❌ Reject'; }
-}
-
-// ONBOARDING
-let currentOnboarding = null;
-async function loadOnboardingScreen() {
-    if(!config.employeeId) return;
-    const el = $('onboardingActivities'); if(!el) return;
-    el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p>';
-    try {
-        const res = await fetch(`${config.middlewareUrl}/api/onboarding/${config.employeeId}`);
-        const data = await res.json();
-        if(data.success && data.onboarding) { currentOnboarding=data.onboarding; renderOnboarding(data.onboarding); }
-        else {
-            if($('onboardingWelcome')) $('onboardingWelcome').textContent = 'No Active Onboarding';
-            if($('onboardingSubtitle')) $('onboardingSubtitle').textContent = 'Contact HR';
-            el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">None</p>';
-        }
-    } catch(e) { el.innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
-}
-function renderOnboarding(onb) {
-    if($('onboardingWelcome')) $('onboardingWelcome').textContent = `Welcome, ${onb.employee_name||'New Hire'}!`;
-    if($('onboardingSubtitle')) $('onboardingSubtitle').textContent = onb.onboarding_template || 'Setup';
-    if($('onboardingProgress')) $('onboardingProgress').textContent = `${onb.progress}%`;
-    if($('onboardingProgressBar')) $('onboardingProgressBar').style.width = `${onb.progress}%`;
-    if($('onboardingFraction')) $('onboardingFraction').textContent = `${onb.completedActivities} of ${onb.totalActivities} complete`;
-    const el = $('onboardingActivities');
-    if(onb.activities?.length) {
-        let html='';
-        onb.activities.forEach(a => {
-            const done = a.completion_status==='Completed';
-            html+=`<div class="leave-request-item" style="cursor:pointer;" onclick="viewOnboardingActivity('${a.activity_name}','${a.description||''}',${done})"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>${a.activity_name}</strong><div style="font-size:12px;color:var(--text-secondary);">${a.responsible||''}</div></div><span class="leave-status ${done?'status-approved':'status-pending'}">${a.completion_status}</span></div></div>`;
-        });
-        el.innerHTML = html;
-    } else { el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No activities</p>'; }
-}
-function viewOnboardingActivity(name, desc, done) {
-    currentActivity = {name, desc, done};
-    $('onboardingDetail').classList.remove('hidden');
-    $('onboardingDetailTitle').textContent = name;
-    $('onboardingDetailContent').innerHTML = `<p>${desc||'No details'}</p><p style="margin-top:8px;">Status: <span class="leave-status ${done?'status-approved':'status-pending'}">${done?'Completed':'Pending'}</span></p>`;
-    const btn = $('onboardingCompleteBtn');
-    btn.style.display = done ? 'none' : 'block';
-    btn.onclick = () => completeOnboardingActivity(name);
-}
-function hideOnboardingDetail() { $('onboardingDetail').classList.add('hidden'); }
-async function completeOnboardingActivity(name) {
-    const btn = $('onboardingCompleteBtn'); btn.disabled=true; btn.textContent='Completing...';
-    try {
-        const res = await fetch(`${config.middlewareUrl}/api/onboarding/complete-activity`, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({employeeId:currentOnboarding.name, activityName:name})
-        });
-        const data = await res.json();
-        if(data.success) { hideOnboardingDetail(); loadOnboardingScreen(); showStatus('Completed!', 'success'); }
-        else throw new Error(data.error);
-    } catch(e) { showStatus(e.message, 'error'); } finally { btn.disabled=false; btn.textContent='✅ Mark Complete'; }
-}
-
-// PAYSLIPS (Placeholder/Safe)
-async function loadPayslipsScreen() {
-    // Implement if needed, currently safe no-op
-    showStatus('Payslips module ready', 'info');
 }
