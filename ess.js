@@ -448,20 +448,146 @@ async function submitLeaveApplication() {
     }
 }
 
-// SCHEDULE
+// ============================================
+// SCHEDULE FUNCTIONS
+// ============================================
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+let scheduleData = { shifts: [], leaves: [], holidays: [] };
+
+function changeMonth(delta) {
+    currentMonth += delta;
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    renderCalendar();
+}
+
 async function loadScheduleScreen() {
-    if(!config.employeeId) return;
+    if (!config.employeeId) return;
+    const listEl = document.getElementById('scheduleList');
+    if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p>';
+
     try {
-        const res = await fetch(`${config.middlewareUrl}/api/schedule/${config.employeeId}`);
-        const data = await res.json();
-        const el = $('scheduleList');
-        if(data.success && data.shifts?.length) {
-            el.innerHTML = '';
-            data.shifts.forEach(s => {
-                el.innerHTML += `<div class="leave-request-item"><strong>${s.shift_type||'Shift'}</strong><div style="font-size:12px;color:var(--text-secondary);">${s.start_date} → ${s.end_date}</div></div>`;
-            });
-        } else { if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No shifts</p>'; }
-    } catch(e) { if($('scheduleList')) $('scheduleList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
+        const response = await fetch(`${config.middlewareUrl}/api/schedule/${config.employeeId}`);
+        const result = await response.json();
+        if (result.success) {
+            scheduleData = result;
+            currentMonth = new Date().getMonth();
+            currentYear = new Date().getFullYear();
+            renderCalendar();
+            renderUpcomingShifts();
+        } else {
+            if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No schedule data</p>';
+        }
+    } catch (error) {
+        console.error('Schedule error:', error);
+        if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Error loading schedule</p>';
+    }
+}
+
+function renderCalendar() {
+    const monthEl = document.getElementById('calendarMonth');
+    const gridEl = document.getElementById('calendarGrid');
+    if (!monthEl || !gridEl) return;
+
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    monthEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const today = new Date().toISOString().split('T')[0];
+
+    let gridHTML = '';
+    for (let i = 0; i < firstDay; i++) gridHTML += '<div></div>';
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        let status = 'off', label = '';
+
+        if (scheduleData.shifts?.some(s => dateStr >= s.start_date && dateStr <= s.end_date)) {
+            status = 'work'; label = 'Shift';
+        }
+        if (scheduleData.leaves?.some(l => dateStr >= l.from_date && dateStr <= l.to_date)) {
+            status = 'leave'; label = 'Leave';
+        }
+        if (scheduleData.holidays?.some(h => h.holiday_date === dateStr)) {
+            status = 'holiday'; label = 'Holiday';
+        }
+
+        const isToday = dateStr === today;
+        const colors = { work: '#d1fae5', leave: '#fef3c7', holiday: '#fee2e2', off: '#f1f5f9' };
+        const textColors = { work: '#065f46', leave: '#92400e', holiday: '#991b1b', off: '#64748b' };
+
+        gridHTML += `
+            <div onclick="showDayDetail('${dateStr}')" style="padding:8px 4px;border-radius:8px;background:${colors[status]};cursor:pointer;text-align:center;${isToday ? 'border:2px solid var(--primary);' : ''}">
+                <div style="font-size:13px;font-weight:${isToday ? '700' : '500'};color:${textColors[status]};">${day}</div>
+                ${label ? `<div style="font-size:9px;color:${textColors[status]};margin-top:2px;">${label}</div>` : ''}
+            </div>
+        `;
+    }
+    gridEl.innerHTML = gridHTML;
+}
+
+function showDayDetail(dateStr) {
+    const detail = document.getElementById('dayDetail');
+    const title = document.getElementById('dayDetailTitle');
+    const content = document.getElementById('dayDetailContent');
+    if (!detail || !title || !content) return;
+
+    title.textContent = `📅 ${dateStr}`;
+    let html = '', found = false;
+
+    scheduleData.shifts?.forEach(s => {
+        if (dateStr >= s.start_date && dateStr <= s.end_date) {
+            found = true;
+            html += `<div class="leave-request-item" style="border-left:4px solid var(--success);margin-bottom:8px;"><strong>🟢 Work</strong><div>${s.shift_type || 'Assigned Shift'}</div></div>`;
+        }
+    });
+    scheduleData.leaves?.forEach(l => {
+        if (dateStr >= l.from_date && dateStr <= l.to_date) {
+            found = true;
+            html += `<div class="leave-request-item" style="border-left:4px solid var(--warning);margin-bottom:8px;"><strong>🟡 Leave</strong><div>${l.leave_type}</div></div>`;
+        }
+    });
+    scheduleData.holidays?.forEach(h => {
+        if (h.holiday_date === dateStr) {
+            found = true;
+            html += `<div class="leave-request-item" style="border-left:4px solid var(--danger);margin-bottom:8px;"><strong>🔴 Holiday</strong><div>${h.description || 'Holiday'}</div></div>`;
+        }
+    });
+
+    content.innerHTML = found ? html : '<p style="text-align:center;color:var(--text-secondary);">No events</p>';
+    detail.classList.remove('hidden');
+}
+
+function hideDayDetail() {
+    const detail = document.getElementById('dayDetail');
+    if (detail) detail.classList.add('hidden');
+}
+
+function renderUpcomingShifts() {
+    const listEl = document.getElementById('scheduleList');
+    if (!listEl) return;
+
+    if (!scheduleData.shifts || scheduleData.shifts.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No upcoming shifts</p>';
+        return;
+    }
+
+    let html = '';
+    scheduleData.shifts.slice(0, 5).forEach(s => {
+        html += `
+            <div class="leave-request-item">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <strong>${s.shift_type || 'Shift'}</strong>
+                    <span class="leave-status status-approved">Confirmed</span>
+                </div>
+                <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">📅 ${s.start_date} to ${s.end_date}</div>
+                ${s.shift_location ? `<div style="font-size:13px;color:var(--text-secondary);">📍 ${s.shift_location}</div>` : ''}
+            </div>
+        `;
+    });
+    listEl.innerHTML = html;
 }
 
 // PAYSLIPS

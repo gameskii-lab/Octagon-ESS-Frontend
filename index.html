@@ -184,8 +184,43 @@
     <!-- SCHEDULE -->
     <div id="scheduleScreen" class="screen">
         <div class="app-container">
-            <header class="app-header"><div class="header-main"><button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button><div class="header-center"><h1 class="header-greeting">Schedule</h1></div><div style="width:44px;"></div></div></header>
-            <main class="main-content"><h2 class="section-title">📅 Upcoming Shifts</h2><div id="scheduleList"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></main>
+            <header class="app-header">
+                <div class="header-main">
+                    <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                    <div class="header-center"><h1 class="header-greeting">Schedule</h1></div>
+                    <div style="width:44px;"></div>
+                </div>
+            </header>
+            <main class="main-content">
+                <!-- Calendar Card -->
+                <div style="background:white;border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <button class="calendar-nav-btn" onclick="changeMonth(-1)" style="width:36px;height:36px;border:none;background:var(--bg);border-radius:8px;cursor:pointer;">◀</button>
+                        <h2 id="calendarMonth" style="font-size:16px;font-weight:700;margin:0;">Loading...</h2>
+                        <button class="calendar-nav-btn" onclick="changeMonth(1)" style="width:36px;height:36px;border:none;background:var(--bg);border-radius:8px;cursor:pointer;">▶</button>
+                    </div>
+                    <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;"></div>
+                    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center;">
+                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--success);"></div>Work</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--warning);"></div>Leave</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--danger);"></div>Holiday</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--border);"></div>Off</div>
+                    </div>
+                </div>
+                
+                <!-- Day Detail View (hidden by default) -->
+                <div id="dayDetail" class="hidden leave-request-item" style="margin-bottom:16px;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                        <h3 id="dayDetailTitle" style="font-size:16px;font-weight:700;margin:0;">Day Detail</h3>
+                        <button onclick="hideDayDetail()" style="background:var(--bg);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;">✕</button>
+                    </div>
+                    <div id="dayDetailContent"></div>
+                </div>
+                
+                <!-- Upcoming Shifts -->
+                <h2 class="section-title">📋 Upcoming Shifts</h2>
+                <div id="scheduleList"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div>
+            </main>
         </div>
     </div>
 
