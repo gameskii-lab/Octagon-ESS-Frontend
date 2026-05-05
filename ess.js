@@ -614,8 +614,10 @@ let currentApprovalDoc = null;
 async function loadApprovalsScreen() {
     const listEl = document.getElementById('approvalsList');
     const detailEl = document.getElementById('approvalDetail');
-    if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Loading approvals...</p>';
-    if (detailEl) detailEl.classList.add('hidden');
+    
+    // Reset view
+    if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading approvals...</p>';
+    if (detailEl) { detailEl.classList.add('hidden'); detailEl.style.display = 'none'; }
 
     try {
         const response = await fetch(`${config.middlewareUrl}/api/approvals/${encodeURIComponent(userEmail)}`);
@@ -638,48 +640,59 @@ async function loadApprovalsScreen() {
             });
             if (listEl) listEl.innerHTML = html;
         } else {
-            if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">No pending approvals</p>';
+            if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No pending approvals</p>';
         }
     } catch (error) {
         console.error('Approval load error:', error);
-        if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Error loading approvals</p>';
+        if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Error loading approvals</p>';
     }
 }
 
 async function viewApproval(doctype, docname, nextAction) {
     currentApprovalDoc = { doctype, docname, nextAction };
+    
     const detailEl = document.getElementById('approvalDetail');
     const titleEl = document.getElementById('approvalDetailTitle');
     const printViewEl = document.getElementById('approvalPrintView');
     const approveBtn = document.getElementById('approveBtn');
     const rejectBtn = document.getElementById('rejectBtn');
 
-    if (detailEl) detailEl.classList.remove('hidden');
+    // Show Detail View
+    if (detailEl) { 
+        detailEl.classList.remove('hidden'); 
+        detailEl.style.display = 'block'; 
+    }
+    
     if (titleEl) titleEl.textContent = `${doctype}: ${docname}`;
     if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading document...</p>';
     if (approveBtn) { approveBtn.style.display = 'block'; approveBtn.textContent = `✅ ${nextAction || 'Approve'}`; }
     if (rejectBtn) rejectBtn.style.display = 'block';
 
+    // Fetch Document Print Format
     try {
         const response = await fetch(`${config.middlewareUrl}/api/print-format/${doctype}/${docname}`);
         const result = await response.json();
         if (result.success && result.html) {
             if (printViewEl) printViewEl.innerHTML = result.html;
         } else {
-            if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Could not load document view</p>';
+            if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Could not load document</p>';
         }
     } catch (error) {
         console.error('Print format error:', error);
         if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Error loading document</p>';
     }
 
+    // Bind Buttons
     if (approveBtn) approveBtn.onclick = () => submitWorkflowAction('Approve');
     if (rejectBtn) rejectBtn.onclick = () => submitWorkflowAction('Reject');
 }
 
 function showApprovalsList() {
     const detailEl = document.getElementById('approvalDetail');
-    if (detailEl) detailEl.classList.add('hidden');
+    if (detailEl) { 
+        detailEl.classList.add('hidden'); 
+        detailEl.style.display = 'none'; 
+    }
     currentApprovalDoc = null;
 }
 
@@ -711,7 +724,7 @@ async function submitWorkflowAction(action) {
             const remarkEl = document.getElementById('approvalRemark');
             if (remarkEl) remarkEl.value = '';
             showApprovalsList();
-            setTimeout(() => loadApprovalsScreen(), 500);
+            setTimeout(() => loadApprovalsScreen(), 500); // Refresh list
         } else {
             throw new Error(result.error || 'Action failed');
         }

@@ -232,6 +232,45 @@
         </div>
     </div>
 
+    <!-- APPROVALS SCREEN -->
+    <div id="approvalsScreen" class="screen">
+        <div class="app-container">
+            <header class="app-header">
+                <div class="header-main">
+                    <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+                    <div class="header-center"><h1 class="header-greeting">Approvals</h1></div>
+                    <div style="width:44px;"></div>
+                </div>
+            </header>
+            <main class="main-content">
+                <!-- 1. List View (Shows pending approvals) -->
+                <div id="approvalsList">
+                    <p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading approvals...</p>
+                </div>
+
+                <!-- 2. Detail View (Hidden by default, shows document + buttons) -->
+                <div id="approvalDetail" class="hidden leave-request-item" style="margin-top:16px; display:none;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                        <h3 id="approvalDetailTitle" style="font-size:16px;font-weight:700;margin:0;">Details</h3>
+                        <button onclick="showApprovalsList()" style="background:var(--bg);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;">✕</button>
+                    </div>
+                    
+                    <!-- Document Content -->
+                    <div id="approvalPrintView"></div>
+                    
+                    <!-- Remark Input -->
+                    <textarea id="approvalRemark" class="form-textarea" placeholder="Remark (optional)" style="margin-top:12px;"></textarea>
+                    
+                    <!-- Action Buttons -->
+                    <div style="display:flex;gap:10px;margin-top:12px;">
+                        <button id="approveBtn" class="submit-btn" style="background:var(--success);flex:1;">✅ Approve</button>
+                        <button id="rejectBtn" class="submit-btn" style="background:var(--danger);flex:1;">❌ Reject</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
     <!-- PROFILE -->
     <div id="profileScreen" class="screen">
         <div class="app-container">
