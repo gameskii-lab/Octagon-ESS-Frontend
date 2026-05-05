@@ -321,22 +321,79 @@ async function loadLeaveRequests() {
     } catch(e) { if($('leaveRequestsList')) $('leaveRequestsList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
 }
 async function submitLeaveApplication() {
-    const type = $('leaveType').value; const from = $('leaveFromDate').value; const to = $('leaveToDate').value; const reason = $('leaveReason').value;
-    if(!type||!from||!to||!reason) return showStatus('Fill all fields', 'error');
-    const btn = $('leaveApplyModal').querySelector('button.submit-btn');
-    btn.disabled=true; btn.textContent='Submitting...';
+    // Safe element retrieval
+    const leaveTypeSelect = document.getElementById('leaveType');
+    const leaveType = leaveTypeSelect?.options[leaveTypeSelect.selectedIndex]?.value || '';
+    const fromDate = document.getElementById('leaveFromDate')?.value;
+    const toDate = document.getElementById('leaveToDate')?.value;
+    const reason = document.getElementById('leaveReason')?.value;
+    const errorEl = document.getElementById('leaveModalError');
+    
+    if (errorEl) errorEl.style.display = 'none';
+
+    if (!leaveType || !fromDate || !toDate || !reason) {
+        if (errorEl) {
+            errorEl.textContent = 'Please fill all fields';
+            errorEl.style.display = 'block';
+        }
+        return;
+    }
+
+    // 🔥 FIX: Robust selector that works even if ID is missing
+    // Looks for button inside .modal-content first, then falls back to #leaveApplyModal
+    const submitBtn = document.querySelector('.modal-content button.submit-btn') || 
+                      document.querySelector('#leaveApplyModal button');
+    
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+    }
+
     try {
-        const res = await fetch(`${config.middlewareUrl}/api/leave-application`, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({employeeId:config.employeeId, leaveType:type, fromDate:from, toDate:to, reason})
+        const response = await fetch(`${config.middlewareUrl}/api/leave-application`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                employeeId: config.employeeId,
+                leaveType: leaveType,
+                fromDate: fromDate,
+                toDate: toDate,
+                reason: reason
+            })
         });
-        const data = await res.json();
-        if(data.success) {
-            closeLeaveApplyModal(); showStatus('Submitted!', 'success');
-            $('leaveType').value=''; $('leaveFromDate').value=''; $('leaveToDate').value=''; $('leaveReason').value='';
-            loadLeaveBalance();
-        } else { showStatus(data.error, 'error'); }
-    } catch(e) { showStatus(e.message, 'error'); } finally { btn.disabled=false; btn.textContent='Submit Request'; }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            closeLeaveApplyModal();
+            showStatus('✅ Leave request submitted!', 'success');
+            
+            // Clear form safely
+            if (leaveTypeSelect) leaveTypeSelect.value = '';
+            const fromDateEl = document.getElementById('leaveFromDate');
+            const toDateEl = document.getElementById('leaveToDate');
+            const reasonEl = document.getElementById('leaveReason');
+            if (fromDateEl) fromDateEl.value = '';
+            if (toDateEl) toDateEl.value = '';
+            if (reasonEl) reasonEl.value = '';
+            
+            // Refresh leave data
+            if (typeof loadLeaveBalance === 'function') loadLeaveBalance();
+        } else {
+            throw new Error(result.error || 'Failed to submit');
+        }
+    } catch (error) {
+        console.error('Leave submission error:', error);
+        if (errorEl) {
+            errorEl.textContent = error.message;
+            errorEl.style.display = 'block';
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Request';
+        }
+    }
 }
 
 // SCHEDULE
