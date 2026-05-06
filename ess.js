@@ -189,6 +189,9 @@ function showAppSection() {
     if($('appHeader')) { $('appHeader').style.display = 'block'; }
     if($('screenTitle')) $('screenTitle').textContent = 'Dashboard';
     updateDrawerInfo();
+    const checkBtn = document.getElementById('checkBtn');
+    const worksiteEl = document.getElementById('worksiteDisplay');  // 👈 ADD THIS LINE IF MISSING
+    
     if (config.customEmployeeBase === 'Office Staff' && config.todaysShift === 'Office Shift') {
         if (checkBtn) checkBtn.style.display = 'block';
     } else {
