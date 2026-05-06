@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         config = JSON.parse(savedConfig);
         currentEmployee = JSON.parse(savedEmp);
         userEmail = savedEmail;
+        config.customEmployeeBase = currentEmployee.custom_employee_base || '';
         updateGreetingName();
         updateDrawerInfo();
         showAppSection();
@@ -139,6 +140,7 @@ async function handleLogin() {
         currentEmployee = empData.employee;
         config.employeeId = currentEmployee.id;
         config.employmentType = currentEmployee.employment_type || 'Daily Wage';
+        config.customEmployeeBase = currentEmployee.custom_employee_base || '';
         userEmail = email;
         
         localStorage.setItem('erpnext_config', JSON.stringify(config));
@@ -187,11 +189,11 @@ function showAppSection() {
     if($('appHeader')) { $('appHeader').style.display = 'block'; }
     if($('screenTitle')) $('screenTitle').textContent = 'Dashboard';
     updateDrawerInfo();
-    if(config.employmentType === 'Daily Wage') {
-        if($('checkBtn')) $('checkBtn').style.display = 'block';
+    if (config.customEmployeeBase === 'Office Staff' && config.todaysShift === 'Office Shift') {
+        if (checkBtn) checkBtn.style.display = 'block';
     } else {
-        if($('checkBtn')) $('checkBtn').style.display = 'none';
-        if($('worksiteDisplay')) $('worksiteDisplay').textContent = '🏢 Office-based';
+        if (checkBtn) checkBtn.style.display = 'none';
+        if (worksiteEl) worksiteEl.textContent = '📍 Site staff - check-in not required';
     }
 }
 
