@@ -52,7 +52,80 @@
         .attendance-card { background: var(--card); border-radius: var(--radius); padding: 16px 10px; text-align: center; box-shadow: var(--shadow); }
         .attendance-value { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
         .attendance-label { font-size: 11px; color: var(--text-secondary); }
-        
+        /* Leave Cards */
+        .leave-card {
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .leave-card-watermark {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 80px;
+            opacity: 0.1;
+        }
+        .leave-card-content {
+            position: relative;
+            z-index: 1;
+        }
+        .leave-card-type {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+        .leave-card-count {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .leave-card-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .leave-card-bar {
+            margin-top: 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 6px;
+            overflow: hidden;
+        }
+        .leave-card-fill {
+            height: 100%;
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        .leave-card-used {
+            font-size: 11px;
+            margin-top: 6px;
+            opacity: 0.8;
+        }
+        .leave-empty {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+        .leave-empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .leave-empty p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+        .leave-empty span {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
         /* Tabs & Lists */
         .tabs { display: flex; gap: 8px; background: var(--bg); padding: 6px; border-radius: var(--radius); margin-bottom: 16px; }
         .tab { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; }
@@ -172,7 +245,7 @@
             </header>
             <main class="main-content">
                 <div class="tabs"><button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">💰 Balance</button><button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">📋 Requests</button></div>
-                <div id="leaveBalanceTab"><h2 class="section-title">Leave Balance</h2><div id="leaveBalanceSummary" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></div>
+                <div id="leaveBalanceTab"><h2 class="section-title">Leave Balance</h2><div id="leaveBalanceSummary" style="margin-bottom:20px;"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></div>
                 <div id="leaveRequestsTab" style="display:none;"><h2 class="section-title">Recent Requests</h2><div id="leaveRequestsList"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></div>
             </main>
             <button class="fab" onclick="openLeaveApplyModal()" style="position:fixed;bottom:20px;right:20px;width:56px;height:56px;background:var(--primary);border:none;border-radius:50%;color:white;font-size:24px;cursor:pointer;box-shadow:var(--shadow);z-index:999;">+</button>
