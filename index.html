@@ -140,9 +140,18 @@
                 <div id="locationDisplay" style="margin-top:12px; font-size:13px; color:var(--text-secondary); text-align:center;"></div>
                 <h2 class="section-title">Today's Attendance</h2>
                 <div class="attendance-cards">
-                    <div class="attendance-value" style="color:var(--success);" id="presentCount">--</div>
-                    <div class="attendance-value" style="color:var(--warning);" id="lateCount">--</div>
-                    <div class="attendance-value" style="color:var(--danger);" id="absentCount">--</div>
+                    <div class="attendance-card">
+                        <div class="attendance-value" style="color:var(--success);" id="presentCount">--</div>
+                        <div class="attendance-label">Present</div>
+                    </div>
+                    <div class="attendance-card">
+                        <div class="attendance-value" style="color:var(--warning);" id="lateCount">--</div>
+                        <div class="attendance-label">Late</div>
+                    </div>
+                    <div class="attendance-card">
+                        <div class="attendance-value" style="color:var(--danger);" id="absentCount">--</div>
+                        <div class="attendance-label">Absent</div>
+                    </div>
                 </div>
                 <h2 class="section-title">Quick Access</h2>
                 <div class="stats-grid">
