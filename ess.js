@@ -209,6 +209,7 @@ async function fetchTodaysShiftAssignment() {
             }
             if(cb) cb.disabled = false;
             await checkCurrentStatus();
+            await loadAttendanceStats();
         } else {
             config.todaysShift = null;
             if(ws) ws.innerHTML = '⚠️ No shift assigned';
@@ -294,6 +295,34 @@ async function checkCurrentStatus() {
             updateButtonState();
         }
     } catch(e) {}
+}
+
+async function loadAttendanceStats() {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const res = await fetch(`${config.middlewareUrl}/api/today-checkins/${config.employeeId}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            const checkins = data.checkins || [];
+            const hasCheckedIn = checkins.length > 0;
+            const lastLog = checkins.length > 0 ? checkins[checkins.length - 1].log_type : null;
+            
+            // Update present count
+            const presentEl = document.getElementById('presentCount');
+            if (presentEl) presentEl.textContent = hasCheckedIn && lastLog === 'OUT' ? 1 : 0;
+            
+            // Update late count (simplified - adjust based on your logic)
+            const lateEl = document.getElementById('lateCount');
+            if (lateEl) lateEl.textContent = 0; // You can add late detection later
+            
+            // Update absent count (simplified)
+            const absentEl = document.getElementById('absentCount');
+            if (absentEl) absentEl.textContent = hasCheckedIn ? 0 : 1;
+        }
+    } catch(e) {
+        console.error('Error loading attendance stats:', e);
+    }
 }
 
 function updateButtonState() {
