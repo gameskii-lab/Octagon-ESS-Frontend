@@ -169,6 +169,7 @@ async function fetchTodaysShiftAssignment() {
             const loc = data.assignment.location;
             config.siteLat = loc.latitude; config.siteLng = loc.longitude;
             config.siteRadius = loc.radius || 100; config.shiftLocationName = loc.name;
+            config.todaysShift = data.assignment.shift_type;  // 👈 ADD THIS LINE
             if(ws) ws.innerHTML = `✅ ${loc.name} • 📏 ${config.siteRadius}m • 🕒 ${data.assignment.shift_type}`;
             if(cb) cb.disabled = false;
             await checkCurrentStatus();
@@ -192,7 +193,7 @@ function showAppSection() {
     const checkBtn = document.getElementById('checkBtn');
     const worksiteEl = document.getElementById('worksiteDisplay');  // 👈 ADD THIS LINE IF MISSING
     
-    if (config.customEmployeeBase === 'Office Staff' && config.todaysShift === 'Office Shift') {
+    if (config.customEmployeeBase === 'Office Based' && config.todaysShift === 'Office Shift') {
         if (checkBtn) checkBtn.style.display = 'block';
     } else {
         if (checkBtn) checkBtn.style.display = 'none';
