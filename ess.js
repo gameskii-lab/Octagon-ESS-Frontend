@@ -3,6 +3,7 @@ let currentStatus = 'OUT';
 let currentLocation = null;
 let currentEmployee = null;
 let userEmail = '';
+let hasCheckedInToday = false;
 let config = {
     middlewareUrl: 'https://octagon-ess-production.up.railway.app',
     employeeId: '',
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await res.json();
                 if (data.success) {
                     currentStatus = logType;
+                    hasCheckedInToday = true;
                     updateButtonState();
                     const msg = isOffsite ? `✅ Offsite check-${logType.toLowerCase()} recorded` : `✅ Checked ${logType.toLowerCase()} at ${now.toLocaleTimeString()}`;
                     showStatus(msg, 'success');
@@ -227,14 +229,57 @@ function showAppSection() {
     if($('screenTitle')) $('screenTitle').textContent = 'Dashboard';
     updateDrawerInfo();
     const checkBtn = document.getElementById('checkBtn');
-    const worksiteEl = document.getElementById('worksiteDisplay');  // 👈 ADD THIS LINE IF MISSING
+    const worksiteEl = document.getElementById('worksiteDisplay');
     
     if (config.customEmployeeBase === 'Office Based' && config.todaysShift === 'Office Shift') {
-        if (checkBtn) checkBtn.style.display = 'block';
+        
+        // If already checked OUT today, hide button completely
+        if (currentStatus === 'OUT' && hasCheckedInToday()) {
+            if (checkBtn) checkBtn.style.display = 'none';
+            if (worksiteEl) worksiteEl.textContent = '✅ You have completed your check-in for today.';
+            return;
+        }
+        
+        // If already checked IN today, show check-out button
+        if (currentStatus === 'IN') {
+            if (checkBtn) checkBtn.style.display = 'block';
+            if (worksiteEl) worksiteEl.textContent = '📍 You are currently checked in. Tap to check out.';
+            return;
+        }
+        
+        // First check-in: validate time window
+        const now = new Date();
+        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+        const shiftStartMinutes = 8 * 60;   // 8:00 AM
+        const shiftEndMinutes = 17 * 60;    // 5:00 PM
+        const bufferMinutes = 60;
+        
+        const checkinWindowStart = shiftStartMinutes - bufferMinutes;  // 7:00 AM
+        const checkinWindowEnd = shiftEndMinutes + bufferMinutes;      // 6:00 PM
+        
+        const isWithinWindow = currentTimeMinutes >= checkinWindowStart && currentTimeMinutes <= checkinWindowEnd;
+        
+        if (isWithinWindow) {
+            if (checkBtn) checkBtn.style.display = 'block';
+            if (worksiteEl) worksiteEl.textContent = '📍 Ready to check in for today.';
+        } else if (currentTimeMinutes > checkinWindowEnd) {
+            if (checkBtn) checkBtn.style.display = 'none';
+            if (worksiteEl) worksiteEl.textContent = '⚠️ Check-in window has closed for today. Your attendance will be processed based on your shift. Contact HR if you had extenuating circumstances.';
+        } else {
+            if (checkBtn) checkBtn.style.display = 'none';
+            if (worksiteEl) worksiteEl.textContent = '⏰ Check-in opens at 7:00 AM.';
+        }
     } else {
         if (checkBtn) checkBtn.style.display = 'none';
         if (worksiteEl) worksiteEl.textContent = '📍 Site staff - check-in not required';
     }
+}
+
+// Helper: Check if employee has any check-in today
+function hasCheckedInToday() {
+    // This is set by checkCurrentStatus after fetching today's check-ins
+    // If currentStatus was ever IN today, they've checked in
+    return currentStatus === 'OUT' && document.getElementById('checkBtn')?.textContent === 'CHECK IN';
 }
 
 async function checkCurrentStatus() {
