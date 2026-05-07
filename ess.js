@@ -165,19 +165,28 @@ async function fetchTodaysShiftAssignment() {
         const data = await res.json();
         const ws = $('worksiteDisplay');
         const cb = $('checkBtn');
-        if (data.success && data.assignment?.location) {
-            const loc = data.assignment.location;
-            config.siteLat = loc.latitude; config.siteLng = loc.longitude;
-            config.siteRadius = loc.radius || 100; config.shiftLocationName = loc.name;
-            config.todaysShift = data.assignment.shift_type;  // 👈 ADD THIS LINE
-            if(ws) ws.innerHTML = `✅ ${loc.name} • 📏 ${config.siteRadius}m • 🕒 ${data.assignment.shift_type}`;
+        
+        if (data.success && data.assignment) {
+            // Set shift type ALWAYS (even without location)
+            config.todaysShift = data.assignment.shift_type;
+            
+            if (data.assignment.location) {
+                const loc = data.assignment.location;
+                config.siteLat = loc.latitude; config.siteLng = loc.longitude;
+                config.siteRadius = loc.radius || 100; config.shiftLocationName = loc.name;
+                if(ws) ws.innerHTML = `✅ ${loc.name} • 📏 ${config.siteRadius}m • 🕒 ${data.assignment.shift_type}`;
+            } else {
+                if(ws) ws.innerHTML = `🕒 ${data.assignment.shift_type} (No location set)`;
+            }
             if(cb) cb.disabled = false;
             await checkCurrentStatus();
         } else {
+            config.todaysShift = null;
             if(ws) ws.innerHTML = '⚠️ No shift assigned';
             if(cb) cb.disabled = true;
         }
     } catch(e) {
+        config.todaysShift = null;
         const ws = $('worksiteDisplay'); const cb = $('checkBtn');
         if(ws) ws.textContent = '❌ Error loading assignment';
         if(cb) cb.disabled = true;
