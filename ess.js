@@ -636,6 +636,67 @@ async function loadLeaveRequests() {
     }
 }
 
+async function viewLeaveDetail(docname) {
+    try {
+        const response = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
+        const result = await response.json();
+        
+        const request = (result.requests || []).find(r => r.name === docname);
+        if (!request) {
+            showStatus('Request not found', 'error');
+            return;
+        }
+        
+        // Hide tabs and show detail
+        const balanceTab = document.getElementById('leaveBalanceTab');
+        const requestsTab = document.getElementById('leaveRequestsTab');
+        const detailView = document.getElementById('leaveDetailView');
+        const applyBtn = document.querySelector('#leaveScreen .fab');
+        
+        if (balanceTab) balanceTab.style.display = 'none';
+        if (requestsTab) requestsTab.style.display = 'none';
+        if (detailView) detailView.style.display = 'block';
+        if (applyBtn) applyBtn.style.display = 'none';
+        
+        const statusClass = request.status === 'Approved' ? 'status-approved' : 
+                           request.status === 'Rejected' ? 'status-rejected' : 'status-pending';
+        
+        document.getElementById('leaveDetailContent').innerHTML = `
+            <div style="text-align:center;margin-bottom:20px;">
+                <span class="leave-status ${statusClass}" style="font-size:16px;padding:8px 20px;">${request.status}</span>
+            </div>
+            <h3 style="text-align:center;margin-bottom:16px;">${request.leave_type}</h3>
+            <div class="hours-row"><span>From:</span><span>${request.from_date}</span></div>
+            <div class="hours-row"><span>To:</span><span>${request.to_date}</span></div>
+            <div class="hours-row"><span>Days:</span><span>${request.total_leave_days || 'N/A'}</span></div>
+            <div class="hours-row"><span>Status:</span><span class="leave-status ${statusClass}">${request.status}</span></div>
+            ${request.description ? `<div class="hours-row"><span>Reason:</span><span>${request.description}</span></div>` : ''}
+        `;
+    } catch (error) {
+        console.error('Error viewing leave detail:', error);
+        showStatus('Error loading details', 'error');
+    }
+}
+
+function closeLeaveDetail() {
+    const balanceTab = document.getElementById('leaveBalanceTab');
+    const requestsTab = document.getElementById('leaveRequestsTab');
+    const detailView = document.getElementById('leaveDetailView');
+    const applyBtn = document.querySelector('#leaveScreen .fab');
+    
+    if (detailView) detailView.style.display = 'none';
+    if (applyBtn) applyBtn.style.display = 'block';
+    
+    // Restore current tab
+    if (currentLeaveTab === 'balance') {
+        if (balanceTab) balanceTab.style.display = 'block';
+        if (requestsTab) requestsTab.style.display = 'none';
+    } else {
+        if (balanceTab) balanceTab.style.display = 'none';
+        if (requestsTab) requestsTab.style.display = 'block';
+    }
+}
+
 async function submitLeaveApplication() {
     // Safe element retrieval
     const leaveTypeSelect = document.getElementById('leaveType');
