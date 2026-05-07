@@ -606,16 +606,36 @@ async function loadLeaveRequests() {
     try {
         const res = await fetch(`${config.middlewareUrl}/api/leave-requests/${config.employeeId}`);
         const data = await res.json();
-        const el = $('leaveRequestsList');
-        if(data.success && data.requests?.length) {
-            el.innerHTML = '';
+        const el = document.getElementById('leaveRequestsList');
+        if (!el) return;
+
+        if (data.success && data.requests && data.requests.length > 0) {
+            let html = '';
             data.requests.forEach(req => {
-                const cls = req.status==='Approved'?'status-approved':req.status==='Rejected'?'status-rejected':'status-pending';
-                el.innerHTML += `<div class="leave-request-item"><div style="display:flex;justify-content:space-between;"><div><strong>${req.leave_type}</strong><div style="font-size:12px;color:var(--text-secondary);">${req.from_date} → ${req.to_date}</div></div><span class="leave-status ${cls}">${req.status}</span></div></div>`;
+                const statusClass = req.status === 'Approved' ? 'status-approved' : 
+                                   req.status === 'Rejected' ? 'status-rejected' : 'status-pending';
+                html += `
+                    <div class="leave-request-item" onclick="viewLeaveDetail('${req.name}')" style="cursor:pointer;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <strong>${req.leave_type}</strong>
+                                <div style="font-size:12px;color:var(--text-secondary);">${req.from_date} → ${req.to_date}</div>
+                            </div>
+                            <span class="leave-status ${statusClass}">${req.status}</span>
+                        </div>
+                    </div>
+                `;
             });
-        } else { if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No requests</p>'; }
-    } catch(e) { if($('leaveRequestsList')) $('leaveRequestsList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
+            el.innerHTML = html;
+        } else {
+            el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No leave requests found</p>';
+        }
+    } catch(e) {
+        const el = document.getElementById('leaveRequestsList');
+        if (el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Error loading requests</p>';
+    }
 }
+
 async function submitLeaveApplication() {
     // Safe element retrieval
     const leaveTypeSelect = document.getElementById('leaveType');
