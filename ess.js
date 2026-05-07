@@ -279,11 +279,10 @@ function showAppSection() {
     }
 }
 
-// Helper: Check if employee has any check-in today
+// Helper: Check if employee has completed check-in for today
 function isCheckinCompleted() {
-    // This is set by checkCurrentStatus after fetching today's check-ins
-    // If currentStatus was ever IN today, they've checked in
-    return currentStatus === 'OUT' && document.getElementById('checkBtn')?.textContent === 'CHECK IN';
+    // If status is OUT and there are already check-ins today, they've finished
+    return currentStatus === 'OUT' && hasCheckedInToday === true;
 }
 
 async function checkCurrentStatus() {
