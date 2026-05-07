@@ -513,25 +513,43 @@ async function loadLeaveBalance() {
 
         if (result.success && result.balances && result.balances.length > 0) {
             let html = '';
-            result.balances.forEach(b => {
+            
+            result.balances.forEach((b, index) => {
                 const allocated = b.leaves_allocated || 0;
                 const taken = b.leaves_taken || 0;
                 const available = allocated - taken;
+                const usagePercent = allocated > 0 ? Math.round((taken / allocated) * 100) : 0;
+                
+                const gradients = [
+                    ['#667eea', '#764ba2'],
+                    ['#f093fb', '#f5576c'],
+                    ['#4facfe', '#00f2fe'],
+                    ['#43e97b', '#38f9d7'],
+                    ['#fa709a', '#fee140'],
+                    ['#a18cd1', '#fbc2eb']
+                ];
+                const [from, to] = gradients[index % gradients.length];
+                
                 html += `
-                    <div class="leave-type">
-                        <div class="count">${available}</div>
-                        <div class="label">${b.leave_type} (Available)</div>
+                    <div class="leave-card" style="background:linear-gradient(135deg,${from},${to});">
+                        <div class="leave-card-watermark">🏖️</div>
+                        <div class="leave-card-content">
+                            <div class="leave-card-type">${b.leave_type}</div>
+                            <div class="leave-card-count">${available}</div>
+                            <div class="leave-card-label">days available</div>
+                            <div class="leave-card-bar"><div class="leave-card-fill" style="width:${usagePercent}%;"></div></div>
+                            <div class="leave-card-used">${taken} of ${allocated} days used</div>
+                        </div>
                     </div>
                 `;
             });
+            
             summaryEl.innerHTML = html;
 
             if (leaveTypeSelect) {
                 leaveTypeSelect.innerHTML = '<option value="">Select Leave Type</option>';
                 result.balances.forEach(b => {
-                    const allocated = b.leaves_allocated || 0;
-                    const taken = b.leaves_taken || 0;
-                    const available = allocated - taken;
+                    const available = (b.leaves_allocated || 0) - (b.leaves_taken || 0);
                     if (available > 0) {
                         leaveTypeSelect.innerHTML += `<option value="${b.leave_type}">${b.leave_type} (${available} days)</option>`;
                     }
@@ -539,13 +557,18 @@ async function loadLeaveBalance() {
             }
             loadUpcomingLeave();
         } else {
-            summaryEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No leave allocations found</p>';
+            summaryEl.innerHTML = `
+                <div class="leave-empty">
+                    <div class="leave-empty-icon">🏖️</div>
+                    <p>No leave allocations found</p>
+                    <span>Contact HR for leave entitlements</span>
+                </div>`;
             if (leaveTypeSelect) leaveTypeSelect.innerHTML = '<option value="">No leave available</option>';
         }
     } catch (error) {
         console.error('Error loading leave balance:', error);
         const summaryEl = document.getElementById('leaveBalanceSummary');
-        if (summaryEl) summaryEl.innerHTML = '<p style="text-align:center;padding:20px;">Error loading balance</p>';
+        if (summaryEl) summaryEl.innerHTML = '<div class="leave-empty" style="color:var(--danger);">Error loading balance</div>';
     }
 }
 
