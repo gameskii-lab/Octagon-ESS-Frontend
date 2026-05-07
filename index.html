@@ -247,6 +247,11 @@
                 <div class="tabs"><button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">💰 Balance</button><button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">📋 Requests</button></div>
                 <div id="leaveBalanceTab"><h2 class="section-title">Leave Balance</h2><div id="leaveBalanceSummary" style="margin-bottom:20px;"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></div>
                 <div id="leaveRequestsTab" style="display:none;"><h2 class="section-title">Recent Requests</h2><div id="leaveRequestsList"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></div>
+                <!-- Leave Detail View (hidden by default) -->
+                <div id="leaveDetailView" style="display:none;">
+                    <button onclick="closeLeaveDetail()" style="width:auto;padding:8px 12px;background:none;color:var(--primary);font-size:14px;margin-bottom:12px;cursor:pointer;">← Back to Leave</button>
+                    <div id="leaveDetailContent" class="leave-request-item"></div>
+                </div>
             </main>
             <button class="fab" onclick="openLeaveApplyModal()" style="position:fixed;bottom:20px;right:20px;width:56px;height:56px;background:var(--primary);border:none;border-radius:50%;color:white;font-size:24px;cursor:pointer;box-shadow:var(--shadow);z-index:999;">+</button>
         </div>
