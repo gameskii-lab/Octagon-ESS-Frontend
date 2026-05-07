@@ -37,29 +37,56 @@ document.addEventListener('DOMContentLoaded', async () => {
                 getLocation();
                 return;
             }
+            
+            // Check if inside geofence
+            let isOffsite = false;
+            let offsiteReason = '';
+            let offsiteNotes = '';
+            
             if (config.siteLat && config.siteLng) {
                 const dist = calculateDistance(currentLocation.latitude, currentLocation.longitude, config.siteLat, config.siteLng);
+                
                 if (dist > config.siteRadius) {
-                    showStatus(`📍 Too far (${Math.round(dist)}m). Max: ${config.siteRadius}m`, 'error');
-                    return;
+                    // Outside geofence - show offsite popup
+                    isOffsite = true;
+                    const reason = await showOffsitePopup(dist);
+                    if (!reason) {
+                        showStatus('Check-in cancelled', 'info');
+                        return; // User cancelled
+                    }
+                    offsiteReason = reason.reason;
+                    offsiteNotes = reason.notes || '';
                 }
             }
+            
             checkBtn.disabled = true;
             checkBtn.textContent = 'Processing...';
             const logType = currentStatus === 'IN' ? 'OUT' : 'IN';
+            
             try {
                 const now = new Date();
                 const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+                
                 const res = await fetch(`${config.middlewareUrl}/api/checkin`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ employeeId: config.employeeId, logType, timestamp, latitude: currentLocation.latitude, longitude: currentLocation.longitude })
+                    body: JSON.stringify({ 
+                        employeeId: config.employeeId, 
+                        logType, 
+                        timestamp, 
+                        latitude: currentLocation.latitude, 
+                        longitude: currentLocation.longitude,
+                        isOffsite: isOffsite,
+                        offsiteReason: offsiteReason,
+                        offsiteNotes: offsiteNotes
+                    })
                 });
                 const data = await res.json();
                 if (data.success) {
                     currentStatus = logType;
                     updateButtonState();
-                    showStatus(`✅ Checked ${logType.toLowerCase()} at ${now.toLocaleTimeString()}`, 'success');
+                    const msg = isOffsite ? `✅ Offsite check-${logType.toLowerCase()} recorded` : `✅ Checked ${logType.toLowerCase()} at ${now.toLocaleTimeString()}`;
+                    showStatus(msg, 'success');
                 } else {
                     throw new Error(data.error || 'Failed');
                 }
@@ -244,6 +271,81 @@ function logout() {
     if($('loginEmail')) $('loginEmail').value = '';
     if($('loginPassword')) $('loginPassword').value = '';
     showStatus('Signed out', 'info');
+}
+
+// Show offsite check-in popup - returns {reason, notes} or null if cancelled
+function showOffsitePopup(distance) {
+    return new Promise((resolve) => {
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;display:flex;align-items:flex-end;justify-content:center;';
+        
+        // Create popup
+        const popup = document.createElement('div');
+        popup.style.cssText = 'background:white;border-radius:20px 20px 0 0;padding:24px;max-width:450px;width:100%;max-height:80vh;overflow-y:auto;animation:slideUp 0.3s ease;';
+        popup.innerHTML = `
+            <style>
+                @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            </style>
+            <h3 style="margin:0 0 8px 0;">📍 Offsite Check-in</h3>
+            <p style="color:#666;margin:0 0 16px 0;">You are ${Math.round(distance)}m from your base location. Please select a reason for checking in offsite.</p>
+            
+            <div style="margin-bottom:16px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">Reason *</label>
+                <select id="offsiteReason" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+                    <option value="">Select reason...</option>
+                    <option value="Client Visit">🏢 Client Visit</option>
+                    <option value="Offsite Meeting">📋 Offsite Meeting</option>
+                    <option value="Field Work">🚗 Field Work</option>
+                    <option value="Working from Home">🏠 Working from Home</option>
+                    <option value="Other">✏️ Other</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom:16px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">Notes (optional)</label>
+                <textarea id="offsiteNotes" rows="2" placeholder="Add any additional details..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:none;"></textarea>
+            </div>
+            
+            <p id="offsiteError" style="color:#f44336;text-align:center;display:none;margin-bottom:12px;">Please select a reason</p>
+            
+            <div style="display:flex;gap:10px;">
+                <button id="offsiteCancel" style="flex:1;padding:14px;background:#f1f5f9;color:#475569;border:none;border-radius:12px;font-weight:600;cursor:pointer;">Cancel</button>
+                <button id="offsiteConfirm" style="flex:1;padding:14px;background:#3b82f6;color:white;border:none;border-radius:12px;font-weight:600;cursor:pointer;">Continue Check-In</button>
+            </div>
+        `;
+        
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+        
+        // Handle cancel
+        document.getElementById('offsiteCancel').onclick = () => {
+            document.body.removeChild(overlay);
+            resolve(null);
+        };
+        
+        // Handle confirm
+        document.getElementById('offsiteConfirm').onclick = () => {
+            const reason = document.getElementById('offsiteReason').value;
+            const notes = document.getElementById('offsiteNotes').value;
+            
+            if (!reason) {
+                document.getElementById('offsiteError').style.display = 'block';
+                return;
+            }
+            
+            document.body.removeChild(overlay);
+            resolve({ reason, notes });
+        };
+        
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                document.body.removeChild(overlay);
+                resolve(null);
+            }
+        });
+    });
 }
 
 function showStatus(msg, type) {
