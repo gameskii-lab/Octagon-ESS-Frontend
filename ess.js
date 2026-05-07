@@ -228,6 +228,10 @@ function showAppSection() {
     if($('appHeader')) { $('appHeader').style.display = 'block'; }
     if($('screenTitle')) $('screenTitle').textContent = 'Dashboard';
     updateDrawerInfo();
+    if (currentLocation) {
+        const el = $('locationDisplay');
+        if (el) el.innerHTML = `📍 Lat: ${currentLocation.latitude.toFixed(6)}, Lng: ${currentLocation.longitude.toFixed(6)}`;
+    }
     const checkBtn = document.getElementById('checkBtn');
     const worksiteEl = document.getElementById('worksiteDisplay');
     
