@@ -234,7 +234,7 @@ function showAppSection() {
     if (config.customEmployeeBase === 'Office Based' && config.todaysShift === 'Office Shift') {
         
         // If already checked OUT today, hide button completely
-        if (currentStatus === 'OUT' && hasCheckedInToday()) {
+        if (currentStatus === 'OUT' && isCheckinCompleted()) {
             if (checkBtn) checkBtn.style.display = 'none';
             if (worksiteEl) worksiteEl.textContent = '✅ You have completed your check-in for today.';
             return;
@@ -276,7 +276,7 @@ function showAppSection() {
 }
 
 // Helper: Check if employee has any check-in today
-function hasCheckedInToday() {
+function isCheckinCompleted() {
     // This is set by checkCurrentStatus after fetching today's check-ins
     // If currentStatus was ever IN today, they've checked in
     return currentStatus === 'OUT' && document.getElementById('checkBtn')?.textContent === 'CHECK IN';
