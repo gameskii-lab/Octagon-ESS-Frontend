@@ -714,11 +714,18 @@ function renderCalendar() {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     monthEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const firstDay = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7;
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const today = new Date().toISOString().split('T')[0];
 
     let gridHTML = '';
+    // Day headers (Mon-Sun)
+    const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    gridHTML += '<div style="display:contents;">';
+    dayHeaders.forEach(d => {
+        gridHTML += `<div style="font-weight:bold;font-size:11px;color:var(--text-secondary);text-align:center;padding:4px 0;">${d}</div>`;
+    });
+    gridHTML += '</div>';
     for (let i = 0; i < firstDay; i++) gridHTML += '<div></div>';
 
     for (let day = 1; day <= daysInMonth; day++) {
