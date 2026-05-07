@@ -134,10 +134,10 @@
             </header>
             <main class="main-content">
                 <div class="checkin-container">
-                    <button class="submit-btn" id="checkBtn" onclick="handleCheckIn()" disabled style="max-width:320px; margin:0 auto;">CHECK IN</button>
+                    <button class="submit-btn" id="checkBtn" disabled style="max-width:320px; margin:0 auto;">CHECK IN</button>
                     <!-- Removed hardcoded spinner text. JS controls this now. -->
                 </div>
-                <div id="locationDisplay" style="margin-top:12px; font-size:13px; color:var(--text-secondary); text-align:center;">📍 Requesting location...</div>
+                <div id="locationDisplay" style="margin-top:12px; font-size:13px; color:var(--text-secondary); text-align:center;"></div>
                 <h2 class="section-title">Today's Attendance</h2>
                 <div class="attendance-cards">
                     <div class="attendance-card"><div class="attendance-value" style="color:var(--success);" id="presentCount">100</div><div class="attendance-label">Present</div></div>
