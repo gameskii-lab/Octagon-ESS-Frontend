@@ -762,6 +762,12 @@ async function loadUpcomingLeave() {
     }
 }
 
+function statusToClass(status) {
+    if (status === 'Approved') return 'status-approved';
+    if (status === 'Rejected') return 'status-rejected';
+    return 'status-pending';
+}
+
 async function loadLeaveRequests() {
     try {
         const res = await apiFetch(`/api/leave-requests/${config.employeeId}`);
@@ -772,27 +778,27 @@ async function loadLeaveRequests() {
         if (data.success && data.requests && data.requests.length > 0) {
             let html = '';
             data.requests.forEach(req => {
-                const statusClass = req.status === 'Approved' ? 'status-approved' : 
-                                   req.status === 'Rejected' ? 'status-rejected' : 'status-pending';
+                const cls = statusToClass(req.status);
+                const days = req.total_leave_days ? `${req.total_leave_days}d` : '';
                 html += `
-                    <div class="leave-request-item" onclick="viewLeaveDetail('${req.name}')" style="cursor:pointer;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div>
-                                <strong>${req.leave_type}</strong>
-                                <div style="font-size:12px;color:var(--text-secondary);">${req.from_date} → ${req.to_date}</div>
+                    <div class="atlas-row" onclick="viewLeaveDetail('${req.name}')">
+                        <div class="atlas-row-head">
+                            <div style="min-width:0;flex:1;">
+                                <div class="atlas-row-title">${req.leave_type}</div>
+                                <div class="atlas-row-meta">${req.from_date} → ${req.to_date}${days ? ' · ' + days : ''}</div>
                             </div>
-                            <span class="leave-status ${statusClass}">${req.status}</span>
+                            <span class="leave-status ${cls}">${req.status}</span>
                         </div>
                     </div>
                 `;
             });
             el.innerHTML = html;
         } else {
-            el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No leave requests found</p>';
+            el.innerHTML = '<div class="atlas-empty">No leave requests yet.</div>';
         }
     } catch(e) {
         const el = document.getElementById('leaveRequestsList');
-        if (el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Error loading requests</p>';
+        if (el) el.innerHTML = '<div class="atlas-empty">Error loading requests.</div>';
     }
 }
 
@@ -818,19 +824,17 @@ async function viewLeaveDetail(docname) {
         if (detailView) detailView.style.display = 'block';
         if (applyBtn) applyBtn.style.display = 'none';
         
-        const statusClass = request.status === 'Approved' ? 'status-approved' : 
-                           request.status === 'Rejected' ? 'status-rejected' : 'status-pending';
-        
+        const statusClass = statusToClass(request.status);
+
         document.getElementById('leaveDetailContent').innerHTML = `
-            <div style="text-align:center;margin-bottom:20px;">
-                <span class="leave-status ${statusClass}" style="font-size:16px;padding:8px 20px;">${request.status}</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px;">
+                <div class="atlas-row-title">${request.leave_type}</div>
+                <span class="leave-status ${statusClass}">${request.status}</span>
             </div>
-            <h3 style="text-align:center;margin-bottom:16px;">${request.leave_type}</h3>
-            <div class="hours-row"><span>From:</span><span>${request.from_date}</span></div>
-            <div class="hours-row"><span>To:</span><span>${request.to_date}</span></div>
-            <div class="hours-row"><span>Days:</span><span>${request.total_leave_days || 'N/A'}</span></div>
-            <div class="hours-row"><span>Status:</span><span class="leave-status ${statusClass}">${request.status}</span></div>
-            ${request.description ? `<div class="hours-row"><span>Reason:</span><span>${request.description}</span></div>` : ''}
+            <div class="hours-row"><span>From</span><span>${request.from_date}</span></div>
+            <div class="hours-row"><span>To</span><span>${request.to_date}</span></div>
+            <div class="hours-row"><span>Days</span><span>${request.total_leave_days || '—'}</span></div>
+            ${request.description ? `<div class="hours-row"><span>Reason</span><span style="text-align:right;">${request.description}</span></div>` : ''}
         `;
     } catch (error) {
         console.error('Error viewing leave detail:', error);
@@ -983,37 +987,34 @@ function renderCalendar() {
     const today = new Date().toISOString().split('T')[0];
 
     let gridHTML = '';
-    // Day headers (Mon-Sun)
     const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    gridHTML += '<div style="display:contents;">';
     dayHeaders.forEach(d => {
-        gridHTML += `<div style="font-weight:bold;font-size:11px;color:var(--text-secondary);text-align:center;padding:4px 0;">${d}</div>`;
+        gridHTML += `<div class="cal-header-cell">${d}</div>`;
     });
-    gridHTML += '</div>';
     for (let i = 0; i < firstDay; i++) gridHTML += '<div></div>';
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        let status = 'off', label = '';
+        let status = 'off', tag = '';
 
         if (scheduleData.shifts?.some(s => dateStr >= s.start_date && dateStr <= s.end_date)) {
-            status = 'work'; label = 'Shift';
+            status = 'work'; tag = '';
         }
         if (scheduleData.leaves?.some(l => dateStr >= l.from_date && dateStr <= l.to_date)) {
-            status = 'leave'; label = 'Leave';
+            status = 'leave'; tag = 'Leave';
         }
         if (scheduleData.holidays?.some(h => h.holiday_date === dateStr)) {
-            status = 'holiday'; label = 'Holiday';
+            status = 'holiday'; tag = 'Hol';
         }
 
         const isToday = dateStr === today;
-        const colors = { work: '#d1fae5', leave: '#fef3c7', holiday: '#fee2e2', off: '#f1f5f9' };
-        const textColors = { work: '#065f46', leave: '#92400e', holiday: '#991b1b', off: '#64748b' };
+        const classes = ['cal-cell', `is-${status}`];
+        if (isToday) classes.push('is-today');
 
         gridHTML += `
-            <div onclick="showDayDetail('${dateStr}')" style="padding:8px 4px;border-radius:8px;background:${colors[status]};cursor:pointer;text-align:center;${isToday ? 'border:2px solid var(--primary);' : ''}">
-                <div style="font-size:13px;font-weight:${isToday ? '700' : '500'};color:${textColors[status]};">${day}</div>
-                ${label ? `<div style="font-size:9px;color:${textColors[status]};margin-top:2px;">${label}</div>` : ''}
+            <div onclick="showDayDetail('${dateStr}')" class="${classes.join(' ')}">
+                <div class="cal-num">${day}</div>
+                ${tag ? `<div class="cal-tag">${tag}</div>` : ''}
             </div>
         `;
     }
@@ -1026,29 +1027,41 @@ function showDayDetail(dateStr) {
     const content = document.getElementById('dayDetailContent');
     if (!detail || !title || !content) return;
 
-    title.textContent = `📅 ${dateStr}`;
+    title.textContent = new Date(dateStr).toLocaleDateString('en-US', { weekday:'long', day:'numeric', month:'long' });
     let html = '', found = false;
+
+    const row = (kind, title, sub, cls) => `
+        <div class="atlas-row" style="cursor:default;">
+            <div class="atlas-row-head">
+                <div style="min-width:0;flex:1;">
+                    <div class="atlas-row-meta">${kind}</div>
+                    <div class="atlas-row-title" style="font-size:16px;margin-top:2px;">${title}</div>
+                    ${sub ? `<div class="atlas-row-meta" style="margin-top:4px;">${sub}</div>` : ''}
+                </div>
+                <span class="leave-status ${cls}">${kind}</span>
+            </div>
+        </div>`;
 
     scheduleData.shifts?.forEach(s => {
         if (dateStr >= s.start_date && dateStr <= s.end_date) {
             found = true;
-            html += `<div class="leave-request-item" style="border-left:4px solid var(--success);margin-bottom:8px;"><strong>🟢 Work</strong><div>${s.shift_type || 'Assigned Shift'}</div></div>`;
+            html += row('Work', s.shift_type || 'Assigned shift', '', 'status-approved');
         }
     });
     scheduleData.leaves?.forEach(l => {
         if (dateStr >= l.from_date && dateStr <= l.to_date) {
             found = true;
-            html += `<div class="leave-request-item" style="border-left:4px solid var(--warning);margin-bottom:8px;"><strong>🟡 Leave</strong><div>${l.leave_type}</div></div>`;
+            html += row('Leave', l.leave_type, '', 'status-pending');
         }
     });
     scheduleData.holidays?.forEach(h => {
         if (h.holiday_date === dateStr) {
             found = true;
-            html += `<div class="leave-request-item" style="border-left:4px solid var(--danger);margin-bottom:8px;"><strong>🔴 Holiday</strong><div>${h.description || 'Holiday'}</div></div>`;
+            html += row('Holiday', h.description || 'Holiday', '', 'status-rejected');
         }
     });
 
-    content.innerHTML = found ? html : '<p style="text-align:center;color:var(--text-secondary);">No events</p>';
+    content.innerHTML = found ? html : '<div class="atlas-empty">No events on this day.</div>';
     detail.classList.remove('hidden');
 }
 
@@ -1062,20 +1075,22 @@ function renderUpcomingShifts() {
     if (!listEl) return;
 
     if (!scheduleData.shifts || scheduleData.shifts.length === 0) {
-        listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No upcoming shifts</p>';
+        listEl.innerHTML = '<div class="atlas-empty">No upcoming shifts.</div>';
         return;
     }
 
     let html = '';
     scheduleData.shifts.slice(0, 5).forEach(s => {
+        const range = s.start_date === s.end_date ? s.start_date : `${s.start_date} → ${s.end_date}`;
         html += `
-            <div class="leave-request-item">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <strong>${s.shift_type || 'Shift'}</strong>
+            <div class="atlas-row" style="cursor:default;">
+                <div class="atlas-row-head">
+                    <div style="min-width:0;flex:1;">
+                        <div class="atlas-row-title">${s.shift_type || 'Shift'}</div>
+                        <div class="atlas-row-meta">${range}${s.shift_location ? ' · ' + s.shift_location : ''}</div>
+                    </div>
                     <span class="leave-status status-approved">Confirmed</span>
                 </div>
-                <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">📅 ${s.start_date} to ${s.end_date}</div>
-                ${s.shift_location ? `<div style="font-size:13px;color:var(--text-secondary);">📍 ${s.shift_location}</div>` : ''}
             </div>
         `;
     });
@@ -1085,17 +1100,34 @@ function renderUpcomingShifts() {
 // PAYSLIPS
 async function loadPayslipsScreen() {
     if(!config.employeeId) return;
+    const fmtBND = v => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BND' }).format(v || 0);
     try {
         const res = await apiFetch(`/api/payslips/${config.employeeId}`);
         const data = await res.json();
         const el = $('payslipsList');
-        if(data.success && data.payslips?.length) {
-            el.innerHTML = '';
+        if (!el) return;
+
+        if (data.success && data.payslips?.length) {
+            let html = '';
             data.payslips.forEach(s => {
-                el.innerHTML += `<div class="leave-request-item"><div style="display:flex;justify-content:space-between;"><strong>${s.period}</strong><span style="font-weight:700;color:var(--success);">${new Intl.NumberFormat('en-US',{style:'currency',currency:'BND'}).format(s.net_pay)}</span></div><div style="font-size:12px;color:var(--text-secondary);">Gross: ${new Intl.NumberFormat('en-US',{style:'currency',currency:'BND'}).format(s.gross_pay)} • Ded: ${new Intl.NumberFormat('en-US',{style:'currency',currency:'BND'}).format(s.total_deduction)}</div></div>`;
+                html += `
+                    <div class="atlas-row">
+                        <div class="atlas-row-meta">${s.period}</div>
+                        <div class="atlas-amount" style="margin-top:4px;">${fmtBND(s.net_pay)}</div>
+                        <div class="atlas-row-foot">
+                            <span>Gross ${fmtBND(s.gross_pay)}</span>
+                            <span>Ded ${fmtBND(s.total_deduction)}</span>
+                        </div>
+                    </div>
+                `;
             });
-        } else { if(el) el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">No payslips</p>'; }
-    } catch(e) { if($('payslipsList')) $('payslipsList').innerHTML = '<p style="text-align:center;padding:20px;">Error</p>'; }
+            el.innerHTML = html;
+        } else {
+            el.innerHTML = '<div class="atlas-empty">No payslips yet.</div>';
+        }
+    } catch(e) {
+        if($('payslipsList')) $('payslipsList').innerHTML = '<div class="atlas-empty">Error loading payslips.</div>';
+    }
 }
 
 // ============================================
@@ -1124,24 +1156,24 @@ async function loadApprovalsScreen() {
             let html = '';
             result.approvals.forEach(approval => {
                 html += `
-                    <div class="leave-request-item" style="cursor:pointer;margin-bottom:10px;" onclick="viewApproval('${approval.doctype}', '${approval.docname}', '${approval.next_action || 'Approve'}')">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div>
-                                <strong style="font-size:15px;">${approval.title}</strong>
-                                <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${approval.doctype} • ${approval.state || 'Pending'}</div>
+                    <div class="atlas-row" onclick="viewApproval('${approval.doctype}', '${approval.docname}', '${approval.next_action || 'Approve'}')">
+                        <div class="atlas-row-head">
+                            <div style="min-width:0;flex:1;">
+                                <div class="atlas-row-title">${approval.title}</div>
+                                <div class="atlas-row-meta">${approval.doctype} · ${approval.state || 'Pending'}</div>
                             </div>
-                            <span class="leave-status status-pending">View →</span>
+                            <span class="leave-status status-pending">Review</span>
                         </div>
                     </div>
                 `;
             });
             if (listEl) listEl.innerHTML = html;
         } else {
-            if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">No pending approvals</p>';
+            if (listEl) listEl.innerHTML = '<div class="atlas-empty">No pending approvals.</div>';
         }
     } catch (error) {
         console.error('Approval load error:', error);
-        if (listEl) listEl.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Error loading approvals</p>';
+        if (listEl) listEl.innerHTML = '<div class="atlas-empty">Error loading approvals.</div>';
     }
 }
 
@@ -1159,8 +1191,8 @@ async function viewApproval(doctype, docname, nextAction) {
     }
     
     if (titleEl) titleEl.textContent = `${doctype}: ${docname}`;
-    if (printViewEl) printViewEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading document...</p>';
-    if (approveBtn) { approveBtn.style.display = 'block'; approveBtn.textContent = `✅ ${nextAction || 'Approve'}`; }
+    if (printViewEl) printViewEl.innerHTML = '<div class="atlas-empty">Loading document…</div>';
+    if (approveBtn) { approveBtn.style.display = 'block'; approveBtn.textContent = nextAction || 'Approve'; }
     if (rejectBtn) rejectBtn.style.display = 'block';
 
     // Fetch Document Print Format

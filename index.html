@@ -847,6 +847,260 @@
         .atlas-profile-row .v {
             font-size: 14px; font-weight: 600;
         }
+
+        /* ── Atlas status pills (override old pastel) */
+        .atlas-page .leave-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 10px; border-radius: 999px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 9.5px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            background: rgba(10,11,13,0.06); color: rgba(10,11,13,0.7);
+        }
+        .atlas-page .leave-status.status-approved {
+            background: var(--atlas-accent); color: var(--atlas-accent-ink);
+        }
+        .atlas-page .leave-status.status-pending {
+            background: rgba(245,183,60,0.18); color: #8B5A00;
+        }
+        .atlas-page .leave-status.status-rejected {
+            background: rgba(224,88,76,0.15); color: #B23A30;
+        }
+
+        /* ── Atlas list-card row (a leave/payslip/approval row) */
+        .atlas-row {
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid rgba(10,11,13,0.06);
+            padding: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.1s ease, border-color 0.15s ease;
+        }
+        .atlas-row:active { transform: scale(0.99); }
+        .atlas-row-head {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+        }
+        .atlas-row-title {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 18px; font-weight: 600; letter-spacing: -0.4px;
+            line-height: 1.15;
+        }
+        .atlas-row-meta {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1.1px;
+            text-transform: uppercase; color: rgba(10,11,13,0.5);
+            margin-top: 4px;
+        }
+        .atlas-row-foot {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 10px;
+            font-family: 'Geist Mono', monospace; font-size: 10px;
+            letter-spacing: 0.8px; text-transform: uppercase;
+            color: rgba(10,11,13,0.55);
+        }
+        .atlas-amount {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 26px; font-weight: 700; letter-spacing: -0.8px;
+            font-variant-numeric: tabular-nums;
+        }
+        .atlas-empty {
+            text-align: center; padding: 28px 16px;
+            color: rgba(10,11,13,0.5); font-size: 13px;
+        }
+
+        /* ── Detail key/value rows (replaces .hours-row) */
+        .atlas-page .hours-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(10,11,13,0.06);
+            font-size: 14px;
+        }
+        .atlas-page .hours-row:last-child { border-bottom: none; }
+        .atlas-page .hours-row > span:first-child {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+        }
+        .atlas-page .hours-row > span:last-child {
+            font-weight: 600; color: var(--atlas-ink);
+        }
+
+        /* ── Calendar day cells */
+        .cal-cell {
+            padding: 8px 4px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid transparent;
+            transition: transform 0.1s ease;
+        }
+        .cal-cell:active { transform: scale(0.95); }
+        .cal-cell .cal-num {
+            font-family: 'Geist', system-ui, sans-serif;
+            font-size: 13px; font-weight: 500;
+            color: var(--atlas-ink);
+        }
+        .cal-cell .cal-tag {
+            font-family: 'Geist Mono', monospace;
+            font-size: 8.5px; letter-spacing: 0.6px;
+            text-transform: uppercase;
+            margin-top: 3px;
+            color: rgba(10,11,13,0.55);
+        }
+        .cal-cell.is-off  { background: rgba(10,11,13,0.03); }
+        .cal-cell.is-work { background: rgba(10,11,13,0.06); }
+        .cal-cell.is-work .cal-num { color: var(--atlas-ink); font-weight: 600; }
+        .cal-cell.is-leave { background: rgba(245,183,60,0.18); }
+        .cal-cell.is-leave .cal-num { color: #8B5A00; font-weight: 600; }
+        .cal-cell.is-holiday { background: rgba(224,88,76,0.15); }
+        .cal-cell.is-holiday .cal-num { color: #B23A30; font-weight: 600; }
+        .cal-cell.is-today {
+            background: var(--atlas-accent);
+            border-color: var(--atlas-ink);
+        }
+        .cal-cell.is-today .cal-num,
+        .cal-cell.is-today .cal-tag { color: var(--atlas-ink); font-weight: 700; }
+        .cal-header-cell {
+            font-family: 'Geist Mono', monospace;
+            font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase;
+            color: rgba(10,11,13,0.45);
+            text-align: center;
+            padding: 6px 0 4px;
+        }
+
+        /* ── Modal restyle (Apply Leave bottom sheet) */
+        .modal-overlay { background: rgba(10,11,13,0.5); backdrop-filter: blur(6px); }
+        .modal-content {
+            background: var(--atlas-bg);
+            color: var(--atlas-ink);
+            border-radius: 28px 28px 0 0;
+            padding: 24px 22px max(env(safe-area-inset-bottom, 0px), 32px);
+            font-family: 'Geist', system-ui, sans-serif;
+        }
+        .modal-title {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 26px; font-weight: 600; letter-spacing: -0.8px; line-height: 1.05;
+        }
+        .modal-header {
+            margin-bottom: 18px;
+        }
+        .close-modal {
+            background: rgba(10,11,13,0.05);
+            border: none; width: 36px; height: 36px;
+            border-radius: 12px; cursor: pointer;
+            color: var(--atlas-ink);
+        }
+        .modal-content .form-label {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .modal-content .form-input,
+        .modal-content .form-select,
+        .modal-content .form-textarea {
+            border: 1px solid rgba(10,11,13,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            font-family: 'Geist', system-ui, sans-serif;
+            background: #fff;
+            font-size: 16px;
+        }
+        .modal-content .submit-btn {
+            background: var(--atlas-ink);
+            color: #fff;
+            border-radius: 16px;
+            height: 54px; padding: 0;
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            box-shadow: 0 14px 32px -10px rgba(0,0,0,0.35);
+            margin-top: 6px;
+        }
+
+        /* ── Approve / Reject button differentiation */
+        .atlas-action-approve {
+            background: var(--atlas-accent) !important;
+            color: var(--atlas-accent-ink) !important;
+        }
+        .atlas-action-reject {
+            background: transparent !important;
+            color: #B23A30 !important;
+            border: 1px solid rgba(178,58,48,0.35) !important;
+        }
+
+        /* ── Atlas restyle for leave-balance cards (override pastel gradients) */
+        .atlas-page .leave-card {
+            background: #fff !important;
+            color: var(--atlas-ink) !important;
+            border: 1px solid rgba(10,11,13,0.06);
+            border-radius: 18px;
+            padding: 16px 18px;
+            box-shadow: none;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .atlas-page .leave-card-watermark { display: none; }
+        .atlas-page .leave-card-type {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.55);
+            opacity: 1;
+            margin-bottom: 4px;
+        }
+        .atlas-page .leave-card-count {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 38px; font-weight: 700;
+            letter-spacing: -1.2px;
+            line-height: 0.95;
+            font-variant-numeric: tabular-nums;
+            color: var(--atlas-ink);
+        }
+        .atlas-page .leave-card-label {
+            font-size: 12px;
+            color: rgba(10,11,13,0.55);
+            opacity: 1;
+            margin-top: 4px;
+        }
+        .atlas-page .leave-card-bar {
+            background: rgba(10,11,13,0.08);
+            margin-top: 12px;
+        }
+        .atlas-page .leave-card-fill {
+            background: var(--atlas-ink);
+        }
+        .atlas-page .leave-card-used {
+            font-family: 'Geist Mono', monospace;
+            font-size: 9.5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+            opacity: 1;
+        }
+        .atlas-page .leave-empty {
+            background: #fff;
+            border: 1px solid rgba(10,11,13,0.06);
+            border-radius: 18px;
+            box-shadow: none;
+            padding: 28px 20px;
+        }
+        .atlas-page .leave-empty p {
+            color: var(--atlas-ink);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .atlas-page .leave-empty span {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+        }
     </style>
 </head>
 <body>
@@ -1238,8 +1492,8 @@
                 <div id="approvalPrintView"></div>
                 <textarea id="approvalRemark" class="form-textarea" placeholder="Remark (optional)" style="margin-top:12px;"></textarea>
                 <div style="display:flex;gap:10px;margin-top:12px;">
-                    <button id="approveBtn" class="submit-btn" style="background:#0A0B0D;flex:1;">Approve</button>
-                    <button id="rejectBtn" class="submit-btn" style="background:#E0584C;flex:1;">Reject</button>
+                    <button id="approveBtn" class="submit-btn atlas-action-approve" style="flex:1;">Approve</button>
+                    <button id="rejectBtn" class="submit-btn atlas-action-reject" style="flex:1;">Reject</button>
                 </div>
             </div>
         </main>
