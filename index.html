@@ -698,6 +698,151 @@
             letter-spacing: 1.2px; text-transform: uppercase;
             color: rgba(10,11,13,0.45);
         }
+
+        /* ── Atlas page shell (Leave / Schedule / Payslips / Approvals / Profile) */
+        .atlas-page {
+            --atlas-accent: #D9F26B;
+            --atlas-accent-ink: #0A0B0D;
+            --atlas-bg: #FAFAF7;
+            --atlas-ink: #0A0B0D;
+            background: var(--atlas-bg);
+            color: var(--atlas-ink);
+            font-family: 'Geist', -apple-system, system-ui, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 110px;
+        }
+        .atlas-page-header {
+            position: sticky; top: 0; z-index: 50;
+            background: var(--atlas-ink); color: #fff;
+            padding: max(env(safe-area-inset-top, 0px), 24px) 18px 18px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .atlas-page-title {
+            flex: 1;
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            font-weight: 600;
+        }
+        .atlas-page-body { padding: 22px 18px 0; }
+
+        /* Hide global bottom tab bar until authenticated */
+        body:not(.app-ready) .dash-tabbar-wrap { display: none; }
+
+        /* Atlas-flavored restyles for shared components inside .atlas-page */
+        .atlas-page .section-title {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.55);
+            font-weight: 600;
+            margin: 22px 0 10px;
+        }
+        .atlas-page .leave-request-item {
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid rgba(10,11,13,0.06);
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: none;
+        }
+        .atlas-page .tabs {
+            display: flex; gap: 6px;
+            background: rgba(10,11,13,0.05);
+            padding: 4px;
+            border-radius: 999px;
+            margin-bottom: 16px;
+        }
+        .atlas-page .tab {
+            flex: 1;
+            background: transparent; border: none;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-family: 'Geist', system-ui, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(10,11,13,0.55);
+            cursor: pointer;
+            box-shadow: none;
+        }
+        .atlas-page .tab.active {
+            background: var(--atlas-ink);
+            color: #fff;
+            box-shadow: none;
+        }
+        .atlas-page .fab {
+            background: var(--atlas-ink) !important;
+            color: #fff !important;
+            box-shadow: 0 14px 32px -10px rgba(0,0,0,0.4) !important;
+            bottom: 100px !important;
+        }
+        .atlas-page .form-input,
+        .atlas-page .form-select,
+        .atlas-page .form-textarea {
+            border: 1px solid rgba(10,11,13,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            font-family: 'Geist', system-ui, sans-serif;
+            background: #fff;
+        }
+        .atlas-page .submit-btn {
+            background: var(--atlas-ink);
+            color: #fff;
+            border-radius: 16px;
+            height: 50px; padding: 0;
+            font-family: 'Geist', system-ui, sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: none;
+        }
+        /* Profile-specific Atlas card */
+        .atlas-profile-card {
+            background: var(--atlas-ink);
+            color: #fff;
+            border-radius: 22px;
+            padding: 28px 22px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .atlas-profile-card .draw-avatar { margin-bottom: 14px; }
+        .atlas-profile-card .name {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 28px; line-height: 1.05;
+            font-weight: 600; letter-spacing: -1px;
+        }
+        .atlas-profile-card .role {
+            margin-top: 6px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.65);
+        }
+        .atlas-profile-rows {
+            margin-top: 14px;
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid rgba(10,11,13,0.06);
+            overflow: hidden;
+        }
+        .atlas-profile-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(10,11,13,0.05);
+        }
+        .atlas-profile-row:last-child { border-bottom: none; }
+        .atlas-profile-row .k {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+        }
+        .atlas-profile-row .v {
+            font-size: 14px; font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -969,46 +1114,36 @@
             </div>
         </div>
 
-        <div class="dash-tabbar-wrap">
-            <div class="dash-tabbar">
-                <button class="dash-tab is-active" onclick="navigateTo('dashboard')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9v9h-6v-6H9v6H3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span>Home</span>
-                </button>
-                <button class="dash-tab" onclick="navigateTo('leave')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16l-7-3-7 3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span>Leave</span>
-                </button>
-                <button class="dash-tab" onclick="navigateTo('payslips')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span>Pay</span>
-                </button>
-                <button class="dash-tab" onclick="navigateTo('profile')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span>Profile</span>
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- LEAVE -->
-    <div id="leaveScreen" class="screen">
-        <div class="app-container">
-            <header class="app-header">
-                <div class="header-main"><button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button><div class="header-center"><h1 class="header-greeting">Leave</h1></div><div style="width:44px;"></div></div>
-            </header>
-            <main class="main-content">
-                <div class="tabs"><button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">💰 Balance</button><button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">📋 Requests</button></div>
-                <div id="leaveBalanceTab"><h2 class="section-title">Leave Balance</h2><div id="leaveBalanceSummary" style="margin-bottom:20px;"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></div>
-                <div id="leaveRequestsTab" style="display:none;"><h2 class="section-title">Recent Requests</h2><div id="leaveRequestsList"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></div>
-                <!-- Leave Detail View (hidden by default) -->
-                <div id="leaveDetailView" style="display:none;">
-                    <button onclick="closeLeaveDetail()" style="width:auto;padding:8px 12px;background:none;color:var(--primary);font-size:14px;margin-bottom:12px;cursor:pointer;">← Back to Leave</button>
-                    <div id="leaveDetailContent" class="leave-request-item"></div>
-                </div>
-            </main>
-            <button class="fab" onclick="openLeaveApplyModal()" style="position:fixed;bottom:20px;right:20px;width:56px;height:56px;background:var(--primary);border:none;border-radius:50%;color:white;font-size:24px;cursor:pointer;box-shadow:var(--shadow);z-index:999;">+</button>
+    <div id="leaveScreen" class="screen atlas-page">
+        <div class="atlas-page-header">
+            <button class="dash-menu-btn" onclick="openDrawer()" aria-label="Open menu">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 2h16M1 7h12M1 12h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <span class="atlas-page-title">Leave</span>
+            <span style="width:44px"></span>
         </div>
+        <main class="atlas-page-body">
+            <div class="tabs">
+                <button class="tab active" id="tabBalance" onclick="switchLeaveTab('balance')">Balance</button>
+                <button class="tab" id="tabRequests" onclick="switchLeaveTab('requests')">Requests</button>
+            </div>
+            <div id="leaveBalanceTab">
+                <h2 class="section-title">Leave balance</h2>
+                <div id="leaveBalanceSummary" style="margin-bottom:20px;"><p style="text-align:center;padding:20px;color:rgba(10,11,13,0.5);">Loading…</p></div>
+            </div>
+            <div id="leaveRequestsTab" style="display:none;">
+                <h2 class="section-title">Recent requests</h2>
+                <div id="leaveRequestsList"><p style="text-align:center;padding:20px;color:rgba(10,11,13,0.5);">Loading…</p></div>
+            </div>
+            <div id="leaveDetailView" style="display:none;">
+                <button onclick="closeLeaveDetail()" style="width:auto;padding:8px 12px;background:none;color:var(--atlas-ink);font-size:13px;font-weight:600;margin-bottom:12px;cursor:pointer;border:none;">← Back</button>
+                <div id="leaveDetailContent" class="leave-request-item"></div>
+            </div>
+        </main>
+        <button class="fab" onclick="openLeaveApplyModal()" style="position:fixed;bottom:100px;right:20px;width:56px;height:56px;border:none;border-radius:50%;font-size:24px;cursor:pointer;z-index:99;">+</button>
     </div>
 
     <!-- LEAVE MODAL -->
@@ -1024,114 +1159,112 @@
     </div>
 
     <!-- SCHEDULE -->
-    <div id="scheduleScreen" class="screen">
-        <div class="app-container">
-            <header class="app-header">
-                <div class="header-main">
-                    <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                    <div class="header-center"><h1 class="header-greeting">Schedule</h1></div>
-                    <div style="width:44px;"></div>
-                </div>
-            </header>
-            <main class="main-content">
-                <!-- Calendar Card -->
-                <div style="background:white;border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                        <button class="calendar-nav-btn" onclick="changeMonth(-1)" style="width:36px;height:36px;border:none;background:var(--bg);border-radius:8px;cursor:pointer;">◀</button>
-                        <h2 id="calendarMonth" style="font-size:16px;font-weight:700;margin:0;">Loading...</h2>
-                        <button class="calendar-nav-btn" onclick="changeMonth(1)" style="width:36px;height:36px;border:none;background:var(--bg);border-radius:8px;cursor:pointer;">▶</button>
-                    </div>
-                    <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;"></div>
-                    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center;">
-                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--success);"></div>Work</div>
-                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--warning);"></div>Leave</div>
-                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--danger);"></div>Holiday</div>
-                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><div style="width:10px;height:10px;border-radius:50%;background:var(--border);"></div>Off</div>
-                    </div>
-                </div>
-                
-                <!-- Day Detail View (hidden by default) -->
-                <div id="dayDetail" class="hidden leave-request-item" style="margin-bottom:16px;">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-                        <h3 id="dayDetailTitle" style="font-size:16px;font-weight:700;margin:0;">Day Detail</h3>
-                        <button onclick="hideDayDetail()" style="background:var(--bg);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;">✕</button>
-                    </div>
-                    <div id="dayDetailContent"></div>
-                </div>
-                
-                <!-- Upcoming Shifts -->
-                <h2 class="section-title">📋 Upcoming Shifts</h2>
-                <div id="scheduleList"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div>
-            </main>
+    <div id="scheduleScreen" class="screen atlas-page">
+        <div class="atlas-page-header">
+            <button class="dash-menu-btn" onclick="openDrawer()" aria-label="Open menu">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 2h16M1 7h12M1 12h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <span class="atlas-page-title">Schedule</span>
+            <span style="width:44px"></span>
         </div>
+        <main class="atlas-page-body">
+            <div style="background:#fff;border-radius:22px;border:1px solid rgba(10,11,13,0.06);padding:18px;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <button class="calendar-nav-btn" onclick="changeMonth(-1)" style="width:36px;height:36px;border:none;background:rgba(10,11,13,0.05);border-radius:10px;cursor:pointer;">◀</button>
+                    <h2 id="calendarMonth" style="font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:18px;font-weight:600;letter-spacing:-0.4px;margin:0;">Loading…</h2>
+                    <button class="calendar-nav-btn" onclick="changeMonth(1)" style="width:36px;height:36px;border:none;background:rgba(10,11,13,0.05);border-radius:10px;cursor:pointer;">▶</button>
+                </div>
+                <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;"></div>
+                <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;justify-content:center;font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:rgba(10,11,13,0.55);">
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><i style="width:7px;height:7px;border-radius:2px;background:#0A0B0D;display:inline-block;"></i>Work</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><i style="width:7px;height:7px;border-radius:2px;background:#F5B73C;display:inline-block;"></i>Leave</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><i style="width:7px;height:7px;border-radius:2px;background:#E0584C;display:inline-block;"></i>Holiday</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><i style="width:7px;height:7px;border-radius:2px;background:rgba(10,11,13,0.15);display:inline-block;"></i>Off</span>
+                </div>
+            </div>
+
+            <div id="dayDetail" class="hidden leave-request-item" style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h3 id="dayDetailTitle" style="font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:18px;font-weight:600;letter-spacing:-0.4px;margin:0;">Day detail</h3>
+                    <button onclick="hideDayDetail()" style="background:rgba(10,11,13,0.05);border:none;width:32px;height:32px;border-radius:10px;cursor:pointer;">✕</button>
+                </div>
+                <div id="dayDetailContent"></div>
+            </div>
+
+            <h2 class="section-title">Upcoming shifts</h2>
+            <div id="scheduleList"><p style="text-align:center;padding:20px;color:rgba(10,11,13,0.5);">Loading…</p></div>
+        </main>
     </div>
 
     <!-- PAYSLIPS -->
-    <div id="payslipsScreen" class="screen">
-        <div class="app-container">
-            <header class="app-header"><div class="header-main"><button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button><div class="header-center"><h1 class="header-greeting">Payslips</h1></div><div style="width:44px;"></div></div></header>
-            <main class="main-content"><h2 class="section-title">📄 Recent Payslips</h2><div id="payslipsList"><p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading...</p></div></main>
+    <div id="payslipsScreen" class="screen atlas-page">
+        <div class="atlas-page-header">
+            <button class="dash-menu-btn" onclick="openDrawer()" aria-label="Open menu">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 2h16M1 7h12M1 12h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <span class="atlas-page-title">Payslips</span>
+            <span style="width:44px"></span>
         </div>
+        <main class="atlas-page-body">
+            <h2 class="section-title">Recent payslips</h2>
+            <div id="payslipsList"><p style="text-align:center;padding:20px;color:rgba(10,11,13,0.5);">Loading…</p></div>
+        </main>
     </div>
 
     <!-- APPROVALS SCREEN -->
-    <div id="approvalsScreen" class="screen">
-        <div class="app-container">
-            <header class="app-header">
-                <div class="header-main">
-                    <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                    <div class="header-center"><h1 class="header-greeting">Approvals</h1></div>
-                    <div style="width:44px;"></div>
-                </div>
-            </header>
-            <main class="main-content">
-                <!-- 1. List View (Shows pending approvals) -->
-                <div id="approvalsList">
-                    <p style="text-align:center;padding:20px;color:var(--text-secondary);">Loading approvals...</p>
-                </div>
-
-                <!-- 2. Detail View (Hidden by default, shows document + buttons) -->
-                <div id="approvalDetail" class="hidden leave-request-item" style="margin-top:16px; display:none;">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-                        <h3 id="approvalDetailTitle" style="font-size:16px;font-weight:700;margin:0;">Details</h3>
-                        <button onclick="showApprovalsList()" style="background:var(--bg);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;">✕</button>
-                    </div>
-                    
-                    <!-- Document Content -->
-                    <div id="approvalPrintView"></div>
-                    
-                    <!-- Remark Input -->
-                    <textarea id="approvalRemark" class="form-textarea" placeholder="Remark (optional)" style="margin-top:12px;"></textarea>
-                    
-                    <!-- Action Buttons -->
-                    <div style="display:flex;gap:10px;margin-top:12px;">
-                        <button id="approveBtn" class="submit-btn" style="background:var(--success);flex:1;">✅ Approve</button>
-                        <button id="rejectBtn" class="submit-btn" style="background:var(--danger);flex:1;">❌ Reject</button>
-                    </div>
-                </div>
-            </main>
+    <div id="approvalsScreen" class="screen atlas-page">
+        <div class="atlas-page-header">
+            <button class="dash-menu-btn" onclick="openDrawer()" aria-label="Open menu">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 2h16M1 7h12M1 12h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <span class="atlas-page-title">Approvals</span>
+            <span style="width:44px"></span>
         </div>
+        <main class="atlas-page-body">
+            <h2 class="section-title">Pending review</h2>
+            <div id="approvalsList">
+                <p style="text-align:center;padding:20px;color:rgba(10,11,13,0.5);">Loading approvals…</p>
+            </div>
+
+            <div id="approvalDetail" class="hidden leave-request-item" style="margin-top:16px; display:none;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h3 id="approvalDetailTitle" style="font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:18px;font-weight:600;letter-spacing:-0.4px;margin:0;">Details</h3>
+                    <button onclick="showApprovalsList()" style="background:rgba(10,11,13,0.05);border:none;width:32px;height:32px;border-radius:10px;cursor:pointer;">✕</button>
+                </div>
+                <div id="approvalPrintView"></div>
+                <textarea id="approvalRemark" class="form-textarea" placeholder="Remark (optional)" style="margin-top:12px;"></textarea>
+                <div style="display:flex;gap:10px;margin-top:12px;">
+                    <button id="approveBtn" class="submit-btn" style="background:#0A0B0D;flex:1;">Approve</button>
+                    <button id="rejectBtn" class="submit-btn" style="background:#E0584C;flex:1;">Reject</button>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- PROFILE -->
-    <div id="profileScreen" class="screen">
-        <div class="app-container">
-            <header class="app-header"><div class="header-main"><button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button><div class="header-center"><h1 class="header-greeting">Profile</h1></div><div style="width:44px;"></div></div></header>
-            <main class="main-content">
-                <div class="leave-request-item" id="profileInfo" style="text-align:center;">
-                    <div style="font-size:48px;margin-bottom:12px;">👤</div>
-                    <h2 id="profileName" style="margin-bottom:4px;">Loading...</h2>
-                    <p id="profileDesignation" style="color:var(--text-secondary);margin-bottom:20px;">Loading...</p>
-                    <div style="text-align:left;border-top:1px solid var(--border);padding-top:16px;">
-                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text-secondary);">Employee ID</span><span id="profileEmployeeId">-</span></div>
-                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text-secondary);">Department</span><span id="profileDepartment">-</span></div>
-                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text-secondary);">Employment Type</span><span id="profileEmploymentType">-</span></div>
-                        <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="color:var(--text-secondary);">Email</span><span id="profileEmail">-</span></div>
-                    </div>
-                </div>
-                <button onclick="logout()" class="submit-btn" style="background:#fee2e2;color:var(--danger);margin-top:16px;">🚪 Sign Out</button>
-            </main>
+    <div id="profileScreen" class="screen atlas-page">
+        <div class="atlas-page-header">
+            <button class="dash-menu-btn" onclick="openDrawer()" aria-label="Open menu">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 2h16M1 7h12M1 12h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <span class="atlas-page-title">Profile</span>
+            <span style="width:44px"></span>
         </div>
+        <main class="atlas-page-body">
+            <div class="atlas-profile-card" id="profileInfo">
+                <div class="draw-avatar" id="profileAvatar">··</div>
+                <div class="name" id="profileName">Loading…</div>
+                <div class="role" id="profileDesignation">—</div>
+            </div>
+            <h2 class="section-title">Details</h2>
+            <div class="atlas-profile-rows">
+                <div class="atlas-profile-row"><span class="k">Employee ID</span><span class="v" id="profileEmployeeId">—</span></div>
+                <div class="atlas-profile-row"><span class="k">Department</span><span class="v" id="profileDepartment">—</span></div>
+                <div class="atlas-profile-row"><span class="k">Employment</span><span class="v" id="profileEmploymentType">—</span></div>
+                <div class="atlas-profile-row"><span class="k">Email</span><span class="v" id="profileEmail">—</span></div>
+            </div>
+            <button onclick="logout()" class="submit-btn" style="margin-top:18px;background:transparent;color:#E0584C;border:1px solid rgba(224,88,76,0.3);">Sign out</button>
+        </main>
     </div>
 
     <!-- SIDE DRAWER — Atlas direction -->
@@ -1212,6 +1345,28 @@
             </button>
         </div>
     </aside>
+
+    <!-- GLOBAL BOTTOM TAB BAR -->
+    <div class="dash-tabbar-wrap">
+        <div class="dash-tabbar">
+            <button class="dash-tab is-active" onclick="navigateTo('dashboard')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9v9h-6v-6H9v6H3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Home</span>
+            </button>
+            <button class="dash-tab" onclick="navigateTo('leave')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16l-7-3-7 3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Leave</span>
+            </button>
+            <button class="dash-tab" onclick="navigateTo('payslips')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Pay</span>
+            </button>
+            <button class="dash-tab" onclick="navigateTo('profile')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Profile</span>
+            </button>
+        </div>
+    </div>
 
     <script src="ess.js"></script>
     <script>

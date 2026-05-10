@@ -312,6 +312,7 @@ function showAppSection() {
     if($('dashboardScreen')) { $('dashboardScreen').classList.add('active'); $('dashboardScreen').style.display = 'block'; }
     if($('appHeader')) { $('appHeader').style.display = 'block'; }
     if($('screenTitle')) $('screenTitle').textContent = 'Dashboard';
+    document.body.classList.add('app-ready');
     syncActiveNav('dashboard');
     updateButtonState();
     updateDrawerInfo();
@@ -479,6 +480,7 @@ function logout() {
     }
 
     clearSessionStorage();
+    document.body.classList.remove('app-ready');
     currentEmployee = null; userEmail = ''; config.employeeId = '';
     if($('appHeader')) $('appHeader').style.display = 'none';
     ['dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen'].forEach(id => {
@@ -1237,6 +1239,7 @@ function loadProfileScreen() {
     if(!currentEmployee) return;
     const name = currentEmployee.name || currentEmployee.employee_name || 'Employee';
     if($('profileName')) $('profileName').textContent = name;
+    if($('profileAvatar')) $('profileAvatar').textContent = getInitials(name);
     if($('profileDesignation')) $('profileDesignation').textContent = currentEmployee.designation || 'N/A';
     if($('profileEmployeeId')) $('profileEmployeeId').textContent = config.employeeId;
     if($('profileDepartment')) $('profileDepartment').textContent = currentEmployee.department || 'N/A';
