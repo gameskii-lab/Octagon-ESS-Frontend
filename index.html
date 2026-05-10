@@ -1843,7 +1843,7 @@
                 <div class="ios-hint-step"><span class="num">2</span><div><strong>Scroll &amp; choose <em>Add to Home Screen</em></strong></div></div>
                 <div class="ios-hint-step"><span class="num">3</span><div><strong>Tap <em>Add</em></strong> in the top-right</div></div>
             </div>
-            <button class="ios-hint-close" onclick="hideIOSInstallHint()">Got it</button>
+            <button class="ios-hint-close" onclick="acknowledgeIOSInstallHint()">Got it</button>
         </div>
     </div>
 
@@ -1886,6 +1886,11 @@
         function hideIOSInstallHint() {
             const el = document.getElementById('iosHintOverlay');
             if (el) el.classList.remove('show');
+        }
+        function acknowledgeIOSInstallHint() {
+            try { localStorage.setItem(_installDismissedKey, '1'); } catch(_){}
+            hideIOSInstallHint();
+            hideInstallBanner();
         }
         async function triggerInstall() {
             if (_deferredInstallPrompt) {
