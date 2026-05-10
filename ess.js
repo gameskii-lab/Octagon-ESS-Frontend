@@ -154,9 +154,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function updateGreetingName() {
-    const name = currentEmployee?.name || currentEmployee?.employee_name || 'Employee';
+    const fullName = currentEmployee?.name || currentEmployee?.employee_name || 'there';
+    const firstName = String(fullName).trim().split(/\s+/)[0] || fullName;
     const el = $('greetingText');
-    if (el) el.textContent = `Hi, ${name}`;
+    if (el) el.textContent = `${firstName}.`;
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -193,18 +194,25 @@ async function reverseGeocode(lat, lng) {
     } catch { return null; }
 }
 
+function setCoordsText(text, html) {
+    ['loginCoords', 'locationDisplay'].forEach(id => {
+        const el = $(id);
+        if (!el) return;
+        if (html) el.innerHTML = html; else el.textContent = text;
+    });
+}
+
 function getLocation() {
-    const el = $('locationDisplay');
     if (!navigator.geolocation) {
-        if(el) el.textContent = 'GPS not supported on this device';
+        setCoordsText('GPS not supported on this device');
         setAtlasPlace('Location', 'unavailable');
         return;
     }
-    if(el) el.textContent = 'Acquiring GPS lock…';
+    setCoordsText('Acquiring GPS lock…');
     setAtlasPlace('Locating', 'you');
     navigator.geolocation.getCurrentPosition(async pos => {
         currentLocation = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-        if(el) el.textContent = formatCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+        setCoordsText(formatCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy));
         const place = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
         if (place) {
             setAtlasPlace(place.locality, place.region || 'now');
@@ -212,7 +220,7 @@ function getLocation() {
             setAtlasPlace('You’re', 'here');
         }
     }, err => {
-        if(el) el.innerHTML = `Location unavailable · <a onclick="getLocation();return false;">retry</a>`;
+        setCoordsText(null, `Location unavailable · <a onclick="getLocation();return false;">retry</a>`);
         setAtlasPlace('Location', 'unavailable');
     }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 }
@@ -301,6 +309,8 @@ function showAppSection() {
     if($('dashboardScreen')) { $('dashboardScreen').classList.add('active'); $('dashboardScreen').style.display = 'block'; }
     if($('appHeader')) { $('appHeader').style.display = 'block'; }
     if($('screenTitle')) $('screenTitle').textContent = 'Dashboard';
+    syncActiveNav('dashboard');
+    updateButtonState();
     updateDrawerInfo();
     if (currentLocation) {
         const el = $('locationDisplay');
@@ -401,9 +411,14 @@ async function loadAttendanceStats() {
 function updateButtonState() {
     const btn = $('checkBtn');
     if(btn) {
-        btn.textContent = currentStatus === 'IN' ? 'CHECK OUT' : 'CHECK IN';
+        btn.textContent = currentStatus === 'IN' ? 'Clock out' : 'Clock in';
         btn.className = `checkin-btn ${currentStatus === 'IN' ? 'check-out' : ''}`;
     }
+    const chip = $('dashStatusText');
+    const drawerChip = $('drawerStatusText');
+    const text = currentStatus === 'IN' ? 'On the clock' : 'Off the clock';
+    if (chip) chip.textContent = text;
+    if (drawerChip) drawerChip.textContent = text;
 }
 
 function logout() {
@@ -521,9 +536,16 @@ function closeDrawer() {
     if($('drawerOverlay')) $('drawerOverlay').classList.remove('open');
 }
 
+function syncActiveNav(screen) {
+    document.querySelectorAll('.dash-tab, .draw-row').forEach(b => {
+        const m = (b.getAttribute('onclick') || '').match(/navigateTo\(['"](\w+)['"]\)/);
+        b.classList.toggle('is-active', !!m && m[1] === screen);
+    });
+}
+
 function navigateTo(screen) {
     closeDrawer();
-    
+
     // 1. Hide all screens (Added approvalsScreen & onboardingScreen)
     ['loginScreen','dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen','approvalsScreen','onboardingScreen'].forEach(id => {
         if($(id)) { $(id).classList.remove('active'); $(id).style.display = 'none'; }
@@ -532,6 +554,8 @@ function navigateTo(screen) {
     // 2. Show target screen
     const target = $(screen + 'Screen');
     if(target) { target.classList.add('active'); target.style.display = 'block'; }
+
+    syncActiveNav(screen);
 
     // 3. Update Header Title (Added approvals & onboarding)
     const titles = {
@@ -556,11 +580,19 @@ function navigateTo(screen) {
     if(screen==='onboarding' && typeof loadOnboardingScreen==='function') loadOnboardingScreen();
 }
 
+function getInitials(fullName) {
+    const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '·';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function updateDrawerInfo() {
     const name = currentEmployee?.name || currentEmployee?.employee_name || 'Employee';
     const dept = currentEmployee?.department || 'N/A';
     if($('drawerEmployeeName')) $('drawerEmployeeName').textContent = name;
     if($('drawerEmployeeDept')) $('drawerEmployeeDept').textContent = dept;
+    if($('drawerAvatar')) $('drawerAvatar').textContent = getInitials(name);
 }
 
 // LEAVE

@@ -330,6 +330,374 @@
         @media (prefers-reduced-motion: reduce) {
             .atlas-livedot::after { animation: none; }
         }
+
+        /* ── Dashboard: Atlas direction ──────────────────────── */
+        #dashboardScreen {
+            --atlas-accent: #D9F26B;
+            --atlas-accent-ink: #0A0B0D;
+            --atlas-bg: #FAFAF7;
+            --atlas-ink: #0A0B0D;
+            min-height: 100vh;
+            background: var(--atlas-bg);
+            color: var(--atlas-ink);
+            font-family: 'Geist', -apple-system, system-ui, sans-serif;
+        }
+
+        .dash-hero {
+            position: relative;
+            background: var(--atlas-ink);
+            padding-top: max(env(safe-area-inset-top, 0px), 24px);
+            padding-bottom: 22px;
+            overflow: hidden;
+            color: #fff;
+        }
+        .dash-hero .dash-mini-map {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+        }
+        .dash-hero .dash-hero-fade {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(10,11,13,0.6) 0%, rgba(10,11,13,0.3) 50%, rgba(10,11,13,0.85) 100%);
+            pointer-events: none;
+        }
+        .dash-hero-top {
+            position: relative;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 18px 0;
+        }
+        .dash-mono {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+        }
+        .dash-menu-btn {
+            width: 44px; height: 44px;
+            border-radius: 14px;
+            border: none; background: rgba(255,255,255,0.10); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        .dash-status-chip {
+            position: relative;
+            margin: 14px 18px 0;
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 7px 12px 7px 10px; border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.10);
+            backdrop-filter: blur(8px);
+            font-family: 'Geist Mono', monospace;
+            font-size: 10.5px;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+        .dash-greeting {
+            position: relative;
+            padding: 14px 18px 0;
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 36px; line-height: 1.0;
+            font-weight: 600; letter-spacing: -1.3px;
+        }
+        .dash-greeting .dash-name {
+            color: var(--atlas-accent); font-style: italic; font-weight: 500;
+        }
+        .dash-coords {
+            position: relative;
+            padding: 8px 18px 0;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .dash-body { padding-bottom: 110px; }
+        .dash-section { padding: 22px 18px 0; }
+        .dash-section-head {
+            display: flex; align-items: baseline; justify-content: space-between;
+        }
+        .dash-section-head .dash-mono { color: rgba(10,11,13,0.55); }
+        .dash-section-head a {
+            font-size: 12px; color: rgba(10,11,13,0.55); cursor: pointer;
+        }
+
+        .dash-attend-card {
+            margin-top: 10px; background: #fff; border-radius: 22px;
+            border: 1px solid rgba(10,11,13,0.06);
+            padding: 16px 18px;
+        }
+        .dash-attend-row {
+            display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+        }
+        .dash-attend-stat {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 44px; font-weight: 700;
+            line-height: 0.92; letter-spacing: -1.6px;
+            font-variant-numeric: tabular-nums;
+        }
+        .dash-attend-sub {
+            margin-top: 6px; font-size: 13px; color: rgba(10,11,13,0.6);
+        }
+        #dashboardScreen .checkin-btn {
+            background: var(--atlas-ink); color: #fff;
+            border: none;
+            padding: 12px 18px; border-radius: 999px;
+            cursor: pointer;
+            font-size: 13px; font-weight: 600; letter-spacing: -0.1px;
+            font-family: 'Geist', system-ui, sans-serif;
+            display: inline-flex; align-items: center; gap: 8px;
+            white-space: nowrap;
+            transition: transform 0.1s ease, opacity 0.15s ease;
+        }
+        #dashboardScreen .checkin-btn::before {
+            content: '';
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--atlas-accent); display: inline-block;
+        }
+        #dashboardScreen .checkin-btn:active { transform: scale(0.97); }
+        #dashboardScreen .checkin-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .dash-week {
+            display: flex; gap: 6px; margin-top: 16px;
+        }
+        .dash-week-day {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .dash-week-bar {
+            width: 100%; height: 36px; border-radius: 6px;
+            background: rgba(10,11,13,0.04); position: relative; overflow: hidden;
+        }
+        .dash-week-fill {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: var(--atlas-ink); border-radius: 6px;
+        }
+        .dash-week-day.is-today .dash-week-fill { background: var(--atlas-accent); }
+        .dash-week-day.is-off .dash-week-fill { background: rgba(10,11,13,0.08); }
+        .dash-week-label {
+            font-family: 'Geist Mono', monospace; font-size: 9px;
+            color: rgba(10,11,13,0.5); font-weight: 500;
+        }
+        .dash-week-day.is-today .dash-week-label { color: #0A0B0D; font-weight: 700; }
+
+        .dash-legend {
+            margin-top: 12px; display: flex; flex-wrap: wrap; gap: 14px;
+            font-family: 'Geist Mono', monospace; font-size: 9.5px;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+        }
+        .dash-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+        .dash-legend i {
+            width: 7px; height: 7px; border-radius: 2px; display: inline-block;
+        }
+        .dash-legend i.dot-present { background: #0A0B0D; }
+        .dash-legend i.dot-late    { background: #F5B73C; }
+        .dash-legend i.dot-absent  { background: #E0584C; }
+
+        .dash-tiles {
+            margin-top: 10px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        }
+        .dash-tile {
+            background: #fff; border-radius: 18px; padding: 14px;
+            border: 1px solid rgba(10,11,13,0.06);
+            position: relative; min-height: 110px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.15s ease;
+        }
+        .dash-tile:active { transform: scale(0.98); }
+        .dash-tile-top { display: flex; align-items: center; justify-content: space-between; }
+        .dash-tile-icon {
+            width: 32px; height: 32px; border-radius: 10px;
+            background: rgba(10,11,13,0.05);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .dash-tile-badge {
+            background: var(--atlas-accent); color: var(--atlas-accent-ink);
+            padding: 3px 8px; border-radius: 999px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.4px;
+        }
+        .dash-tile-value {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -0.8px;
+            font-variant-numeric: tabular-nums;
+        }
+        .dash-tile-label {
+            margin-top: 4px; font-size: 13px; font-weight: 600;
+        }
+        .dash-tile-sub {
+            font-family: 'Geist Mono', monospace; font-size: 9.5px;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: rgba(10,11,13,0.5); margin-top: 1px;
+        }
+
+        .dash-activity {
+            margin-top: 10px; background: #fff; border-radius: 22px;
+            border: 1px solid rgba(10,11,13,0.06); overflow: hidden;
+        }
+        .dash-activity-row {
+            padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid rgba(10,11,13,0.05);
+        }
+        .dash-activity-row:last-child { border-bottom: none; }
+        .dash-activity-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+            background: rgba(10,11,13,0.3);
+        }
+        .dash-activity-dot.is-warn { background: #F5B73C; }
+        .dash-activity-dot.is-now {
+            background: var(--atlas-accent);
+            box-shadow: 0 0 0 4px rgba(217,242,107,0.2);
+        }
+        .dash-activity-body { flex: 1; min-width: 0; }
+        .dash-activity-title { font-size: 14px; font-weight: 600; }
+        .dash-activity-meta {
+            font-family: 'Geist Mono', monospace; font-size: 10.5px;
+            color: rgba(10,11,13,0.55); letter-spacing: 0.3px; margin-top: 1px;
+        }
+        .dash-empty {
+            padding: 20px 16px; text-align: center;
+            font-size: 13px; color: rgba(10,11,13,0.5);
+        }
+
+        .dash-tabbar-wrap {
+            position: fixed; left: 0; right: 0; bottom: 0;
+            padding: 8px 14px max(env(safe-area-inset-bottom, 0px), 16px);
+            background: linear-gradient(to top, var(--atlas-bg) 70%, rgba(250,250,247,0));
+            pointer-events: none;
+        }
+        .dash-tabbar {
+            display: flex; align-items: center; justify-content: space-around;
+            background: var(--atlas-ink); border-radius: 22px; padding: 8px 6px;
+            box-shadow: 0 12px 28px -10px rgba(0,0,0,0.45);
+            pointer-events: auto;
+        }
+        .dash-tab {
+            flex: 1; background: transparent; border: none;
+            border-radius: 16px; padding: 10px 4px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            color: rgba(255,255,255,0.6);
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .dash-tab.is-active {
+            background: var(--atlas-accent); color: var(--atlas-accent-ink);
+        }
+        .dash-tab span {
+            font-size: 10px; font-weight: 600; letter-spacing: -0.1px;
+        }
+
+        /* ── Drawer: Atlas direction ─────────────────────────── */
+        #drawerOverlay {
+            position: fixed; inset: 0; background: rgba(10,11,13,0.5);
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+            z-index: 200;
+        }
+        #drawerOverlay.open { opacity: 1; pointer-events: auto; }
+
+        #sideDrawer {
+            position: fixed; top: 0; left: 0; bottom: 0; width: min(86vw, 380px);
+            background: var(--atlas-bg, #FAFAF7); color: var(--atlas-ink, #0A0B0D);
+            transform: translateX(-100%);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 201;
+            display: flex; flex-direction: column;
+            font-family: 'Geist', -apple-system, system-ui, sans-serif;
+            overflow: hidden;
+        }
+        #sideDrawer.open { transform: translateX(0); }
+
+        .draw-hero {
+            position: relative; overflow: hidden;
+            background: #0A0B0D; color: #fff;
+            padding: max(env(safe-area-inset-top, 0px), 64px) 22px 24px;
+            border-bottom-right-radius: 28px;
+        }
+        .draw-hero-grid {
+            position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.5;
+        }
+        .draw-close {
+            position: absolute; top: max(env(safe-area-inset-top, 0px), 60px); right: 22px;
+            width: 36px; height: 36px; border-radius: 12px;
+            background: rgba(255,255,255,0.10); border: none; cursor: pointer; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .draw-id { position: relative; display: flex; align-items: center; gap: 14px; }
+        .draw-avatar {
+            width: 56px; height: 56px; border-radius: 18px;
+            background: #D9F26B; color: #0A0B0D;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 22px; font-weight: 700; letter-spacing: -1px;
+            flex-shrink: 0;
+        }
+        .draw-name {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 22px; font-weight: 600; line-height: 1.05; letter-spacing: -0.8px;
+        }
+        .draw-role {
+            font-family: 'Geist Mono', monospace; font-size: 10px;
+            color: rgba(255,255,255,0.6); letter-spacing: 1px; text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .draw-status {
+            position: relative; margin-top: 16px;
+            display: flex; align-items: center; gap: 8px;
+            color: rgba(255,255,255,0.85);
+            font-family: 'Geist Mono', monospace; font-size: 10px;
+            letter-spacing: 1.2px; text-transform: uppercase;
+        }
+
+        .draw-nav-section { padding: 14px 14px 0; flex: 1; overflow-y: auto; }
+        .draw-nav-label {
+            font-family: 'Geist Mono', monospace; font-size: 10px;
+            letter-spacing: 1.4px; text-transform: uppercase;
+            color: rgba(10,11,13,0.55);
+        }
+        .draw-nav { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+        .draw-row {
+            display: flex; align-items: center; gap: 12px; width: 100%;
+            padding: 12px; border-radius: 14px; border: none;
+            background: transparent; color: var(--atlas-ink);
+            cursor: pointer; text-align: left;
+            font-family: 'Geist', system-ui, sans-serif;
+        }
+        .draw-row.is-active { background: var(--atlas-ink); color: #fff; }
+        .draw-row-icon {
+            width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+            background: rgba(10,11,13,0.05);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .draw-row.is-active .draw-row-icon { background: var(--atlas-accent); }
+        .draw-row-body { flex: 1; min-width: 0; }
+        .draw-row-label { font-size: 15px; font-weight: 600; display: block; }
+        .draw-row-meta {
+            display: block; margin-top: 1px;
+            font-family: 'Geist Mono', monospace; font-size: 10px;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+        }
+        .draw-row.is-active .draw-row-meta { color: rgba(255,255,255,0.55); }
+        .draw-row-badge {
+            background: var(--atlas-accent); color: var(--atlas-accent-ink);
+            padding: 3px 8px; border-radius: 999px;
+            font-size: 9.5px; font-weight: 700; letter-spacing: 0.4px;
+        }
+
+        .draw-signout-wrap { padding: 16px 14px max(env(safe-area-inset-bottom, 0px), 32px); }
+        .draw-signout {
+            width: 100%; padding: 14px 16px; border-radius: 16px;
+            background: transparent; border: 1px solid rgba(10,11,13,0.1);
+            display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; color: var(--atlas-ink);
+            font-family: 'Geist', system-ui, sans-serif;
+            font-size: 15px; font-weight: 600;
+        }
+        .draw-signout-left { display: inline-flex; align-items: center; gap: 12px; }
+        .draw-signout-version {
+            font-family: 'Geist Mono', monospace; font-size: 9.5px;
+            letter-spacing: 1.2px; text-transform: uppercase;
+            color: rgba(10,11,13,0.45);
+        }
     </style>
 </head>
 <body>
@@ -394,7 +762,7 @@
             <div class="atlas-place" id="atlasPlace">
                 Locating <span class="atlas-accent">you.</span>
             </div>
-            <div class="atlas-coords" id="locationDisplay">4.456198° N · 114.004718° E · ±4m</div>
+            <div class="atlas-coords" id="loginCoords">4.456198° N · 114.004718° E · ±4m</div>
 
             <div class="atlas-spacer"></div>
 
@@ -414,54 +782,212 @@
             <div class="atlas-recal">
                 Wrong location? <a onclick="getLocation();return false;">Recalibrate GPS</a>
             </div>
-
-            <div id="worksiteDisplay" style="display:none"></div>
         </div>
     </div>
 
     <!-- DASHBOARD -->
+    <!-- DASHBOARD — Atlas direction -->
     <div id="dashboardScreen" class="screen">
-        <div class="app-container">
-            <header class="app-header" id="appHeader">
-                <div class="header-main">
-                    <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-                    <div class="header-center">
-                        <h1 id="greetingText" class="header-greeting">Hi, Employee</h1>
-                        <p id="greetingSub" class="header-subtitle">Good Morning</p>
-                    </div>
-                    <div class="header-date"><span id="currentDate">Loading...</span></div>
+        <div id="appHeader" style="display:none"></div>
+        <h2 id="screenTitle" style="display:none">Dashboard</h2>
+
+        <div class="dash-hero">
+            <svg class="dash-mini-map" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <g stroke="rgba(255,255,255,0.06)" stroke-width="0.5">
+                    <line x1="0"   y1="0" x2="0"   y2="200"/><line x1="40"  y1="0" x2="40"  y2="200"/>
+                    <line x1="80"  y1="0" x2="80"  y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
+                    <line x1="160" y1="0" x2="160" y2="200"/><line x1="200" y1="0" x2="200" y2="200"/>
+                    <line x1="240" y1="0" x2="240" y2="200"/><line x1="280" y1="0" x2="280" y2="200"/>
+                    <line x1="320" y1="0" x2="320" y2="200"/><line x1="360" y1="0" x2="360" y2="200"/>
+                    <line x1="400" y1="0" x2="400" y2="200"/>
+                    <line x1="0" y1="0"   x2="400" y2="0"/>  <line x1="0" y1="40"  x2="400" y2="40"/>
+                    <line x1="0" y1="80"  x2="400" y2="80"/> <line x1="0" y1="120" x2="400" y2="120"/>
+                    <line x1="0" y1="160" x2="400" y2="160"/><line x1="0" y1="200" x2="400" y2="200"/>
+                </g>
+                <g fill="rgba(255,255,255,0.05)">
+                    <path d="M-20 110 Q 80 80 160 100 T 320 90 Q 400 80 420 110 L 420 220 L -20 220 Z"/>
+                    <path d="M-20 140 Q 100 120 200 135 T 380 130 Q 420 128 420 145 L 420 220 L -20 220 Z" fill="rgba(255,255,255,0.07)"/>
+                </g>
+                <g fill="rgba(255,255,255,0.16)">
+                    <circle cx="60" cy="40" r="1.2"/><circle cx="140" cy="60" r="1.2"/>
+                    <circle cx="320" cy="50" r="1.2"/><circle cx="80" cy="160" r="1.2"/>
+                    <circle cx="350" cy="170" r="1.2"/>
+                </g>
+                <g transform="translate(220, 110)">
+                    <circle r="34" fill="var(--atlas-accent)" opacity="0.08">
+                        <animate attributeName="r"       values="14;42;42" dur="2.4s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.32;0;0" dur="2.4s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle r="18" fill="var(--atlas-accent)" opacity="0.18"/>
+                    <circle r="9"  fill="var(--atlas-accent)"/>
+                    <circle r="3"  fill="var(--atlas-accent-ink)"/>
+                </g>
+            </svg>
+            <div class="dash-hero-fade"></div>
+
+            <div class="dash-hero-top">
+                <button class="dash-menu-btn" onclick="openDrawer()" aria-label="Open menu">
+                    <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
+                        <path d="M1 2h16M1 7h12M1 12h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <span class="dash-mono" id="currentDate">—</span>
+                <span style="width:44px"></span>
+            </div>
+
+            <div class="dash-status-chip">
+                <span class="atlas-livedot"></span>
+                <span id="dashStatusText">Off the clock</span>
+            </div>
+
+            <div class="dash-greeting">
+                <span id="greetingSub">Hello,</span><br>
+                <span class="dash-name" id="greetingText">there.</span>
+            </div>
+
+            <div class="dash-coords" id="locationDisplay">Acquiring GPS lock…</div>
+        </div>
+
+        <div class="dash-body">
+            <div class="dash-section">
+                <div class="dash-section-head">
+                    <span class="dash-mono">Today's attendance</span>
                 </div>
-                <div class="header-title-bar"><h2 id="screenTitle">Dashboard</h2></div>
-            </header>
-            <main class="main-content">
-                <div class="checkin-container">
-                    <button class="submit-btn" id="checkBtn" disabled style="max-width:320px; margin:0 auto;">CHECK IN</button>
-                    <!-- Removed hardcoded spinner text. JS controls this now. -->
-                </div>
-                <div id="locationDisplay" style="margin-top:12px; font-size:13px; color:var(--text-secondary); text-align:center;"></div>
-                <h2 class="section-title">Today's Attendance</h2>
-                <div class="attendance-cards">
-                    <div class="attendance-card">
-                        <div class="attendance-value" style="color:var(--success);" id="presentCount">--</div>
-                        <div class="attendance-label">Present</div>
+                <div class="dash-attend-card">
+                    <div class="dash-attend-row">
+                        <div>
+                            <div class="dash-attend-stat" id="dashAttendStat">—</div>
+                            <div class="dash-attend-sub" id="worksiteDisplay">Loading status…</div>
+                        </div>
+                        <button class="checkin-btn" id="checkBtn" disabled>CHECK IN</button>
                     </div>
-                    <div class="attendance-card">
-                        <div class="attendance-value" style="color:var(--warning);" id="lateCount">--</div>
-                        <div class="attendance-label">Late</div>
+                    <div class="dash-week" id="dashWeekStrip">
+                        <div class="dash-week-day"><div class="dash-week-bar"><div class="dash-week-fill" style="height:60%"></div></div><div class="dash-week-label">M</div></div>
+                        <div class="dash-week-day"><div class="dash-week-bar"><div class="dash-week-fill" style="height:55%"></div></div><div class="dash-week-label">T</div></div>
+                        <div class="dash-week-day"><div class="dash-week-bar"><div class="dash-week-fill" style="height:70%"></div></div><div class="dash-week-label">W</div></div>
+                        <div class="dash-week-day"><div class="dash-week-bar"><div class="dash-week-fill" style="height:60%"></div></div><div class="dash-week-label">T</div></div>
+                        <div class="dash-week-day"><div class="dash-week-bar"><div class="dash-week-fill" style="height:50%"></div></div><div class="dash-week-label">F</div></div>
+                        <div class="dash-week-day is-off"><div class="dash-week-bar"><div class="dash-week-fill" style="height:30%"></div></div><div class="dash-week-label">S</div></div>
+                        <div class="dash-week-day is-today"><div class="dash-week-bar"><div class="dash-week-fill" style="height:65%"></div></div><div class="dash-week-label">S</div></div>
                     </div>
-                    <div class="attendance-card">
-                        <div class="attendance-value" style="color:var(--danger);" id="absentCount">--</div>
-                        <div class="attendance-label">Absent</div>
+                    <div class="dash-legend">
+                        <span><i class="dot-present"></i><span id="presentCount">0</span> present</span>
+                        <span><i class="dot-late"></i><span id="lateCount">0</span> late</span>
+                        <span><i class="dot-absent"></i><span id="absentCount">0</span> absent</span>
                     </div>
                 </div>
-                <h2 class="section-title">Quick Access</h2>
-                <div class="stats-grid">
-                    <div class="action-card" onclick="navigateTo('leave')"><div class="card-icon green"><i class="fas fa-calendar-alt"></i></div><div class="card-label">Leave</div><div class="card-value" id="leaveCount">0</div></div>
-                    <div class="action-card" onclick="navigateTo('payslips')"><div class="card-icon blue"><i class="fas fa-file-invoice-dollar"></i></div><div class="card-label">Payslips</div><div class="card-value" id="payslipCount">1</div></div>
-                    <div class="action-card" onclick="navigateTo('schedule')"><div class="card-icon orange"><i class="fas fa-calendar"></i></div><div class="card-label">Schedule</div><div class="card-value" id="attendanceCount">0</div></div>
-                    <div class="action-card" onclick="navigateTo('profile')"><div class="card-icon red"><i class="fas fa-user"></i></div><div class="card-label">Profile</div><div class="card-value">View</div></div>
+            </div>
+
+            <div class="dash-section">
+                <div class="dash-section-head">
+                    <span class="dash-mono">Quick access</span>
                 </div>
-            </main>
+                <div class="dash-tiles">
+                    <div class="dash-tile" onclick="navigateTo('leave')">
+                        <div class="dash-tile-top">
+                            <div class="dash-tile-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16l-7-3-7 3z" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="dash-tile-value" id="leaveCount">0</div>
+                            <div class="dash-tile-label">Leave</div>
+                            <div class="dash-tile-sub">balance</div>
+                        </div>
+                    </div>
+                    <div class="dash-tile" onclick="navigateTo('payslips')">
+                        <div class="dash-tile-top">
+                            <div class="dash-tile-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6zM9 12h6M9 16h4" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                            <span class="dash-tile-badge">NEW</span>
+                        </div>
+                        <div>
+                            <div class="dash-tile-value" id="payslipCount">1</div>
+                            <div class="dash-tile-label">Payslips</div>
+                            <div class="dash-tile-sub">new</div>
+                        </div>
+                    </div>
+                    <div class="dash-tile" onclick="navigateTo('schedule')">
+                        <div class="dash-tile-top">
+                            <div class="dash-tile-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="dash-tile-value" id="attendanceCount">0</div>
+                            <div class="dash-tile-label">Schedule</div>
+                            <div class="dash-tile-sub">upcoming</div>
+                        </div>
+                    </div>
+                    <div class="dash-tile" onclick="navigateTo('approvals')">
+                        <div class="dash-tile-top">
+                            <div class="dash-tile-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12l4 4 12-12" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="dash-tile-value" id="approvalsCount">0</div>
+                            <div class="dash-tile-label">Approvals</div>
+                            <div class="dash-tile-sub">pending</div>
+                        </div>
+                    </div>
+                    <div class="dash-tile" onclick="navigateTo('onboarding')">
+                        <div class="dash-tile-top">
+                            <div class="dash-tile-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 4l16 8-16 8 4-8z" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="dash-tile-value" id="onboardingCount">—</div>
+                            <div class="dash-tile-label">Onboarding</div>
+                            <div class="dash-tile-sub">steps</div>
+                        </div>
+                    </div>
+                    <div class="dash-tile" onclick="navigateTo('profile')">
+                        <div class="dash-tile-top">
+                            <div class="dash-tile-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="dash-tile-value">View</div>
+                            <div class="dash-tile-label">Profile</div>
+                            <div class="dash-tile-sub">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-section">
+                <div class="dash-section-head">
+                    <span class="dash-mono">Recent activity</span>
+                </div>
+                <div class="dash-activity" id="dashActivity">
+                    <div class="dash-empty">No recent activity yet.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-tabbar-wrap">
+            <div class="dash-tabbar">
+                <button class="dash-tab is-active" onclick="navigateTo('dashboard')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9v9h-6v-6H9v6H3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Home</span>
+                </button>
+                <button class="dash-tab" onclick="navigateTo('leave')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16l-7-3-7 3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Leave</span>
+                </button>
+                <button class="dash-tab" onclick="navigateTo('payslips')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Pay</span>
+                </button>
+                <button class="dash-tab" onclick="navigateTo('profile')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Profile</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -608,34 +1134,93 @@
         </div>
     </div>
 
-    <!-- SIDE DRAWER -->
+    <!-- SIDE DRAWER — Atlas direction -->
     <div id="drawerOverlay" onclick="closeDrawer()"></div>
-    <div id="sideDrawer">
-        <div class="drawer-header">
-            <div class="drawer-avatar">👤</div>
-            <div id="drawerEmployeeName" style="font-weight:700;margin-bottom:2px;">Employee</div>
-            <div id="drawerEmployeeDept" style="font-size:12px;color:var(--text-secondary);">Department</div>
+    <aside id="sideDrawer" aria-label="Navigation menu">
+        <div class="draw-hero">
+            <svg class="draw-hero-grid" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <g stroke="rgba(255,255,255,0.05)" stroke-width="0.5">
+                    <line x1="0"   y1="0" x2="0"   y2="180"/><line x1="32"  y1="0" x2="32"  y2="180"/>
+                    <line x1="64"  y1="0" x2="64"  y2="180"/><line x1="96"  y1="0" x2="96"  y2="180"/>
+                    <line x1="128" y1="0" x2="128" y2="180"/><line x1="160" y1="0" x2="160" y2="180"/>
+                    <line x1="192" y1="0" x2="192" y2="180"/><line x1="224" y1="0" x2="224" y2="180"/>
+                    <line x1="256" y1="0" x2="256" y2="180"/><line x1="288" y1="0" x2="288" y2="180"/>
+                    <line x1="0" y1="0"   x2="320" y2="0"/><line x1="0" y1="32"  x2="320" y2="32"/>
+                    <line x1="0" y1="64"  x2="320" y2="64"/><line x1="0" y1="96" x2="320" y2="96"/>
+                    <line x1="0" y1="128" x2="320" y2="128"/><line x1="0" y1="160" x2="320" y2="160"/>
+                </g>
+            </svg>
+            <button class="draw-close" onclick="closeDrawer()" aria-label="Close menu">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <path d="M1 1l12 12M13 1L1 13" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div class="draw-id">
+                <div class="draw-avatar" id="drawerAvatar">JL</div>
+                <div style="min-width:0">
+                    <div class="draw-name" id="drawerEmployeeName">Employee</div>
+                    <div class="draw-role" id="drawerEmployeeDept">Department</div>
+                </div>
+            </div>
+            <div class="draw-status">
+                <span class="atlas-livedot"></span>
+                <span id="drawerStatusText">Off the clock</span>
+            </div>
         </div>
-        <nav class="drawer-nav">
-            <button onclick="navigateTo('dashboard'); closeDrawer();">📊 Dashboard</button>
-            <button onclick="navigateTo('leave'); closeDrawer();">🏖️ Leave</button>
-            <button onclick="navigateTo('schedule'); closeDrawer();">📅 Schedule</button>
-            <button onclick="navigateTo('payslips'); closeDrawer();">💰 Payslips</button>
-            <button onclick="navigateTo('approvals'); closeDrawer();">✅ Approvals</button>
-            <button onclick="navigateTo('onboarding'); closeDrawer();">🚀 Onboarding</button>
-            <button onclick="navigateTo('profile'); closeDrawer();">👤 Profile</button>
-            <button class="danger" onclick="logout(); closeDrawer();">🚪 Sign Out</button>
-        </nav>
-    </div>
+
+        <div class="draw-nav-section">
+            <span class="draw-nav-label">Navigate</span>
+            <nav class="draw-nav">
+                <button class="draw-row is-active" onclick="navigateTo('dashboard'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9v9h-6v-6H9v6H3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Dashboard</span></span>
+                </button>
+                <button class="draw-row" onclick="navigateTo('leave'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16l-7-3-7 3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Leave</span><span class="draw-row-meta">Request &amp; balance</span></span>
+                </button>
+                <button class="draw-row" onclick="navigateTo('schedule'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Schedule</span><span class="draw-row-meta">Upcoming shifts</span></span>
+                </button>
+                <button class="draw-row" onclick="navigateTo('payslips'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6zM9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Payslips</span><span class="draw-row-meta">Earnings</span></span>
+                </button>
+                <button class="draw-row" onclick="navigateTo('approvals'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12l4 4 12-12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Approvals</span><span class="draw-row-meta">Pending review</span></span>
+                </button>
+                <button class="draw-row" onclick="navigateTo('onboarding'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 4l16 8-16 8 4-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Onboarding</span><span class="draw-row-meta">Steps</span></span>
+                </button>
+                <button class="draw-row" onclick="navigateTo('profile'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Profile</span></span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="draw-signout-wrap">
+            <button class="draw-signout" onclick="logout(); closeDrawer();">
+                <span class="draw-signout-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 3h4v18h-4M10 8l-5 4 5 4M5 12h11" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Sign out
+                </span>
+                <span class="draw-signout-version">v 1.0</span>
+            </button>
+        </div>
+    </aside>
 
     <script src="ess.js"></script>
     <script>
         function updateGreetingTime() {
             const hour = new Date().getHours();
             const sub = document.getElementById('greetingSub');
-            if(sub) sub.textContent = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+            if(sub) sub.textContent = (hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,');
             const dateEl = document.getElementById('currentDate');
-            if(dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+            if(dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday:'short', day:'numeric', month:'short' });
         }
         updateGreetingTime();
         setInterval(updateGreetingTime, 60000);
