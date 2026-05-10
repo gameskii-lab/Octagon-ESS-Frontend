@@ -594,8 +594,8 @@ function syncActiveNav(screen) {
 function navigateTo(screen) {
     closeDrawer();
 
-    // 1. Hide all screens (Added approvalsScreen & onboardingScreen)
-    ['loginScreen','dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen','approvalsScreen','onboardingScreen'].forEach(id => {
+    // 1. Hide all screens (Added approvalsScreen, onboardingScreen, overtimeScreen)
+    ['loginScreen','dashboardScreen','leaveScreen','payslipsScreen','scheduleScreen','profileScreen','approvalsScreen','onboardingScreen','overtimeScreen'].forEach(id => {
         if($(id)) { $(id).classList.remove('active'); $(id).style.display = 'none'; }
     });
 
@@ -613,19 +613,18 @@ function navigateTo(screen) {
         schedule:'Schedule',
         profile:'Profile',
         approvals:'Approvals',
-        onboarding:'Onboarding'
+        onboarding:'Onboarding',
+        overtime:'Overtime'
     };
     if($('screenTitle')) $('screenTitle').textContent = titles[screen] || 'Octagon ESS';
 
-    // 4. Load Data for specific screens (Added approvals & onboarding)
     if(screen==='leave' && typeof loadLeaveScreen==='function') loadLeaveScreen();
     if(screen==='schedule' && typeof loadScheduleScreen==='function') loadScheduleScreen();
     if(screen==='payslips' && typeof loadPayslipsScreen==='function') loadPayslipsScreen();
     if(screen==='profile' && typeof loadProfileScreen==='function') loadProfileScreen();
-    
-    // 🔥 ADDED: Approvals & Onboarding loaders
     if(screen==='approvals' && typeof loadApprovalsScreen==='function') loadApprovalsScreen();
     if(screen==='onboarding' && typeof loadOnboardingScreen==='function') loadOnboardingScreen();
+    if(screen==='overtime' && typeof loadOvertimeScreen==='function') loadOvertimeScreen();
 }
 
 function getInitials(fullName) {
@@ -1263,6 +1262,151 @@ async function submitWorkflowAction(action) {
             btn.disabled = false;
             btn.textContent = action === 'Approve' ? '✅ Approve' : '❌ Reject';
         }
+    }
+}
+
+// ============================================
+// OVERTIME
+// ============================================
+let _overtimeOptionsLoaded = false;
+
+async function loadOvertimeScreen() {
+    const listEl = document.getElementById('overtimeList');
+    if (listEl) listEl.innerHTML = '<p style="text-align:center;padding:20px;color:rgba(10,11,13,0.5);">Loading…</p>';
+
+    try {
+        const res = await apiFetch(`/api/overtime/${config.employeeId}`);
+        const data = await res.json();
+        if (!data.success) {
+            if (listEl) listEl.innerHTML = '<div class="atlas-empty">Error loading overtime requests.</div>';
+            return;
+        }
+
+        const requests = data.requests || [];
+
+        // Side effect: populate the dashboard tile with this month's approved hours.
+        if ($('overtimeMonthHours')) {
+            const ym = new Date().toISOString().slice(0, 7); // YYYY-MM
+            const monthHours = requests
+                .filter(r => r.date && r.date.startsWith(ym) && r.status === 'Approved')
+                .reduce((sum, r) => sum + (parseFloat(r.hours) || 0), 0);
+            $('overtimeMonthHours').textContent = monthHours > 0 ? `${monthHours}h` : '0';
+        }
+
+        if (!requests.length) {
+            if (listEl) listEl.innerHTML = '<div class="atlas-empty">No overtime requests yet. Tap "Log overtime" to submit one.</div>';
+            return;
+        }
+
+        let html = '';
+        requests.forEach(r => {
+            const cls = statusToClass(r.status || r.workflow_state);
+            const hoursDisplay = r.hours ? `${r.hours}h` : '—';
+            const project = r.project ? escapeHtml(r.project) : '';
+            const activity = r.activity_type ? escapeHtml(r.activity_type) : '';
+            const meta = [r.date, hoursDisplay, activity].filter(Boolean).join(' · ');
+            html += `
+                <div class="atlas-row" style="cursor:default;">
+                    <div class="atlas-row-head">
+                        <div style="min-width:0;flex:1;">
+                            <div class="atlas-row-title">${project || r.name}</div>
+                            <div class="atlas-row-meta">${escapeHtml(meta)}</div>
+                        </div>
+                        <span class="leave-status ${cls}">${escapeHtml(r.status || r.workflow_state || 'Pending')}</span>
+                    </div>
+                    ${r.reason ? `<div style="margin-top:8px;font-size:13px;color:rgba(10,11,13,0.7);line-height:1.4;">${escapeHtml(r.reason)}</div>` : ''}
+                </div>
+            `;
+        });
+        if (listEl) listEl.innerHTML = html;
+    } catch (err) {
+        console.error('Overtime list error:', err);
+        if (listEl) listEl.innerHTML = '<div class="atlas-empty">Error loading overtime requests.</div>';
+    }
+}
+
+async function loadOvertimeOptions(force = false) {
+    if (_overtimeOptionsLoaded && !force) return;
+    try {
+        const res = await apiFetch('/api/overtime/options');
+        const data = await res.json();
+        if (!data.success) return;
+
+        const projectSelect = $('otProject');
+        if (projectSelect) {
+            projectSelect.innerHTML = '<option value="">Select project</option>'
+                + (data.projects || []).map(p =>
+                    `<option value="${escapeHtml(p.name)}">${escapeHtml(p.project_name || p.name)}</option>`
+                ).join('');
+        }
+
+        const activitySelect = $('otActivityType');
+        if (activitySelect) {
+            activitySelect.innerHTML = '<option value="">Select activity</option>'
+                + (data.activity_types || []).map(a =>
+                    `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`
+                ).join('');
+        }
+        _overtimeOptionsLoaded = true;
+    } catch (err) {
+        console.error('Overtime options error:', err);
+    }
+}
+
+function openOvertimeModal() {
+    const overlay = $('overtimeModalOverlay');
+    if (!overlay) return;
+    // Default the date to today.
+    if ($('otDate')) $('otDate').value = new Date().toISOString().split('T')[0];
+    if ($('otHours')) $('otHours').value = '';
+    if ($('otReason')) $('otReason').value = '';
+    overlay.classList.add('active');
+    loadOvertimeOptions();
+}
+
+function closeOvertimeModal() {
+    const overlay = $('overtimeModalOverlay');
+    if (overlay) overlay.classList.remove('active');
+}
+
+async function submitOvertimeRequest() {
+    const date = $('otDate')?.value;
+    const hours = $('otHours')?.value;
+    const project = $('otProject')?.value;
+    const activity_type = $('otActivityType')?.value;
+    const reason = $('otReason')?.value?.trim();
+
+    if (!date || !hours || !project || !activity_type || !reason) {
+        showStatus('Fill in date, hours, project, activity, and reason.', 'error');
+        return;
+    }
+    const hoursNum = parseFloat(hours);
+    if (!Number.isFinite(hoursNum) || hoursNum <= 0) {
+        showStatus('Hours must be greater than 0.', 'error');
+        return;
+    }
+
+    const btn = $('otSubmitBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+    try {
+        const res = await apiFetch('/api/overtime', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date, hours: hoursNum, reason, project, activity_type })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showStatus('✅ Overtime request submitted', 'success');
+            closeOvertimeModal();
+            loadOvertimeScreen();
+        } else {
+            showStatus(`❌ ${data.error || 'Submission failed'}`, 'error');
+        }
+    } catch (err) {
+        console.error('Overtime submit error:', err);
+        showStatus('❌ Network error', 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit Request'; }
     }
 }
 

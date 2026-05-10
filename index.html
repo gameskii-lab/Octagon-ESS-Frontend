@@ -1525,16 +1525,16 @@
                             <div class="dash-tile-sub">steps</div>
                         </div>
                     </div>
-                    <div class="dash-tile" onclick="navigateTo('profile')">
+                    <div class="dash-tile" onclick="navigateTo('overtime')">
                         <div class="dash-tile-top">
                             <div class="dash-tile-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2M12 22a10 10 0 110-20 10 10 0 010 20z" stroke="#0A0B0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </div>
                         </div>
                         <div>
-                            <div class="dash-tile-value">View</div>
-                            <div class="dash-tile-label">Profile</div>
-                            <div class="dash-tile-sub">—</div>
+                            <div class="dash-tile-value" id="overtimeMonthHours">—</div>
+                            <div class="dash-tile-label">Overtime</div>
+                            <div class="dash-tile-sub">this month</div>
                         </div>
                     </div>
                 </div>
@@ -1591,6 +1591,38 @@
             <div class="form-group"><label class="form-label">To Date</label><input type="date" id="leaveToDate" class="form-input"></div>
             <div class="form-group"><label class="form-label">Reason</label><textarea id="leaveReason" class="form-textarea" placeholder="Enter reason..."></textarea></div>
             <button onclick="submitLeaveApplication()" class="submit-btn">Submit Request</button>
+        </div>
+    </div>
+
+    <!-- OVERTIME -->
+    <div id="overtimeScreen" class="screen atlas-page">
+        <div class="atlas-page-header">
+            <button class="dash-menu-btn" onclick="openDrawer()" aria-label="Open menu">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 2h16M1 7h12M1 12h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <span class="atlas-page-title">Overtime</span>
+            <span style="width:44px"></span>
+        </div>
+        <main class="atlas-page-body">
+            <button onclick="openOvertimeModal()" class="submit-btn atlas-action-approve" style="height:54px;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:16px;font-weight:700;letter-spacing:-0.2px;box-shadow:0 14px 32px -10px rgba(217,242,107,0.55);">+ Log overtime</button>
+            <h2 class="section-title">Recent requests</h2>
+            <div id="overtimeList"><p style="text-align:center;padding:20px;color:rgba(10,11,13,0.5);">Loading…</p></div>
+        </main>
+    </div>
+
+    <!-- OVERTIME MODAL -->
+    <div class="modal-overlay" id="overtimeModalOverlay" onclick="if(event.target===this) closeOvertimeModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Log overtime</h2>
+                <button class="close-modal" onclick="closeOvertimeModal()">✕</button>
+            </div>
+            <div class="form-group"><label class="form-label">Date</label><input type="date" id="otDate" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Hours</label><input type="number" id="otHours" class="form-input" placeholder="e.g. 2.5" step="0.25" min="0.25" inputmode="decimal"></div>
+            <div class="form-group"><label class="form-label">Project</label><select id="otProject" class="form-select"><option value="">Loading…</option></select></div>
+            <div class="form-group"><label class="form-label">Activity</label><select id="otActivityType" class="form-select"><option value="">Loading…</option></select></div>
+            <div class="form-group"><label class="form-label">Reason</label><textarea id="otReason" class="form-textarea" placeholder="Why was overtime needed?"></textarea></div>
+            <button onclick="submitOvertimeRequest()" class="submit-btn" id="otSubmitBtn">Submit Request</button>
         </div>
     </div>
 
@@ -1769,6 +1801,10 @@
                 <button class="draw-row" onclick="navigateTo('schedule'); closeDrawer();">
                     <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                     <span class="draw-row-body"><span class="draw-row-label">Schedule</span><span class="draw-row-meta">Upcoming shifts</span></span>
+                </button>
+                <button class="draw-row" onclick="navigateTo('overtime'); closeDrawer();">
+                    <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2M12 22a10 10 0 110-20 10 10 0 010 20z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="draw-row-body"><span class="draw-row-label">Overtime</span><span class="draw-row-meta">Log &amp; review hours</span></span>
                 </button>
                 <button class="draw-row" onclick="navigateTo('payslips'); closeDrawer();">
                     <span class="draw-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6zM9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
