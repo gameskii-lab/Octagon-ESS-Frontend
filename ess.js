@@ -174,15 +174,46 @@ function formatCoords(lat, lng, accuracy) {
     return `${Math.abs(lat).toFixed(6)}° ${ns} · ${Math.abs(lng).toFixed(6)}° ${ew}${acc}`;
 }
 
+function setAtlasPlace(line1, accentLine) {
+    const el = $('atlasPlace');
+    if (!el) return;
+    const safe = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    el.innerHTML = `${safe(line1)}<br><span class="atlas-accent">${safe(accentLine)}.</span>`;
+}
+
+async function reverseGeocode(lat, lng) {
+    try {
+        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+        if (!res.ok) return null;
+        const d = await res.json();
+        const locality = d.city || d.locality || d.principalSubdivision || '';
+        const region = d.countryName || d.principalSubdivision || '';
+        if (!locality) return null;
+        return { locality, region };
+    } catch { return null; }
+}
+
 function getLocation() {
     const el = $('locationDisplay');
-    if (!navigator.geolocation) { if(el) el.textContent = 'GPS not supported on this device'; return; }
+    if (!navigator.geolocation) {
+        if(el) el.textContent = 'GPS not supported on this device';
+        setAtlasPlace('Location', 'unavailable');
+        return;
+    }
     if(el) el.textContent = 'Acquiring GPS lock…';
-    navigator.geolocation.getCurrentPosition(pos => {
+    setAtlasPlace('Locating', 'you');
+    navigator.geolocation.getCurrentPosition(async pos => {
         currentLocation = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
         if(el) el.textContent = formatCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+        const place = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+        if (place) {
+            setAtlasPlace(place.locality, place.region || 'now');
+        } else {
+            setAtlasPlace('You’re', 'here');
+        }
     }, err => {
         if(el) el.innerHTML = `Location unavailable · <a onclick="getLocation();return false;">retry</a>`;
+        setAtlasPlace('Location', 'unavailable');
     }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 }
 
