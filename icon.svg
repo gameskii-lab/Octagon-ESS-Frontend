@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0A0B0D"/>
+  <path d="M156 96h200l100 100v200l-100 100H156L56 396V196z" fill="none" stroke="#D9F26B" stroke-width="22" stroke-linejoin="round"/>
+  <text x="256" y="296" font-family="-apple-system,BlinkMacSystemFont,system-ui,sans-serif" font-size="92" font-weight="800" fill="#D9F26B" text-anchor="middle" letter-spacing="-2">ESS</text>
+</svg>

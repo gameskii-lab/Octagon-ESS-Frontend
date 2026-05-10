@@ -8,6 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <meta name="theme-color" content="#0A0B0D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Octagon ESS">
     <style>
         :root {
             --primary: #4f46e5; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
@@ -1151,6 +1159,125 @@
             text-transform: uppercase;
             color: rgba(255,255,255,0.6);
         }
+
+        /* ── PWA install banner */
+        .install-banner {
+            position: fixed;
+            left: 12px; right: 12px;
+            bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+            z-index: 250;
+            background: var(--atlas-ink);
+            color: #fff;
+            border-radius: 18px;
+            padding: 12px 14px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 14px 32px -10px rgba(0,0,0,0.5);
+            animation: install-banner-in 0.25s ease;
+        }
+        .install-banner.show { display: flex; }
+        body.app-ready .install-banner.show {
+            bottom: max(env(safe-area-inset-bottom, 0px), 88px);
+        }
+        @keyframes install-banner-in {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .install-banner-icon {
+            width: 38px; height: 38px; flex-shrink: 0;
+            border-radius: 10px;
+            background: var(--atlas-accent);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--atlas-accent-ink);
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 14px; font-weight: 800;
+        }
+        .install-banner-body { flex: 1; min-width: 0; line-height: 1.25; }
+        .install-banner-body strong {
+            display: block; font-size: 14px; font-weight: 600;
+            font-family: 'Geist', system-ui, sans-serif;
+        }
+        .install-banner-body span {
+            display: block;
+            font-family: 'Geist Mono', monospace;
+            font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase;
+            color: rgba(255,255,255,0.6); margin-top: 2px;
+        }
+        .install-banner-cta {
+            background: var(--atlas-accent); color: var(--atlas-accent-ink);
+            border: none; border-radius: 999px;
+            padding: 8px 14px;
+            font-family: 'Geist', system-ui, sans-serif;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; flex-shrink: 0;
+        }
+        .install-banner-close {
+            width: 28px; height: 28px; flex-shrink: 0;
+            border: none; border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ── iOS install hint (Safari can't trigger native prompt) */
+        .ios-hint-overlay {
+            position: fixed; inset: 0;
+            background: rgba(10,11,13,0.55); backdrop-filter: blur(6px);
+            display: none; align-items: flex-end; justify-content: center;
+            z-index: 3500;
+        }
+        .ios-hint-overlay.show { display: flex; }
+        .ios-hint-sheet {
+            background: var(--atlas-bg); color: var(--atlas-ink);
+            border-radius: 28px 28px 0 0;
+            padding: 26px 22px max(env(safe-area-inset-bottom, 0px), 28px);
+            width: 100%; max-width: 480px;
+            font-family: 'Geist', system-ui, sans-serif;
+        }
+        .ios-hint-title {
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 24px; font-weight: 600; letter-spacing: -0.6px; line-height: 1.05;
+        }
+        .ios-hint-meta {
+            margin-top: 4px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px; letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.55);
+        }
+        .ios-hint-steps {
+            margin-top: 18px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .ios-hint-step {
+            display: flex; align-items: center; gap: 12px;
+            background: #fff;
+            border: 1px solid rgba(10,11,13,0.06);
+            border-radius: 14px; padding: 12px 14px;
+        }
+        .ios-hint-step .num {
+            width: 26px; height: 26px; flex-shrink: 0;
+            border-radius: 8px;
+            background: var(--atlas-ink); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Geist Mono', monospace;
+            font-size: 12px; font-weight: 700;
+        }
+        .ios-hint-step strong { font-weight: 600; font-size: 14px; }
+        .ios-hint-step em {
+            font-style: normal;
+            background: var(--atlas-accent); color: var(--atlas-accent-ink);
+            padding: 1px 6px; border-radius: 4px;
+            font-weight: 700;
+        }
+        .ios-hint-close {
+            margin-top: 16px; width: 100%;
+            background: var(--atlas-ink); color: #fff;
+            border: none; border-radius: 16px; height: 50px;
+            font-family: 'Geist', system-ui, sans-serif;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -1694,8 +1821,113 @@
         </div>
     </div>
 
+    <!-- PWA install banner -->
+    <div id="installBanner" class="install-banner" role="dialog" aria-label="Install app">
+        <div class="install-banner-icon">ESS</div>
+        <div class="install-banner-body">
+            <strong>Install Octagon ESS</strong>
+            <span id="installBannerSub">Add to home screen for one-tap access</span>
+        </div>
+        <button class="install-banner-cta" onclick="triggerInstall()" id="installBannerCta">Install</button>
+        <button class="install-banner-close" onclick="dismissInstall()" aria-label="Dismiss">✕</button>
+    </div>
+
+    <!-- iOS install hint -->
+    <div id="iosHintOverlay" class="ios-hint-overlay" onclick="if(event.target===this) hideIOSInstallHint()">
+        <div class="ios-hint-sheet" role="dialog" aria-label="Install instructions">
+            <div class="ios-hint-meta">Add to Home Screen</div>
+            <div class="ios-hint-title">Install Octagon ESS<br>on your iPhone.</div>
+            <div class="ios-hint-steps">
+                <div class="ios-hint-step"><span class="num">1</span><div><strong>Tap the <em>Share</em> button</strong> in Safari's bottom bar</div></div>
+                <div class="ios-hint-step"><span class="num">2</span><div><strong>Scroll &amp; choose <em>Add to Home Screen</em></strong></div></div>
+                <div class="ios-hint-step"><span class="num">3</span><div><strong>Tap <em>Add</em></strong> in the top-right</div></div>
+            </div>
+            <button class="ios-hint-close" onclick="hideIOSInstallHint()">Got it</button>
+        </div>
+    </div>
+
     <script src="ess.js"></script>
     <script>
+        // ── PWA install / service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+
+        let _deferredInstallPrompt = null;
+        const _installDismissedKey = 'pwa-install-dismissed';
+
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+        function isInStandaloneMode() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+        function showInstallBanner(subText) {
+            const el = document.getElementById('installBanner');
+            const sub = document.getElementById('installBannerSub');
+            if (sub && subText) sub.textContent = subText;
+            if (el) el.classList.add('show');
+        }
+        function hideInstallBanner() {
+            const el = document.getElementById('installBanner');
+            if (el) el.classList.remove('show');
+        }
+        function dismissInstall() {
+            try { localStorage.setItem(_installDismissedKey, '1'); } catch(_){}
+            hideInstallBanner();
+        }
+        function showIOSInstallHint() {
+            const el = document.getElementById('iosHintOverlay');
+            if (el) el.classList.add('show');
+        }
+        function hideIOSInstallHint() {
+            const el = document.getElementById('iosHintOverlay');
+            if (el) el.classList.remove('show');
+        }
+        async function triggerInstall() {
+            if (_deferredInstallPrompt) {
+                _deferredInstallPrompt.prompt();
+                try {
+                    const { outcome } = await _deferredInstallPrompt.userChoice;
+                    _deferredInstallPrompt = null;
+                    hideInstallBanner();
+                    if (outcome === 'accepted' && typeof showStatus === 'function') {
+                        showStatus('Installed', 'success');
+                    }
+                } catch(_) { hideInstallBanner(); }
+            } else if (isIOS() && !isInStandaloneMode()) {
+                showIOSInstallHint();
+            } else {
+                // Fallback: tell the user to use the browser menu
+                hideInstallBanner();
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            _deferredInstallPrompt = e;
+            try {
+                if (localStorage.getItem(_installDismissedKey) === '1' || isInStandaloneMode()) return;
+            } catch(_){}
+            showInstallBanner('Add to home screen for one-tap access');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            _deferredInstallPrompt = null;
+            hideInstallBanner();
+        });
+
+        // iOS Safari can't fire beforeinstallprompt — surface the hint banner manually.
+        window.addEventListener('load', () => {
+            try {
+                if (isIOS() && !isInStandaloneMode() && localStorage.getItem(_installDismissedKey) !== '1') {
+                    setTimeout(() => showInstallBanner('Tap to add to home screen'), 1500);
+                }
+            } catch(_){}
+        });
+
         function updateGreetingTime() {
             const hour = new Date().getHours();
             const sub = document.getElementById('greetingSub');

@@ -1,9 +1,10 @@
-const CACHE_NAME = 'octagon-ess-v1';
+const CACHE_NAME = 'octagon-ess-v2';
 const urlsToCache = [
   '/',
   '/index.html',
   '/ess.js',
   '/manifest.json',
+  '/icon.svg',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 

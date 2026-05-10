@@ -4,21 +4,21 @@
   "description": "Employee Self Service Portal",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#1a2744",
+  "background_color": "#FAFAF7",
+  "theme_color": "#0A0B0D",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ],
   "categories": ["business", "productivity"],
@@ -27,15 +27,13 @@
       "name": "Check In",
       "short_name": "Check In",
       "description": "Quick check-in",
-      "url": "/?action=checkin",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "url": "/?action=checkin"
     },
     {
       "name": "Apply Leave",
       "short_name": "Leave",
       "description": "Apply for leave",
-      "url": "/?action=leave",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "url": "/?action=leave"
     }
   ]
 }
