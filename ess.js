@@ -162,7 +162,8 @@ async function handleLogin() {
         const loginData = await loginRes.json();
         if (!loginData.success) throw new Error(loginData.error || 'Invalid credentials');
         
-        const empRes = await fetch(`${config.middlewareUrl}/api/employee/${encodeURIComponent(email)}`);
+        // Use the working debug endpoint as workaround
+        const empRes = await fetch(`${config.middlewareUrl}/api/debug/employee-by-email/${encodeURIComponent(email)}`);
         const empData = await empRes.json();
         if (!empData.success) throw new Error(empData.error || 'Employee not found');
         
