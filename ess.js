@@ -123,6 +123,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     currentStatus = logType;
                     hasCheckedInToday = true;
                     updateButtonState();
+                    _todayCheckinsCache.push({ log_type: logType, time: timestamp });
+                    renderHoursLogged();
+                    loadAttendanceStats();
                     const msg = isOffsite ? `✅ Offsite check-${logType.toLowerCase()} recorded` : `✅ Checked ${logType.toLowerCase()} at ${now.toLocaleTimeString()}`;
                     showStatus(msg, 'success');
                 } else {
@@ -380,25 +383,68 @@ async function checkCurrentStatus() {
     } catch(e) {}
 }
 
+let _todayCheckinsCache = [];
+
+function computeHoursLoggedMs(checkins, now = Date.now()) {
+    if (!Array.isArray(checkins) || !checkins.length) return 0;
+    const sorted = [...checkins]
+        .filter(c => c && c.time && c.log_type)
+        .sort((a, b) => new Date(a.time) - new Date(b.time));
+    let totalMs = 0;
+    let inAt = null;
+    for (const c of sorted) {
+        const t = new Date(c.time).getTime();
+        if (Number.isNaN(t)) continue;
+        if (c.log_type === 'IN' && inAt === null) {
+            inAt = t;
+        } else if (c.log_type === 'OUT' && inAt !== null) {
+            totalMs += Math.max(0, t - inAt);
+            inAt = null;
+        }
+    }
+    if (inAt !== null) totalMs += Math.max(0, now - inAt);
+    return totalMs;
+}
+
+function formatHoursLogged(ms) {
+    const totalMin = Math.max(0, Math.floor(ms / 60000));
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return `${h}h ${String(m).padStart(2, '0')}m`;
+}
+
+function renderHoursLogged() {
+    const el = $('dashAttendStat');
+    if (!el) return;
+    const ms = computeHoursLoggedMs(_todayCheckinsCache);
+    el.textContent = formatHoursLogged(ms);
+}
+
+setInterval(() => {
+    if (currentStatus === 'IN') renderHoursLogged();
+}, 60000);
+
 async function loadAttendanceStats() {
     try {
-        const today = new Date().toISOString().split('T')[0];
         const res = await apiFetch(`/api/today-checkins/${config.employeeId}`);
         const data = await res.json();
-        
+
         if (data.success) {
             const checkins = data.checkins || [];
+            _todayCheckinsCache = checkins;
+            renderHoursLogged();
+
             const hasCheckedIn = checkins.length > 0;
             const lastLog = checkins.length > 0 ? checkins[checkins.length - 1].log_type : null;
-            
+
             // Update present count
             const presentEl = document.getElementById('presentCount');
             if (presentEl) presentEl.textContent = hasCheckedIn && lastLog === 'OUT' ? 1 : 0;
-            
+
             // Update late count (simplified - adjust based on your logic)
             const lateEl = document.getElementById('lateCount');
             if (lateEl) lateEl.textContent = 0; // You can add late detection later
-            
+
             // Update absent count (simplified)
             const absentEl = document.getElementById('absentCount');
             if (absentEl) absentEl.textContent = hasCheckedIn ? 0 : 1;
