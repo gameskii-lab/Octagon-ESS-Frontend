@@ -195,9 +195,7 @@
 
         .atlas-hero {
             position: relative;
-            height: 60vh;
-            min-height: 380px;
-            max-height: 480px;
+            height: clamp(240px, 38vh, 420px);
             background: var(--atlas-ink);
             overflow: hidden;
             flex-shrink: 0;
@@ -223,7 +221,7 @@
             background: var(--atlas-bg);
             border-radius: 32px 32px 0 0;
             flex: 1;
-            padding: 28px 26px max(env(safe-area-inset-bottom, 0px), 50px);
+            padding: 24px 26px max(env(safe-area-inset-bottom, 0px), 28px);
             display: flex; flex-direction: column;
             box-shadow: 0 -20px 40px rgba(0,0,0,0.08);
             position: relative; z-index: 1;
