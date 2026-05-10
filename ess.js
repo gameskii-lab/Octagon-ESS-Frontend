@@ -167,15 +167,22 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
+function formatCoords(lat, lng, accuracy) {
+    const ns = lat >= 0 ? 'N' : 'S';
+    const ew = lng >= 0 ? 'E' : 'W';
+    const acc = accuracy ? ` · ±${Math.round(accuracy)}m` : '';
+    return `${Math.abs(lat).toFixed(6)}° ${ns} · ${Math.abs(lng).toFixed(6)}° ${ew}${acc}`;
+}
+
 function getLocation() {
     const el = $('locationDisplay');
-    if (!navigator.geolocation) { if(el) el.textContent = '❌ GPS not supported'; return; }
-    if(el) el.textContent = '📍 Requesting location...';
+    if (!navigator.geolocation) { if(el) el.textContent = 'GPS not supported on this device'; return; }
+    if(el) el.textContent = 'Acquiring GPS lock…';
     navigator.geolocation.getCurrentPosition(pos => {
         currentLocation = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-        if(el) el.innerHTML = `📍 Lat: ${currentLocation.latitude.toFixed(6)}, Lng: ${currentLocation.longitude.toFixed(6)}`;
+        if(el) el.textContent = formatCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
     }, err => {
-        if(el) el.innerHTML = `❌ Location unavailable <button onclick="getLocation()" style="padding:4px 8px; margin-left:8px; font-size:12px; background:#2196F3; color:white; border:none; border-radius:4px;">Retry</button>`;
+        if(el) el.innerHTML = `Location unavailable · <a onclick="getLocation();return false;">retry</a>`;
     }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 }
 
@@ -266,7 +273,7 @@ function showAppSection() {
     updateDrawerInfo();
     if (currentLocation) {
         const el = $('locationDisplay');
-        if (el) el.innerHTML = `📍 Lat: ${currentLocation.latitude.toFixed(6)}, Lng: ${currentLocation.longitude.toFixed(6)}`;
+        if (el) el.textContent = formatCoords(currentLocation.latitude, currentLocation.longitude);
     }
     const checkBtn = document.getElementById('checkBtn');
     const worksiteEl = document.getElementById('worksiteDisplay');

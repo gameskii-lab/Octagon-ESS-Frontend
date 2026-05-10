@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Octagon ESS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4f46e5; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
@@ -168,26 +171,251 @@
         .screen.active { display: block; }
         .hidden { display: none !important; }
         
-        /* Login */
-        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .login-card { background: var(--card); border-radius: 20px; padding: 32px 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); }
-        .login-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 24px; }
+        /* ── Login: Atlas variation ───────────────────────────── */
+        #loginScreen {
+            --atlas-accent: #D9F26B;
+            --atlas-accent-ink: #0A0B0D;
+            --atlas-bg: #FAFAF7;
+            --atlas-ink: #0A0B0D;
+            min-height: 100vh;
+            background: var(--atlas-bg);
+            color: var(--atlas-ink);
+            font-family: 'Geist', -apple-system, system-ui, sans-serif;
+        }
+        #loginScreen.active { display: flex; flex-direction: column; }
+
+        @keyframes atlas-ping {
+            0%   { transform: scale(0.6); opacity: 0.5; }
+            75%, 100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        .atlas-hero {
+            position: relative;
+            height: 60vh;
+            min-height: 380px;
+            max-height: 480px;
+            background: var(--atlas-ink);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .atlas-hero svg.atlas-map {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+        }
+        .atlas-brand {
+            position: absolute;
+            top: max(env(safe-area-inset-top, 0px), 24px);
+            left: 24px;
+            display: flex; align-items: center; gap: 8px;
+            color: #fff;
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .atlas-card {
+            margin-top: -56px;
+            background: var(--atlas-bg);
+            border-radius: 32px 32px 0 0;
+            flex: 1;
+            padding: 28px 26px max(env(safe-area-inset-bottom, 0px), 50px);
+            display: flex; flex-direction: column;
+            box-shadow: 0 -20px 40px rgba(0,0,0,0.08);
+            position: relative; z-index: 1;
+        }
+
+        .atlas-chip {
+            align-self: flex-start;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 12px 6px 8px;
+            border-radius: 999px;
+            background: var(--atlas-ink);
+            color: #fff;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+        .atlas-livedot {
+            position: relative; width: 10px; height: 10px; flex-shrink: 0;
+        }
+        .atlas-livedot::before, .atlas-livedot::after {
+            content: ''; position: absolute; border-radius: 50%; background: var(--atlas-accent);
+        }
+        .atlas-livedot::before { inset: 0; }
+        .atlas-livedot::after {
+            inset: -4px; opacity: 0.35;
+            animation: atlas-ping 1.8s ease-out infinite;
+        }
+
+        .atlas-place {
+            margin-top: 12px;
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 38px; line-height: 1.0;
+            font-weight: 600; letter-spacing: -1.4px;
+        }
+        .atlas-place .atlas-accent {
+            color: var(--atlas-accent);
+            font-style: italic; font-weight: 500;
+        }
+        .atlas-coords {
+            margin-top: 8px;
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            color: rgba(10,11,13,0.55);
+            letter-spacing: 0.5px;
+        }
+
+        .atlas-spacer { flex: 1; min-height: 16px; }
+
+        .atlas-fields { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+        .atlas-field {
+            background: #fff;
+            border-radius: 14px;
+            padding: 10px 16px;
+            border: 1px solid rgba(10,11,13,0.08);
+        }
+        .atlas-field .atlas-label {
+            display: block;
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(10,11,13,0.5);
+            margin-bottom: 2px;
+        }
+        .atlas-field input {
+            width: 100%;
+            background: transparent; border: none; outline: none;
+            font-size: 17px; font-weight: 500;
+            padding: 0;
+            color: var(--atlas-ink);
+            font-family: 'Geist', system-ui, sans-serif;
+        }
+
+        #loginScreen .submit-btn.atlas-cta {
+            margin-top: 16px;
+            width: 100%;
+            height: 58px; padding: 0;
+            background: var(--atlas-accent);
+            color: var(--atlas-accent-ink);
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 14px 32px -10px rgba(217,242,107,0.55);
+            transition: transform 0.1s ease;
+        }
+        #loginScreen .submit-btn.atlas-cta:active { transform: scale(0.98); }
+        #loginScreen .submit-btn.atlas-cta:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .atlas-recal {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: rgba(10,11,13,0.55);
+        }
+        .atlas-recal a {
+            color: var(--atlas-ink);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .atlas-livedot::after { animation: none; }
+        }
     </style>
 </head>
 <body>
     <div id="statusMessage"></div>
 
-    <!-- LOGIN -->
+    <!-- LOGIN — Atlas variation -->
     <div id="loginScreen" class="screen active">
-        <div class="login-container">
-            <div class="login-card">
-                <h1 class="login-title">Octagon ESS</h1>
-                <div class="form-group"><label class="form-label">Email</label><input type="email" id="loginEmail" class="form-input" placeholder="Enter email"></div>
-                <div class="form-group"><label class="form-label">Password</label><input type="password" id="loginPassword" class="form-input" placeholder="Enter password"></div>
-                <button onclick="handleLogin()" class="submit-btn">Sign In</button>
-                <div id="worksiteDisplay" style="margin-top:16px; padding:12px; background:var(--bg); border-radius:8px; font-size:13px;"></div>
-                <div id="locationDisplay" style="margin-top:8px; font-size:12px; color:var(--text-secondary); text-align:center;"></div>
+        <div class="atlas-hero">
+            <svg class="atlas-map" viewBox="0 0 400 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <g stroke="rgba(255,255,255,0.06)" stroke-width="0.5">
+                    <line x1="0"   y1="0" x2="0"   y2="440"/><line x1="40"  y1="0" x2="40"  y2="440"/>
+                    <line x1="80"  y1="0" x2="80"  y2="440"/><line x1="120" y1="0" x2="120" y2="440"/>
+                    <line x1="160" y1="0" x2="160" y2="440"/><line x1="200" y1="0" x2="200" y2="440"/>
+                    <line x1="240" y1="0" x2="240" y2="440"/><line x1="280" y1="0" x2="280" y2="440"/>
+                    <line x1="320" y1="0" x2="320" y2="440"/><line x1="360" y1="0" x2="360" y2="440"/>
+                    <line x1="400" y1="0" x2="400" y2="440"/>
+                    <line x1="0" y1="0"   x2="400" y2="0"/>  <line x1="0" y1="40"  x2="400" y2="40"/>
+                    <line x1="0" y1="80"  x2="400" y2="80"/> <line x1="0" y1="120" x2="400" y2="120"/>
+                    <line x1="0" y1="160" x2="400" y2="160"/><line x1="0" y1="200" x2="400" y2="200"/>
+                    <line x1="0" y1="240" x2="400" y2="240"/><line x1="0" y1="280" x2="400" y2="280"/>
+                    <line x1="0" y1="320" x2="400" y2="320"/><line x1="0" y1="360" x2="400" y2="360"/>
+                    <line x1="0" y1="400" x2="400" y2="400"/><line x1="0" y1="440" x2="400" y2="440"/>
+                </g>
+                <g fill="rgba(255,255,255,0.04)">
+                    <path d="M-20 280 Q 80 240 160 270 T 320 250 Q 400 230 420 280 L 420 460 L -20 460 Z"/>
+                    <path d="M-20 320 Q 100 290 200 310 T 380 300 Q 420 295 420 320 L 420 460 L -20 460 Z" fill="rgba(255,255,255,0.06)"/>
+                </g>
+                <g fill="rgba(255,255,255,0.18)">
+                    <circle cx="80" cy="120" r="1.5"/><circle cx="140" cy="200" r="1.5"/>
+                    <circle cx="320" cy="160" r="1.5"/><circle cx="280" cy="80" r="1.5"/>
+                    <circle cx="60" cy="60" r="1.5"/>
+                </g>
+                <text x="20" y="20"  fill="rgba(255,255,255,0.35)" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="1.5">04°27'N</text>
+                <text x="320" y="20" fill="rgba(255,255,255,0.35)" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="1.5">114°00'E</text>
+                <g transform="translate(200, 230)">
+                    <circle r="50" fill="var(--atlas-accent)" opacity="0.08">
+                        <animate attributeName="r"       values="20;65;65"  dur="2.4s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.35;0;0"  dur="2.4s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle r="28" fill="var(--atlas-accent)" opacity="0.18"/>
+                    <circle r="14" fill="var(--atlas-accent)"/>
+                    <circle r="5"  fill="var(--atlas-accent-ink)"/>
+                    <line x1="-28" y1="0"   x2="-50" y2="0"   stroke="var(--atlas-accent)" stroke-width="1" opacity="0.4"/>
+                    <line x1="28"  y1="0"   x2="50"  y2="0"   stroke="var(--atlas-accent)" stroke-width="1" opacity="0.4"/>
+                    <line x1="0"   y1="-28" x2="0"   y2="-50" stroke="var(--atlas-accent)" stroke-width="1" opacity="0.4"/>
+                    <line x1="0"   y1="28"  x2="0"   y2="50"  stroke="var(--atlas-accent)" stroke-width="1" opacity="0.4"/>
+                </g>
+            </svg>
+            <div class="atlas-brand">
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 2h10l5 5v10l-5 5H7l-5-5V7z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+                <span>Octagon · ESS</span>
             </div>
+        </div>
+
+        <div class="atlas-card">
+            <div class="atlas-chip">
+                <span class="atlas-livedot"></span>
+                You're at
+            </div>
+            <div class="atlas-place">
+                Bandar Seri<br>Begawan <span class="atlas-accent">HQ.</span>
+            </div>
+            <div class="atlas-coords" id="locationDisplay">4.456198° N · 114.004718° E · ±4m</div>
+
+            <div class="atlas-spacer"></div>
+
+            <div class="atlas-fields">
+                <div class="atlas-field">
+                    <label class="atlas-label" for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@octagon.bn" autocomplete="email">
+                </div>
+                <div class="atlas-field">
+                    <label class="atlas-label" for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••••" autocomplete="current-password">
+                </div>
+            </div>
+
+            <button onclick="handleLogin()" class="submit-btn atlas-cta">Sign in &amp; check in</button>
+
+            <div class="atlas-recal">
+                Wrong location? <a onclick="getLocation();return false;">Recalibrate GPS</a>
+            </div>
+
+            <div id="worksiteDisplay" style="display:none"></div>
         </div>
     </div>
 
