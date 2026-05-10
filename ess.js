@@ -1266,6 +1266,112 @@ async function submitWorkflowAction(action) {
     }
 }
 
+// ============================================
+// ONBOARDING
+// ============================================
+function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[<>&"']/g, c => (
+        { '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;' }[c]
+    ));
+}
+
+async function loadOnboardingScreen() {
+    const progressEl = document.getElementById('onboardingProgress');
+    const activitiesEl = document.getElementById('onboardingActivities');
+    const labelEl = document.getElementById('onboardingActivitiesLabel');
+    if (!progressEl) return;
+
+    progressEl.innerHTML = '<div class="atlas-empty">Loading…</div>';
+    if (activitiesEl) activitiesEl.innerHTML = '';
+    if (labelEl) labelEl.style.display = 'none';
+
+    try {
+        const res = await apiFetch(`/api/onboarding/${config.employeeId}`);
+        const data = await res.json();
+
+        if (!data.success || !data.onboarding) {
+            progressEl.innerHTML = '<div class="atlas-empty">No active onboarding for your account.</div>';
+            return;
+        }
+
+        const ob = data.onboarding;
+        const pct = Math.max(0, Math.min(100, ob.progress || 0));
+        const joining = ob.joining_date
+            ? new Date(ob.joining_date).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' })
+            : '—';
+
+        progressEl.innerHTML = `
+            <div class="atlas-progress-hero">
+                <div class="atlas-progress-meta">${escapeHtml(ob.status || 'In progress')}</div>
+                <div class="atlas-progress-pct">${pct}<span class="pct-symbol">%</span></div>
+                <div class="atlas-progress-bar"><div class="atlas-progress-fill" style="width:${pct}%;"></div></div>
+                <div class="atlas-progress-foot">
+                    <span>${ob.completedActivities || 0} of ${ob.totalActivities || 0} done</span>
+                    <span>Joined · ${escapeHtml(joining)}</span>
+                </div>
+            </div>
+        `;
+
+        if (!Array.isArray(ob.activities) || ob.activities.length === 0) {
+            if (activitiesEl) activitiesEl.innerHTML = '<div class="atlas-empty" style="margin-top:18px;">No activities assigned.</div>';
+            return;
+        }
+
+        if (labelEl) labelEl.style.display = '';
+
+        let html = '';
+        ob.activities.forEach(a => {
+            const status = a.completion_status || 'Pending';
+            const cls = status === 'Completed' ? 'status-approved'
+                      : status === 'Skipped' || status === 'Failed' ? 'status-rejected'
+                      : 'status-pending';
+            const isPending = status !== 'Completed';
+            const attrs = isPending
+                ? `data-activity="${escapeHtml(a.activity_name)}" onclick="completeOnboardingActivity(this.dataset.activity)"`
+                : 'style="cursor:default;"';
+            html += `
+                <div class="atlas-row" ${attrs}>
+                    <div class="atlas-row-head">
+                        <div style="min-width:0;flex:1;">
+                            <div class="atlas-row-title">${escapeHtml(a.activity_name)}</div>
+                            ${a.responsible ? `<div class="atlas-row-meta">Responsible · ${escapeHtml(a.responsible)}</div>` : ''}
+                        </div>
+                        <span class="leave-status ${cls}">${escapeHtml(status)}</span>
+                    </div>
+                    ${a.description ? `<div style="margin-top:8px;font-size:13px;color:rgba(10,11,13,0.7);line-height:1.4;">${escapeHtml(a.description)}</div>` : ''}
+                    ${isPending ? '<div class="atlas-row-foot" style="color:rgba(10,11,13,0.45);"><span>Tap to mark complete</span><span>→</span></div>' : ''}
+                </div>
+            `;
+        });
+        if (activitiesEl) activitiesEl.innerHTML = html;
+    } catch (err) {
+        console.error('Onboarding load error:', err);
+        progressEl.innerHTML = '<div class="atlas-empty">Error loading onboarding.</div>';
+    }
+}
+
+async function completeOnboardingActivity(activityName) {
+    if (!activityName) return;
+    if (!confirm(`Mark "${activityName}" as complete?`)) return;
+    try {
+        const res = await apiFetch(`/api/onboarding/complete-activity`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ activityName })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showStatus('✅ Activity completed', 'success');
+            loadOnboardingScreen();
+        } else {
+            showStatus(`❌ ${data.error || 'Failed to complete'}`, 'error');
+        }
+    } catch (err) {
+        console.error('Complete activity error:', err);
+        showStatus('❌ Network error', 'error');
+    }
+}
+
 // PROFILE
 function loadProfileScreen() {
     if(!currentEmployee) return;
